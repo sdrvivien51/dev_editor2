@@ -3,6 +3,7 @@ import List from '@editorjs/list';
 import Image from '@editorjs/image';
 import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
+import ChartTool from './ChartTool';
 
 export const editorConfig: Partial<EditorConfig> = {
   tools: {
@@ -20,6 +21,9 @@ export const editorConfig: Partial<EditorConfig> = {
       config: {
         defaultStyle: 'unordered'
       }
+    },
+    chart: {
+      class: ChartTool,
     },
     image: {
       class: Image,
