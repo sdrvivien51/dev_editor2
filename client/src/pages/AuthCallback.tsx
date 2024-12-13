@@ -29,10 +29,13 @@ export default function AuthCallback() {
         if (sessionError) throw sessionError;
 
         if (session?.user) {
-          // Create or update user in our database
-          const response = await fetch("/api/users", {
+          // Create or update user in our database and establish session
+          const response = await fetch("/api/auth/callback", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${accessToken}`
+            },
             body: JSON.stringify({
               id: session.user.id,
               email: session.user.email,

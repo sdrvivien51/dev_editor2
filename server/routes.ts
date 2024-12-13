@@ -64,10 +64,24 @@ export function registerRoutes(app: Express) {
     res.json(user);
   });
 
-  // Create or update user
-  app.post("/api/users", async (req, res) => {
+  // Handle auth callback and session setup
+  app.post("/api/auth/callback", async (req: AuthRequest, res) => {
     const { id, email, name } = req.body;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({ message: "No authorization header" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
     try {
+      // Set the session
+      req.session.userId = id;
+      
       const existingUser = await db.query.users.findFirst({
         where: eq(users.id, id),
       });
