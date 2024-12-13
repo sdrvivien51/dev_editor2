@@ -43,17 +43,38 @@ export default function Editor() {
   });
 
   useEffect(() => {
-    if (!editorRef.current) {
-      editorRef.current = new EditorJS({
-        ...editorConfig,
-        placeholder: 'Start writing your post...',
-        onChange: () => {
-          // You can add auto-save functionality here
-        }
-      });
-    }
+    const initEditor = async () => {
+      if (!editorRef.current) {
+        const editor = new EditorJS({
+          ...editorConfig,
+          holder: 'editorjs',
+          placeholder: 'Start writing your post...',
+          data: {
+            blocks: [
+              {
+                type: "paragraph",
+                data: {
+                  text: "Start writing your amazing post..."
+                }
+              }
+            ]
+          },
+          onChange: () => {
+            // You can add auto-save functionality here
+          }
+        });
+        editorRef.current = editor;
+      }
+    };
+
+    initEditor().catch(console.error);
+
     return () => {
-      editorRef.current?.destroy();
+      if (editorRef.current) {
+        editorRef.current.destroy()
+          .catch(console.error);
+        editorRef.current = undefined;
+      }
     };
   }, []);
 
