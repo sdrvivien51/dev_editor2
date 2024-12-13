@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS from "@editorjs/editorjs";
+import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Editor() {
-  const editorRef = useRef<EditorJS>();
+  const editorRef = useRef<EditorJS | null>(null);
   const [title, setTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
@@ -44,37 +44,49 @@ export default function Editor() {
 
   useEffect(() => {
     const initEditor = async () => {
-      if (!editorRef.current) {
-        const editor = new EditorJS({
-          ...editorConfig,
-          holder: 'editorjs',
-          placeholder: 'Start writing your post...',
-          data: {
-            blocks: [
-              {
-                type: "paragraph",
-                data: {
-                  text: "Start writing your amazing post..."
+      try {
+        if (!editorRef.current) {
+          const editor = new EditorJS({
+            holder: 'editorjs',
+            data: {
+              blocks: [
+                {
+                  type: "paragraph",
+                  data: {
+                    text: "Start writing your amazing post..."
+                  }
                 }
-              }
-            ]
-          },
-          onChange: () => {
-            // You can add auto-save functionality here
-          }
-        });
-        editorRef.current = editor;
+              ]
+            },
+            tools: editorConfig.tools,
+            placeholder: editorConfig.placeholder,
+            onChange: () => {
+              // You can add auto-save functionality here
+            }
+          });
+          
+          await editor.isReady;
+          editorRef.current = editor;
+        }
+      } catch (error) {
+        console.error('Editor initialization failed:', error);
       }
     };
 
-    initEditor().catch(console.error);
+    initEditor();
 
     return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy()
-          .catch(console.error);
-        editorRef.current = undefined;
-      }
+      const destroyEditor = async () => {
+        if (editorRef.current) {
+          try {
+            await editorRef.current.destroy();
+            editorRef.current = null;
+          } catch (error) {
+            console.error('Editor destruction failed:', error);
+          }
+        }
+      };
+      destroyEditor();
     };
   }, []);
 

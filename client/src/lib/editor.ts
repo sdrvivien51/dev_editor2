@@ -1,9 +1,10 @@
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Image from '@editorjs/image';
+import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
 
-export const editorConfig = {
+export const editorConfig: Partial<EditorConfig> = {
   tools: {
     header: {
       class: Header,
