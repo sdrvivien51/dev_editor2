@@ -5,6 +5,7 @@ import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
 import ChartTool from './ChartTool';
 import TradingViewTool from './TradingViewTool';
+import MermaidTool from './MermaidTool';
 
 export const editorConfig: Partial<EditorConfig> = {
   tools: {
@@ -29,6 +30,10 @@ export const editorConfig: Partial<EditorConfig> = {
     },
     tradingview: {
       class: TradingViewTool,
+      inlineToolbar: false,
+    },
+    mermaid: {
+      class: MermaidTool,
       inlineToolbar: false,
     },
     image: {
