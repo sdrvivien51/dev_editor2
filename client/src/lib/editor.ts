@@ -22,12 +22,7 @@ export const editorConfig: Partial<EditorConfig> = {
         defaultStyle: 'unordered'
       }
     },
-    chart: {
-      class: ChartTool,
-      config: {
-        enableReactComponents: true
-      }
-    },
+    chart: ChartTool,
     image: {
       class: Image,
       config: {
