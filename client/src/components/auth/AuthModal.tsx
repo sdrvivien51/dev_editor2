@@ -18,7 +18,7 @@ export function AuthModal() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: 'http://localhost:5000/auth-callback',
           data: {
             name: email.split('@')[0],
           },

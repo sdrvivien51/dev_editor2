@@ -16,7 +16,7 @@ function App() {
           <Route path="/write" component={Editor} />
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />
-          <Route path="/auth/callback" component={AuthCallback} />
+          <Route path="/auth-callback" component={AuthCallback} />
           <Route>404 Page Not Found</Route>
         </Switch>
       </main>

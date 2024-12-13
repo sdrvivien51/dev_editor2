@@ -10,18 +10,22 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) throw error;
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
 
-        if (user) {
+        if (session?.user) {
           // Create or update user in our database
           const response = await fetch("/api/users", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              id: user.id,
-              email: user.email,
-              name: user.user_metadata.name || user.email?.split("@")[0] || "Anonymous",
+              id: session.user.id,
+              email: session.user.email,
+              name: session.user.user_metadata.name || session.user.email?.split("@")[0] || "Anonymous",
             }),
           });
 
@@ -33,11 +37,14 @@ export default function AuthCallback() {
             title: "Welcome!",
             description: "You have successfully signed in.",
           });
+          
+          // Redirect to home page after a short delay
+          setTimeout(() => setLocation("/"), 1000);
+        } else {
+          throw new Error("No session found");
         }
-
-        // Redirect to home page
-        setLocation("/");
       } catch (error: any) {
+        console.error("Auth callback error:", error);
         toast({
           title: "Error",
           description: error.message,
