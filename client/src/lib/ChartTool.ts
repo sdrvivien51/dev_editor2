@@ -83,26 +83,38 @@ export default class ChartTool implements BlockTool {
   }
 
   private _openConfig() {
-    // We'll implement this later with a Radix UI Popover
-    const labels = prompt('Entrez les labels (séparés par des virgules):', this.data.data.labels.join(','));
-    const values = prompt('Entrez les valeurs (séparées par des virgules):', this.data.data.datasets[0].data.join(','));
-    const type = prompt('Type de graphique (bar, line, pie, doughnut):', this.data.type) as ChartData['type'];
+    const root = document.createElement('div');
+    root.className = 'chart-config-root';
+    this.wrapper.appendChild(root);
 
-    if (labels && values && type) {
+    const handleSave = (config: {
+      type: 'bar' | 'line' | 'pie' | 'doughnut';
+      labels: string[];
+      data: number[];
+      colors: string[];
+    }) => {
       this.data = {
-        type,
+        type: config.type,
         data: {
-          labels: labels.split(',').map(l => l.trim()),
+          labels: config.labels,
           datasets: [{
             label: 'Dataset',
-            data: values.split(',').map(v => Number(v.trim())),
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+            data: config.data,
+            backgroundColor: config.colors,
           }]
         }
       };
 
       this._renderChart(this.wrapper.querySelector('canvas')!);
-    }
+      root.remove();
+    };
+
+    // @ts-ignore
+    import('@/components/editor/ChartConfig').then(({ ChartConfig }) => {
+      const { createRoot } = require('react-dom/client');
+      const root = createRoot(document.querySelector('.chart-config-root'));
+      root.render(React.createElement(ChartConfig, { onSave: handleSave }));
+    });
   }
 
   save() {
