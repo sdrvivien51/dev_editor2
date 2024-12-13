@@ -53,15 +53,9 @@ export default class ChartTool implements BlockTool {
     const canvas = document.createElement('canvas');
     container.appendChild(canvas);
 
-    const configBtn = document.createElement('button');
-    configBtn.textContent = 'Configurer le graphique';
-    configBtn.className = 'cdx-button';
-    configBtn.onclick = this._openConfig.bind(this);
-
     this.wrapper.appendChild(container);
-    this.wrapper.appendChild(configBtn);
 
-    // Render chart
+    // Initialize chart with default data
     this._renderChart(canvas);
 
     return this.wrapper;
@@ -77,44 +71,38 @@ export default class ChartTool implements BlockTool {
       data: this.data.data,
       options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
       }
     });
   }
 
-  private _openConfig() {
-    const root = document.createElement('div');
-    root.className = 'chart-config-root';
-    this.wrapper.appendChild(root);
-
-    const handleSave = (config: {
-      type: 'bar' | 'line' | 'pie' | 'doughnut';
-      labels: string[];
-      data: number[];
-      colors: string[];
-    }) => {
-      this.data = {
-        type: config.type,
-        data: {
-          labels: config.labels,
-          datasets: [{
-            label: 'Dataset',
-            data: config.data,
-            backgroundColor: config.colors,
-          }]
-        }
-      };
-
-      this._renderChart(this.wrapper.querySelector('canvas')!);
-      root.remove();
+  public updateData(config: {
+    type: 'bar' | 'line' | 'pie' | 'doughnut';
+    labels: string[];
+    data: number[];
+    colors: string[];
+  }) {
+    this.data = {
+      type: config.type,
+      data: {
+        labels: config.labels,
+        datasets: [{
+          label: 'Dataset',
+          data: config.data,
+          backgroundColor: config.colors,
+        }]
+      }
     };
 
-    // @ts-ignore
-    import('@/components/editor/ChartConfig').then(({ ChartConfig }) => {
-      const { createRoot } = require('react-dom/client');
-      const root = createRoot(document.querySelector('.chart-config-root'));
-      root.render(React.createElement(ChartConfig, { onSave: handleSave }));
-    });
+    const canvas = this.wrapper.querySelector('canvas');
+    if (canvas) {
+      this._renderChart(canvas);
+    }
   }
 
   save() {

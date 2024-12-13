@@ -24,6 +24,9 @@ export const editorConfig: Partial<EditorConfig> = {
     },
     chart: {
       class: ChartTool,
+      config: {
+        enableReactComponents: true
+      }
     },
     image: {
       class: Image,
