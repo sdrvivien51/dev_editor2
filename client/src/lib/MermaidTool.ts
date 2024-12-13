@@ -56,21 +56,23 @@ export default class MermaidTool implements BlockTool {
 
     // Add configuration interface
     wrapper.appendChild(this.configRoot);
-    const root = createRoot(this.configRoot);
-    root.render(createElement(MermaidConfig, {
-      onSave: (config: MermaidData) => {
-        this.data = config;
-        
-        // Clear and re-render the diagram
-        wrapper.querySelector('.mermaid')?.remove();
-        const newMermaidContainer = document.createElement('div');
-        newMermaidContainer.classList.add('mermaid');
-        newMermaidContainer.textContent = config.code;
-        wrapper.insertBefore(newMermaidContainer, this.configRoot);
-        
-        mermaid.run({ nodes: [newMermaidContainer] });
-      }
-    }));
+    if (!wrapper.querySelector('.mermaid-config-root')) {
+      const root = createRoot(this.configRoot);
+      root.render(createElement(MermaidConfig, {
+        onSave: (config: MermaidData) => {
+          this.data = config;
+          
+          // Clear and re-render the diagram
+          wrapper.querySelector('.mermaid')?.remove();
+          const newMermaidContainer = document.createElement('div');
+          newMermaidContainer.classList.add('mermaid');
+          newMermaidContainer.textContent = config.code;
+          wrapper.insertBefore(newMermaidContainer, this.configRoot);
+          
+          mermaid.run({ nodes: [newMermaidContainer] });
+        }
+      }));
+    }
 
     return wrapper;
   }
