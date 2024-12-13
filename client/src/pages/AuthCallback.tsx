@@ -10,11 +10,22 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
+        // Get the hash fragment from the URL
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1) // Remove the # character
+        );
         
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        
+        if (!accessToken) throw new Error("No access token found");
+
+        // Set the session with the tokens
+        const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || "",
+        });
+
         if (sessionError) throw sessionError;
 
         if (session?.user) {

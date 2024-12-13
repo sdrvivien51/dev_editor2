@@ -42,7 +42,10 @@ export function Navbar() {
                   <Link href="/settings">
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem onClick={() => supabase.auth.signOut()}>
+                  <DropdownMenuItem onClick={async () => {
+                    await supabase.auth.signOut();
+                    setLocation("/");
+                  }}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
