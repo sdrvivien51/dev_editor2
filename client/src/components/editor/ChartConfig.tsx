@@ -22,70 +22,82 @@ export function ChartConfig({ onSave }: ChartConfigProps) {
   const [colors, setColors] = useState('#FF6384, #36A2EB, #FFCE56');
 
   const handleSave = () => {
-    const chartConfig = {
-      type,
-      labels: labels.split(',').map(l => l.trim()),
-      data: data.split(',').map(d => Number(d.trim())),
-      colors: colors.split(',').map(c => c.trim()),
-    };
-    onSave(chartConfig);
+    try {
+      const chartConfig = {
+        type,
+        labels: labels.split(',').map(l => l.trim()),
+        data: data.split(',').map(d => Number(d.trim())),
+        colors: colors.split(',').map(c => c.trim()),
+      };
+      onSave(chartConfig);
+    } catch (error) {
+      console.error('Failed to parse chart configuration:', error);
+    }
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-          <Settings className="h-4 w-4" />
-          <span className="sr-only">Configure chart</span>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            <Label>Chart Type</Label>
-            <Select value={type} onValueChange={(value: any) => setType(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bar">Bar</SelectItem>
-                <SelectItem value="line">Line</SelectItem>
-                <SelectItem value="pie">Pie</SelectItem>
-                <SelectItem value="doughnut">Doughnut</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+    <div className="inline-block">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+            <Settings className="h-4 w-4" />
+            <span className="sr-only">Configure chart</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-80">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">Chart Configuration</h4>
+              <p className="text-sm text-muted-foreground">
+                Configure your chart's appearance and data.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label>Chart Type</Label>
+              <Select value={type} onValueChange={(value: any) => setType(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select chart type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bar">Bar</SelectItem>
+                  <SelectItem value="line">Line</SelectItem>
+                  <SelectItem value="pie">Pie</SelectItem>
+                  <SelectItem value="doughnut">Doughnut</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Labels (comma separated)</Label>
-            <Input
-              value={labels}
-              onChange={(e) => setLabels(e.target.value)}
-              placeholder="Label 1, Label 2, Label 3"
-            />
-          </div>
+            <div className="space-y-2">
+              <Label>Labels (comma separated)</Label>
+              <Input
+                value={labels}
+                onChange={(e) => setLabels(e.target.value)}
+                placeholder="Label 1, Label 2, Label 3"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label>Data (comma separated)</Label>
-            <Input
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-              placeholder="10, 20, 30"
-            />
-          </div>
+            <div className="space-y-2">
+              <Label>Data (comma separated)</Label>
+              <Input
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                placeholder="10, 20, 30"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label>Colors (comma separated)</Label>
-            <Input
-              value={colors}
-              onChange={(e) => setColors(e.target.value)}
-              placeholder="#FF6384, #36A2EB, #FFCE56"
-            />
-          </div>
+            <div className="space-y-2">
+              <Label>Colors (comma separated)</Label>
+              <Input
+                value={colors}
+                onChange={(e) => setColors(e.target.value)}
+                placeholder="#FF6384, #36A2EB, #FFCE56"
+              />
+            </div>
 
-          <Button onClick={handleSave}>Update Chart</Button>
-        </div>
-      </PopoverContent>
-    </Popover>
+            <Button onClick={handleSave}>Update Chart</Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
