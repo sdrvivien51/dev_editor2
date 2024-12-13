@@ -64,6 +64,34 @@ export function registerRoutes(app: Express) {
     res.json(user);
   });
 
+  // Create or update user
+  app.post("/api/users", async (req, res) => {
+    const { id, email, name } = req.body;
+    try {
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, id),
+      });
+
+      if (existingUser) {
+        const updatedUser = await db
+          .update(users)
+          .set({ email, name, updated_at: new Date() })
+          .where(eq(users.id, id))
+          .returning();
+        return res.json(updatedUser[0]);
+      }
+
+      const newUser = await db
+        .insert(users)
+        .values({ id, email, name })
+        .returning();
+      return res.json(newUser[0]);
+    } catch (error: any) {
+      console.error("Error creating/updating user:", error);
+      return res.status(500).json({ message: "Failed to create/update user" });
+    }
+  });
+
   // Update profile
   app.put("/api/profile", async (req: AuthRequest, res) => {
     const userId = req.session.userId;

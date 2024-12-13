@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Editor from "./pages/Editor";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import AuthCallback from "./pages/AuthCallback";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/write" component={Editor} />
           <Route path="/profile" component={Profile} />
           <Route path="/settings" component={Settings} />
+          <Route path="/auth/callback" component={AuthCallback} />
           <Route>404 Page Not Found</Route>
         </Switch>
       </main>
