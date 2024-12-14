@@ -4,6 +4,11 @@ import path from 'path';
 import runtimeErrorModalPlugin from '@replit/vite-plugin-runtime-error-modal';
 
 export default defineConfig({
+  server: {
+    headers: {
+      'Permissions-Policy': 'keyboard-map=*'
+    },
+  },
   plugins: [react(), runtimeErrorModalPlugin()],
   resolve: {
     alias: {
