@@ -1,4 +1,3 @@
-
 import React, { useCallback } from 'react';
 import {
   ReactFlow,
@@ -7,7 +6,7 @@ import {
   useEdgesState,
   MarkerType,
   Connection,
-  Edge
+  Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
