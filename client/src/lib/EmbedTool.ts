@@ -78,6 +78,8 @@ export default class EmbedTool implements BlockTool {
     iframe.height = this.data.height;
     iframe.frameBorder = '0';
     iframe.allowFullscreen = true;
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
     
     this.element.appendChild(iframe);
     return this.element;
