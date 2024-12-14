@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid/non-secure';
 import {
-  Connection,
-  Edge,
   EdgeChange,
   NodeChange,
   XYPosition,
@@ -16,7 +14,7 @@ const useStore = create<RFState>((set, get) => ({
     {
       id: 'root',
       type: 'mindmap',
-      data: { label: 'New Mind Map' },
+      data: { label: 'Root Node' },
       position: { x: 0, y: 0 },
     },
   ],

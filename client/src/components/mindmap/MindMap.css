@@ -38,19 +38,25 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-.react-flow__handle {
+.target-handle {
   width: 8px !important;
   height: 8px !important;
   background: #784be8 !important;
   border: 2px solid white !important;
+  top: -4px !important;
 }
 
 .source-handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: #784be8 !important;
+  border: 2px solid white !important;
   bottom: -4px !important;
 }
 
-.target-handle {
-  top: -4px !important;
+.react-flow__handle {
+  background: #784be8 !important;
+  border: 2px solid white !important;
 }
 
 .react-flow__handle-top {

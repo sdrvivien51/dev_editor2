@@ -1,17 +1,20 @@
-import { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import {
   ReactFlow,
-  Controls,
   Background,
-  useReactFlow,
+  Controls,
   Connection,
-  OnConnectStart,
-  OnConnectEnd,
+  addEdge,
+  useReactFlow,
+  MarkerType,
+  ReactFlowProvider
 } from '@xyflow/react';
 import { useShallow } from 'zustand/shallow';
 import MindMapNode from './MindMapNode';
+import FloatingEdge from './FloatingEdge';
+import CustomConnectionLine from './CustomConnectionLine';
 import useStore from './store';
-import { RFState, MindMapNode as MindMapNodeType } from './types';
+import { RFState } from './types';
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
 
@@ -27,62 +30,77 @@ const nodeTypes = {
   mindmap: MindMapNode,
 };
 
-function Flow() {
-  const store = useStore(useShallow(selector));
-  const { screenToFlowPosition } = useReactFlow();
-  const connectingNodeId = useRef<string | null>(null);
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
-  const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
-    connectingNodeId.current = nodeId;
+const connectionLineStyle = {
+  stroke: '#b1b1b7',
+  strokeWidth: 2,
+};
+
+const defaultEdgeOptions = {
+  type: 'floating',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: '#b1b1b7',
+  },
+  style: { stroke: '#b1b1b7', strokeWidth: 2 },
+};
+
+let id = 1;
+const getId = () => `${id++}`;
+
+function Flow() {
+  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(useShallow(selector));
+  const { screenToFlowPosition } = useReactFlow();
+  
+  const onConnect = useCallback((params: Connection) => {
+    useStore.setState((state) => ({
+      edges: addEdge(params, state.edges),
+    }));
   }, []);
 
-  const onConnectEnd: OnConnectEnd = useCallback(
-    (event) => {
-      const targetIsPane = (event.target as Element)?.classList.contains('react-flow__pane');
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      const targetIsPane = (event.target as Element).classList.contains('react-flow__pane');
 
-      if (targetIsPane && connectingNodeId.current && event instanceof MouseEvent) {
-        const parentNode = store.nodes.find((node) => node.id === connectingNodeId.current);
-        if (!parentNode) return;
-
-        const { clientX, clientY } = event;
+      if (targetIsPane) {
+        const { clientX, clientY } = event instanceof MouseEvent ? event : event.touches[0];
         const position = screenToFlowPosition({
           x: clientX,
           y: clientY,
         });
 
-        store.addChildNode(parentNode, position);
-      }
-    },
-    [screenToFlowPosition, store]
-  );
-
-  const onConnect = useCallback(
-    (params: Connection) => {
-      if (params.source && params.target) {
-        const newEdge: Edge = {
-          id: `${params.source}-${params.target}`,
-          source: params.source,
-          target: params.target,
+        const newNode = {
+          id: getId(),
+          type: 'mindmap',
+          position,
+          data: { label: `Node ${id}` },
         };
+
         useStore.setState((state) => ({
-          edges: [...state.edges, newEdge],
+          nodes: [...state.nodes, newNode],
         }));
       }
     },
-    []
+    [screenToFlowPosition]
   );
 
   return (
     <div style={{ width: '100%', height: '500px' }}>
       <ReactFlow
-        nodes={store.nodes}
-        edges={store.edges}
-        onNodesChange={store.onNodesChange}
-        onEdgesChange={store.onEdgesChange}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        connectionLineComponent={CustomConnectionLine}
+        connectionLineStyle={connectionLineStyle}
+        defaultEdgeOptions={defaultEdgeOptions}
         fitView
       >
         <Background />
@@ -94,6 +112,8 @@ function Flow() {
 
 export default function MindMapWrapper() {
   return (
-    <Flow />
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
   );
 }
