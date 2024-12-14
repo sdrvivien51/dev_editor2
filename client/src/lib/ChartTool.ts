@@ -1,6 +1,6 @@
 import { API, BlockTool, BlockToolData } from '@editorjs/editorjs';
 import Chart from 'chart.js/auto';
-import { ChartConfig } from '@/components/editor/ChartConfig';
+import { ChartConfig } from '@/components/editor/tool/ChartConfig';
 import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 

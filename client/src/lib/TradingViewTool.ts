@@ -1,7 +1,7 @@
 import { API, BlockTool, BlockToolData } from '@editorjs/editorjs';
 import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
-import TradingViewWidget from '@/components/editor/TradingViewWidget';
+import TradingViewWidget from "@/components/editor/tool/TradingViewWidget";
 
 export default class TradingViewTool implements BlockTool {
   private api: API;
