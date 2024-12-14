@@ -70,6 +70,12 @@ class EmbedTool {
         html: '<iframe style="width:100%;" height="500" frameborder="0" allowfullscreen></iframe>',
         height: 500
       },
+      codesandbox: {
+        regex: /https?:\/\/codesandbox\.io\/(?:s|p\/devbox)\/([^\/\?\&]*)/,
+        embedUrl: 'https://codesandbox.io/embed/<%= remote_id %>',
+        html: '<iframe style="width:100%;" height="500" frameborder="0" allowfullscreen></iframe>',
+        height: 500
+      },
       codepen: {
         regex: /https?:\/\/codepen\.io\/([^\/\?\&]*)\/pen\/([^\/\?\&]*)/,
         embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&theme-id=0&default-tab=css,result&embed-version=2',
