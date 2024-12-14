@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import '@xyflow/react/dist/style.css';
 import {
   ReactFlow,
   addEdge,

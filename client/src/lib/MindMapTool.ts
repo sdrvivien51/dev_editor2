@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import MindMap from '@/components/mindmap/MindMap';
 import { ReactFlowProvider } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 export default class MindMapTool implements BlockTool {
   private api: API;
