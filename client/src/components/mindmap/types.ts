@@ -1,4 +1,4 @@
-import { Node, Edge } from '@xyflow/react';
+import { Node, Edge, NodeChange, EdgeChange } from '@xyflow/react';
 
 export interface MindMapData {
   label: string;
@@ -11,8 +11,8 @@ export type MindMapEdge = Edge;
 export interface RFState {
   nodes: MindMapNode[];
   edges: MindMapEdge[];
-  onNodesChange: (changes: any) => void;
-  onEdgesChange: (changes: any) => void;
-  addChildNode: (parentNode: MindMapNode, position: { x: number; y: number }) => void;
+  onNodesChange: (changes: NodeChange[]) => void;
+  onEdgesChange: (changes: EdgeChange[]) => void;
+  addChildNode: (parentNode: Node, position: { x: number; y: number }) => void;
   updateNodeLabel: (nodeId: string, label: string) => void;
 }

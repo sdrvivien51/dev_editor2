@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid/non-secure';
 import {
+  Edge,
+  Node,
   EdgeChange,
   NodeChange,
   XYPosition,
@@ -22,7 +24,7 @@ const useStore = create<RFState>((set, get) => ({
   edges: [],
   onNodesChange: (changes: NodeChange[]) => {
     set({
-      nodes: applyNodeChanges(changes, get().nodes),
+      nodes: applyNodeChanges(changes, get().nodes) as MindMapNode[],
     });
   },
   onEdgesChange: (changes: EdgeChange[]) => {
@@ -30,8 +32,8 @@ const useStore = create<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
-  addChildNode: (parentNode: Node<MindMapNodeData>, position: XYPosition) => {
-    const newNode = {
+  addChildNode: (parentNode: Node, position: XYPosition) => {
+    const newNode: MindMapNode = {
       id: nanoid(),
       type: 'mindmap',
       data: { label: 'New Node' },
@@ -39,7 +41,7 @@ const useStore = create<RFState>((set, get) => ({
       style: { backgroundColor: 'white', padding: '10px', borderRadius: '5px' }
     };
 
-    const newEdge = {
+    const newEdge: Edge = {
       id: nanoid(),
       source: parentNode.id,
       target: newNode.id,

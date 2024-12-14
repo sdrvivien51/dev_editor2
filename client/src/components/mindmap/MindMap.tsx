@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -9,11 +9,12 @@ import {
   NodeMouseHandler,
   OnConnectStart,
   OnConnectEnd,
+  Node,
 } from '@xyflow/react';
 import { useShallow } from 'zustand/shallow';
 import MindMapNode from './MindMapNode';
 import useStore from './store';
-import { RFState, MindMapNode as MindMapNodeType } from './types';
+import { RFState } from './types';
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
 
