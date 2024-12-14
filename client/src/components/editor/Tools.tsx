@@ -13,10 +13,11 @@ export const EDITOR_JS_TOOLS = {
       services: {
         youtube: {
           regex: /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)/,
-          embedUrl: 'https://www.youtube.com/embed/<%= remote_id %>',
-          html: '<iframe width="560" height="315" src="<%= embedUrl %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+          embedUrl: 'https://www.youtube.com/embed/{{remote_id}}',
+          html: '<iframe width="560" height="315" src="{{embedUrl}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
           height: 315,
-          width: 560
+          width: 560,
+          id: (groups) => groups[1]
         },
         coub: true,
         codepen: true,
