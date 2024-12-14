@@ -1,8 +1,8 @@
 import React, { memo, useState, useCallback } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
-import { NodeData } from './types';
+import { Handle, Position } from '@xyflow/react';
+import { CustomNodeProps } from './types';
 
-function MindMapNode({ data, id }: NodeProps<NodeData>) {
+const MindMapNode = ({ data, isConnectable }: CustomNodeProps) => {
   const [label, setLabel] = useState(data.label);
 
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -14,11 +14,13 @@ function MindMapNode({ data, id }: NodeProps<NodeData>) {
       <Handle
         type="target"
         position={Position.Top}
+        isConnectable={isConnectable}
         className="react-flow__handle handle-top"
       />
       <Handle
         type="target"
         position={Position.Left}
+        isConnectable={isConnectable}
         className="react-flow__handle handle-left"
       />
       <div className="node-content">
@@ -33,15 +35,17 @@ function MindMapNode({ data, id }: NodeProps<NodeData>) {
       <Handle
         type="source"
         position={Position.Right}
+        isConnectable={isConnectable}
         className="react-flow__handle handle-right"
       />
       <Handle
         type="source"
         position={Position.Bottom}
+        isConnectable={isConnectable}
         className="react-flow__handle handle-bottom"
       />
     </div>
   );
-}
+};
 
 export default memo(MindMapNode);
