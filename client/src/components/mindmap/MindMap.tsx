@@ -1,117 +1,76 @@
 import { useCallback } from 'react';
 import {
   ReactFlow,
+  addEdge,
+  useNodesState,
+  useEdgesState,
   Background,
   Controls,
   Connection,
-  addEdge,
-  useReactFlow,
+  Edge,
   MarkerType,
-  ReactFlowProvider,
-  NodeTypes
 } from '@xyflow/react';
-import { useShallow } from 'zustand/shallow';
 import CustomNode from './CustomNode';
-import FloatingEdge from './FloatingEdge';
-import CustomConnectionLine from './CustomConnectionLine';
-import useStore from './store';
-import { RFState } from './types';
-import '@xyflow/react/dist/style.css';
+import { applyEdgeChanges, applyNodeChanges } from '@xyflow/react';
 import './MindMap.css';
 
-const selector = (state: RFState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  addChildNode: state.addChildNode,
-});
-
-const nodeTypes: NodeTypes = {
-  mindmap: CustomNode,
+const nodeTypes = {
+  custom: CustomNode,
 };
 
-const edgeTypes = {
-  floating: FloatingEdge,
-};
-
-const defaultEdgeOptions = {
-  type: 'floating',
-  animated: false,
-  style: { 
-    stroke: '#784be8',
-    strokeWidth: 3,
+const initialNodes = [
+  {
+    id: '1',
+    type: 'custom',
+    data: { label: 'Root Node' },
+    position: { x: 250, y: 250 },
   },
-  markerEnd: {
-    type: MarkerType.ArrowClosed,
-    color: '#784be8',
-    width: 20,
-    height: 20,
-  },
-};
+];
 
-const connectionLineStyle = {
-  stroke: '#784be8',
-  strokeWidth: 3,
-  opacity: 0.8,
-};
-
-let id = 1;
-const getId = () => `${id++}`;
+const initialEdges: Edge[] = [];
 
 function Flow() {
-  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(useShallow(selector));
-  const { screenToFlowPosition } = useReactFlow();
-  
-  const onConnect = useCallback((params: Connection) => {
-    const edge = {
-      ...params,
-      type: 'floating',
-      animated: true,
-      style: { 
-        stroke: '#784be8',
-        strokeWidth: 3,
-        opacity: 1,
-        pointerEvents: 'all',
-      },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        color: '#784be8',
-        width: 20,
-        height: 20,
+  const [nodes, setNodes] = useNodesState(initialNodes);
+  const [edges, setEdges] = useEdgesState(initialEdges);
+
+  const onNodesChange = useCallback((changes: any) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  }, [setNodes]);
+
+  const onEdgesChange = useCallback((changes: any) => {
+    setEdges((eds) => applyEdgeChanges(changes, eds));
+  }, [setEdges]);
+
+  const onConnect = useCallback(
+    (params: Connection) => {
+      setEdges((eds) =>
+        addEdge({
+          ...params,
+          type: 'smoothstep',
+          animated: true,
+          style: { stroke: '#784be8' },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: '#784be8',
+          },
+        }, eds)
+      );
+    },
+    [setEdges]
+  );
+
+  const addNewNode = useCallback(() => {
+    const newNode = {
+      id: `${nodes.length + 1}`,
+      type: 'custom',
+      data: { label: `Node ${nodes.length + 1}` },
+      position: {
+        x: Math.random() * 500,
+        y: Math.random() * 500,
       },
     };
-    
-    useStore.setState((state) => ({
-      edges: addEdge(edge, state.edges),
-    }));
-  }, []);
-
-  const onConnectEnd = useCallback(
-    (event: MouseEvent | TouchEvent) => {
-      const targetIsPane = (event.target as Element).classList.contains('react-flow__pane');
-
-      if (targetIsPane) {
-        const { clientX, clientY } = event instanceof MouseEvent ? event : event.touches[0];
-        const position = screenToFlowPosition({
-          x: clientX,
-          y: clientY,
-        });
-
-        const newNode = {
-          id: getId(),
-          type: 'mindmap',
-          position,
-          data: { label: `Node ${id}` },
-        };
-
-        useStore.setState((state) => ({
-          nodes: [...state.nodes, newNode],
-        }));
-      }
-    },
-    [screenToFlowPosition]
-  );
+    setNodes((nds) => [...nds, newNode]);
+  }, [nodes, setNodes]);
 
   return (
     <div style={{ width: '100%', height: '500px' }}>
@@ -121,16 +80,30 @@ function Flow() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onConnectEnd={onConnectEnd}
         nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        connectionLineComponent={CustomConnectionLine}
-        connectionLineStyle={connectionLineStyle}
-        defaultEdgeOptions={defaultEdgeOptions}
         fitView
+        deleteKeyCode="Delete"
+        selectionKeyCode="Shift"
+        multiSelectionKeyCode="Control"
       >
         <Background />
         <Controls />
+        <div style={{ position: 'absolute', right: 10, top: 10 }}>
+          <button
+            onClick={addNewNode}
+            className="nodrag"
+            style={{
+              padding: '8px 16px',
+              borderRadius: '4px',
+              background: '#784be8',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Add Node
+          </button>
+        </div>
       </ReactFlow>
     </div>
   );
@@ -138,8 +111,8 @@ function Flow() {
 
 export default function MindMapWrapper() {
   return (
-    <ReactFlowProvider>
+    <div className="mindmap-wrapper">
       <Flow />
-    </ReactFlowProvider>
+    </div>
   );
 }
