@@ -9,15 +9,13 @@ import {
   Edge,
   Node,
   ReactFlowInstance,
-  OnConnect,
-  OnConnectStart,
-  OnConnectEnd,
+  Position,
   MarkerType,
 } from '@xyflow/react';
 import { initialNodes, initialEdges } from './InitialElements';
 import MindMapNode from './MindMapNode';
 import FloatingEdge from './FloatingEdge';
-import { NodeData, MindMapNode as MindMapNodeType } from './types';
+import { NodeData } from './types';
 import './MindMap.css';
 
 const MIN_DISTANCE = 150;
@@ -40,8 +38,8 @@ const Flow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null);
 
-  const onConnect: OnConnect = useCallback(
-    (params) => {
+  const onConnect = useCallback(
+    (params: Connection) => {
       setEdges((eds) =>
         addEdge(
           {
@@ -56,19 +54,19 @@ const Flow = () => {
     [setEdges]
   );
 
-  const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
+  const onConnectStart = useCallback((_: any, { nodeId }: { nodeId: string | null }) => {
     connectingNodeId.current = nodeId;
   }, []);
 
-  const onConnectEnd: OnConnectEnd = useCallback(
-    (event) => {
-      if (!event.target || !reactFlowWrapper.current) return;
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      if (!event.target || !reactFlowWrapper.current || !reactFlowInstance) return;
 
-      const targetIsPane = event.target.classList.contains('react-flow__pane');
+      const targetIsPane = (event.target as Element).classList.contains('react-flow__pane');
 
-      if (targetIsPane && reactFlowInstance) {
+      if (targetIsPane && connectingNodeId.current) {
         const { top, left } = reactFlowWrapper.current.getBoundingClientRect();
-        const position = reactFlowInstance.project({
+        const position = reactFlowInstance.screenToFlowPosition({
           x: (event as MouseEvent).clientX - left - 75,
           y: (event as MouseEvent).clientY - top - 25,
         });
@@ -82,16 +80,15 @@ const Flow = () => {
 
         setNodes((nds) => nds.concat(newNode));
         
-        if (connectingNodeId.current) {
-          const newEdge: Edge = {
-            id: `e${connectingNodeId.current}-${newNode.id}`,
-            source: connectingNodeId.current,
-            target: newNode.id,
-            type: 'floating',
-            markerEnd: { type: MarkerType.Arrow },
-          };
-          setEdges((eds) => eds.concat(newEdge));
-        }
+        const newEdge: Edge = {
+          id: `e${connectingNodeId.current}-${newNode.id}`,
+          source: connectingNodeId.current!,
+          target: newNode.id,
+          type: 'floating',
+          markerEnd: { type: MarkerType.Arrow },
+        };
+        
+        setEdges((eds) => eds.concat(newEdge));
       }
     },
     [reactFlowInstance]
