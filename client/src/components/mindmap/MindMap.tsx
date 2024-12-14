@@ -6,6 +6,7 @@ import {
   useReactFlow,
   ConnectionLineType,
   Panel,
+  ReactFlowProvider,
   type Node,
   type Edge,
   type OnConnectStart,
@@ -56,7 +57,7 @@ const nodeTypes = {
 const connectionLineStyle = { stroke: '#F6AD55', strokeWidth: 3 };
 const defaultEdgeOptions = { style: connectionLineStyle, type: 'default' };
 
-function MindMap() {
+function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
     useShallow(selector)
   );
@@ -76,8 +77,7 @@ function MindMap() {
       );
 
       if (targetIsPane && connectingNodeId.current) {
-        const { nodeLookup } = store.getState();
-        const parentNode = nodeLookup.get(connectingNodeId.current);
+        const parentNode = nodes.find(node => node.id === connectingNodeId.current);
 
         if (!parentNode) return;
 
@@ -89,7 +89,7 @@ function MindMap() {
         addChildNode(parentNode, position);
       }
     },
-    [screenToFlowPosition, addChildNode]
+    [screenToFlowPosition, addChildNode, nodes]
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
@@ -125,4 +125,11 @@ function MindMap() {
   );
 }
 
-export default MindMap;
+// Wrap with ReactFlowProvider before exporting
+export default function MindMap() {
+  return (
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
+  );
+}
