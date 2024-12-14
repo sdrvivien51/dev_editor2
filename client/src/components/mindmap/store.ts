@@ -1,16 +1,16 @@
-import {
-  applyNodeChanges,
-  applyEdgeChanges,
-  type Edge,
-  type EdgeChange,
-  type Node,
-  type NodeChange,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type XYPosition,
-} from '@xyflow/react';
 import { create } from 'zustand';
 import { nanoid } from 'nanoid/non-secure';
+import {
+  Node,
+  Edge,
+  EdgeChange,
+  NodeChange,
+  OnNodesChange,
+  OnEdgesChange,
+  XYPosition,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from '@xyflow/react';
 
 export type RFState = {
   nodes: Node[];
@@ -54,6 +54,7 @@ const useStore = create<RFState>((set, get) => ({
       id: nanoid(),
       source: parentNode.id,
       target: newNode.id,
+      type: 'default',
     };
 
     set({

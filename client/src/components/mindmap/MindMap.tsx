@@ -7,13 +7,15 @@ import {
   ConnectionLineType,
   Panel,
   ReactFlowProvider,
-  type Node,
-  type Edge,
-  type OnConnectStart,
-  type OnConnectEnd,
+  Connection,
+  OnConnectStart,
+  OnConnectEnd,
+  Node,
+  NodeMouseHandler
 } from '@xyflow/react';
 import { useShallow } from 'zustand/shallow';
 import { Trash2 } from 'lucide-react';
+import { nanoid } from 'nanoid/non-secure';
 
 import useStore, { type RFState } from './store';
 import '@xyflow/react/dist/style.css';
@@ -54,7 +56,7 @@ const nodeTypes = {
   mindmap: MindMapNode,
 };
 
-const connectionLineStyle = { stroke: '#F6AD55', strokeWidth: 3 };
+const connectionLineStyle = { stroke: '#784be8', strokeWidth: 3 };
 const defaultEdgeOptions = { style: connectionLineStyle, type: 'default' };
 
 function Flow() {
@@ -70,7 +72,7 @@ function Flow() {
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event) => {
-      if (!(event instanceof MouseEvent)) return;
+      if (!event || !(event instanceof MouseEvent)) return;
 
       const targetIsPane = (event.target as Element).classList.contains(
         'react-flow__pane'
@@ -92,7 +94,7 @@ function Flow() {
     [screenToFlowPosition, addChildNode, nodes]
   );
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick: NodeMouseHandler = useCallback((event: React.MouseEvent, node: Node) => {
     const isDeleteButton = (event.target as Element).closest('.delete-button');
     if (isDeleteButton) {
       const updatedNodes = nodes.filter((n) => n.id !== node.id);
@@ -103,8 +105,7 @@ function Flow() {
     }
   }, [nodes, edges]);
 
-  const onConnect = useCallback((params) => {
-    // Add the new edge to the store
+  const onConnect = useCallback((params: Connection) => {
     useStore.setState({
       edges: [...edges, { ...params, id: nanoid(), type: 'default' }]
     });
@@ -133,7 +134,6 @@ function Flow() {
   );
 }
 
-// Wrap with ReactFlowProvider before exporting
 export default function MindMap() {
   return (
     <ReactFlowProvider>
