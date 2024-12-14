@@ -27,11 +27,11 @@ export default class EmbedTool implements BlockTool {
     input.placeholder = 'Paste an embed URL...';
     input.value = this.data?.url || '';
     
-    input.addEventListener('paste', (event) => {
-      this._createPreview(input.value);
+    input.addEventListener('paste', () => {
+      setTimeout(() => this._createPreview(input.value), 100);
     });
 
-    input.addEventListener('change', (event) => {
+    input.addEventListener('change', () => {
       this._createPreview(input.value);
     });
 
@@ -50,15 +50,19 @@ export default class EmbedTool implements BlockTool {
       this.embedPreview = null;
     }
 
+    if (!url) return;
+
     const services = (this.api.configuration as any)?.tools?.embed?.config?.services || {};
-    const foundService = Object.entries(services).find(([name, service]: [string, any]) => {
-      return service.regex.test(url);
+    const foundService = Object.entries(services).find(([_, service]: [string, any]) => {
+      return service.regex && service.regex.test(url);
     });
 
     if (!foundService) return;
 
-    const [serviceName, service] = foundService;
+    const [_, service] = foundService;
     const match = url.match(service.regex);
+    if (!match) return;
+
     const embed = service.html.replace(
       '<%= remote_id %>',
       service.id ? service.id(match.slice(1)) : match[1]
@@ -77,9 +81,6 @@ export default class EmbedTool implements BlockTool {
   }
 
   validate(savedData: any) {
-    if (!savedData.url || !savedData.url.trim()) {
-      return false;
-    }
-    return true;
+    return Boolean(savedData.url && savedData.url.trim());
   }
 }
