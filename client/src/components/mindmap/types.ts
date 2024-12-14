@@ -1,9 +1,10 @@
 import { Edge, Node } from '@xyflow/react';
 
-export interface MindMapData extends Record<string, unknown> {
+export interface MindMapData {
   label: string;
   width?: number;
   height?: number;
+  onChange?: (value: string) => void;
   [key: string]: unknown;
 }
 

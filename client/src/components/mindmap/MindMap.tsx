@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   Background,
@@ -7,10 +7,11 @@ import {
   addEdge,
   useReactFlow,
   MarkerType,
-  ReactFlowProvider
+  ReactFlowProvider,
+  NodeTypes
 } from '@xyflow/react';
 import { useShallow } from 'zustand/shallow';
-import MindMapNode from './MindMapNode';
+import CustomNode from './CustomNode';
 import FloatingEdge from './FloatingEdge';
 import CustomConnectionLine from './CustomConnectionLine';
 import useStore from './store';
@@ -26,8 +27,8 @@ const selector = (state: RFState) => ({
   addChildNode: state.addChildNode,
 });
 
-const nodeTypes = {
-  mindmap: MindMapNode,
+const nodeTypes: NodeTypes = {
+  mindmap: CustomNode,
 };
 
 const edgeTypes = {
