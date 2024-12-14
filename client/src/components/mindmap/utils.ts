@@ -1,72 +1,64 @@
-import { Position } from '@xyflow/react';
+import { Position, Node } from '@xyflow/react';
 
-function getNodeIntersection(intersectionNode: any, targetNode: any) {
-  const sourceWidth = intersectionNode?.width || 0;
-  const sourceHeight = intersectionNode?.height || 0;
-  const sourcePos = intersectionNode?.position || { x: 0, y: 0 };
-  const targetPos = targetNode?.position || { x: 0, y: 0 };
-  const targetWidth = targetNode?.width || 0;
-  const targetHeight = targetNode?.height || 0;
-
+function getNodeIntersection(node: Node, targetNode: Node) {
+  // Get node dimensions
+  const nodeWidth = node.width || 150;
+  const nodeHeight = node.height || 40;
+  
   // Calculate center points
-  const sourceCenter = {
-    x: sourcePos.x + sourceWidth / 2,
-    y: sourcePos.y + sourceHeight / 2,
-  };
-  const targetCenter = {
-    x: targetPos.x + targetWidth / 2,
-    y: targetPos.y + targetHeight / 2,
-  };
+  const sourceX = node.position.x + nodeWidth / 2;
+  const sourceY = node.position.y + nodeHeight / 2;
+  const targetX = targetNode.position.x + (targetNode.width || 150) / 2;
+  const targetY = targetNode.position.y + (targetNode.height || 40) / 2;
 
-  // Calculate angle between centers
-  const dx = targetCenter.x - sourceCenter.x;
-  const dy = targetCenter.y - sourceCenter.y;
+  // Calculate the angle between the centers
+  const dx = targetX - sourceX;
+  const dy = targetY - sourceY;
   const angle = Math.atan2(dy, dx);
 
-  // Calculate intersection points
-  const halfWidth = sourceWidth / 2;
-  const halfHeight = sourceHeight / 2;
-  
-  let x = sourceCenter.x;
-  let y = sourceCenter.y;
+  // Find intersection point
+  let intersectionX = sourceX;
+  let intersectionY = sourceY;
 
-  // Determine intersection point based on angle
   if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) {
-    // Intersects with left or right
+    // Intersect with left or right side
     const sign = Math.cos(angle) >= 0 ? 1 : -1;
-    x = sourceCenter.x + sign * halfWidth;
-    y = sourceCenter.y + Math.tan(angle) * sign * halfWidth;
+    intersectionX = sourceX + sign * (nodeWidth / 2);
+    intersectionY = sourceY + Math.tan(angle) * sign * (nodeWidth / 2);
   } else {
-    // Intersects with top or bottom
+    // Intersect with top or bottom side
     const sign = Math.sin(angle) >= 0 ? 1 : -1;
-    y = sourceCenter.y + sign * halfHeight;
-    x = sourceCenter.x + (sign * halfHeight) / Math.tan(angle);
+    intersectionY = sourceY + sign * (nodeHeight / 2);
+    intersectionX = sourceX + (sign * nodeHeight / 2) / Math.tan(angle);
   }
 
-  return { x, y };
+  return { x: intersectionX, y: intersectionY };
 }
 
-function getEdgePosition(node: any, intersectionPoint: { x: number; y: number }) {
-  const n = { ...node.measured, ...node.internals.positionAbsolute };
+function getEdgePosition(node: Node, intersectionPoint: { x: number; y: number }) {
+  const nodeX = node.position.x;
+  const nodeY = node.position.y;
+  const nodeWidth = node.width || 150;
+  const nodeHeight = node.height || 40;
   const threshold = 5;
 
-  if (Math.abs(intersectionPoint.x - n.x) <= threshold) {
+  if (Math.abs(intersectionPoint.x - nodeX) <= threshold) {
     return Position.Left;
   }
-  if (Math.abs(intersectionPoint.x - (n.x + n.width)) <= threshold) {
+  if (Math.abs(intersectionPoint.x - (nodeX + nodeWidth)) <= threshold) {
     return Position.Right;
   }
-  if (Math.abs(intersectionPoint.y - n.y) <= threshold) {
+  if (Math.abs(intersectionPoint.y - nodeY) <= threshold) {
     return Position.Top;
   }
-  if (Math.abs(intersectionPoint.y - (n.y + n.height)) <= threshold) {
+  if (Math.abs(intersectionPoint.y - (nodeY + nodeHeight)) <= threshold) {
     return Position.Bottom;
   }
 
   return Position.Right;
 }
 
-export function getEdgeParams(source: any, target: any) {
+export function getEdgeParams(source: Node, target: Node) {
   const sourceIntersectionPoint = getNodeIntersection(source, target);
   const targetIntersectionPoint = getNodeIntersection(target, source);
 
