@@ -1,4 +1,3 @@
-
 import React, { useCallback, useRef } from 'react';
 import {
   ReactFlow,
@@ -10,7 +9,7 @@ import {
   OnConnectStart,
   OnConnectEnd
 } from '@xyflow/react';
-import { useShallow } from 'zustand/react-shallow';
+import { useShallow } from "zustand/react/shallow";
 import useStore from './store';
 import MindMapNode from './MindMapNode';
 import FloatingEdge from './FloatingEdge';
