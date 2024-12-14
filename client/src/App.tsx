@@ -8,18 +8,24 @@ import AuthCallback from "./pages/AuthCallback";
 
 function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/write" component={Editor} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/auth-callback" component={AuthCallback} />
-          <Route>404 Page Not Found</Route>
-        </Switch>
-      </main>
+    <div className="relative min-h-screen bg-background font-sans antialiased">
+      <div className="relative flex min-h-screen flex-col">
+        <Navbar />
+        <main className="container mx-auto flex-1 space-y-4 px-4 py-8">
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/write" component={Editor} />
+            <Route path="/profile" component={Profile} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/auth-callback" component={AuthCallback} />
+            <Route>
+              <div className="flex h-[50vh] items-center justify-center">
+                <h1 className="text-2xl font-bold">404 Page Not Found</h1>
+              </div>
+            </Route>
+          </Switch>
+        </main>
+      </div>
     </div>
   );
 }
