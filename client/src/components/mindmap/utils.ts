@@ -7,9 +7,11 @@ function getNodeIntersection(intersectionNode, targetNode) {
   const {
     width: intersectionNodeWidth,
     height: intersectionNodeHeight,
-    positionAbsolute: intersectionNodePosition,
+    positionAbsolute,
+    position
   } = intersectionNode;
-  const targetPosition = targetNode.positionAbsolute;
+  const intersectionNodePosition = positionAbsolute || position;
+  const targetPosition = targetNode.positionAbsolute || targetNode.position;
 
   const w = intersectionNodeWidth / 2;
   const h = intersectionNodeHeight / 2;
