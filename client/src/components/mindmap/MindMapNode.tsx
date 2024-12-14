@@ -36,7 +36,7 @@ const MindMapNode = ({ data, isConnectable }: CustomNodeProps) => {
         type="source"
         position={Position.Right}
         isConnectable={isConnectable}
-        className="react-flow__handle handle-right"
+        className="react-flow__handle handle-right customHandle"
       />
       <Handle
         type="source"

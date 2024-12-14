@@ -47,16 +47,14 @@ const Flow = () => {
 
   const onConnect = useCallback(
     (params: Connection) => {
-      setEdges((eds) =>
-        addEdge(
-          {
-            ...params,
-            type: 'floating',
-            markerEnd: { type: MarkerType.Arrow },
-          },
-          eds
-        )
-      );
+      const newEdge = {
+        ...params,
+        type: 'floating',
+        animated: true,
+        style: { stroke: '#222' },
+        markerEnd: { type: MarkerType.Arrow },
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
     },
     [setEdges]
   );

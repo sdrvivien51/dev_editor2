@@ -116,9 +116,20 @@
   cursor: crosshair;
 }
 
+.customHandle {
+  opacity: 1 !important;
+  z-index: 1;
+}
+
 .customHandle:hover {
   transform: scale(1.2);
   box-shadow: 0 0 0 2px rgba(120, 75, 232, 0.5);
+}
+
+.react-flow__handle {
+  opacity: 1 !important;
+  z-index: 1;
+  background: #1a192b !important;
 }
 
 .customHandle.connecting {
