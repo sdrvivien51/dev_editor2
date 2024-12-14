@@ -11,18 +11,26 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
     updateNodeLabel(id, evt.target.value);
   }, [id, updateNodeLabel]);
 
+  const handleStyle = {
+    width: '12px',
+    height: '12px',
+    background: '#784be8',
+    border: '2px solid white',
+    boxShadow: '0 0 6px 2px rgba(120, 75, 232, 0.3)',
+  };
+
   return (
-    <div className="mindmap-node nodrag">
+    <div className="mindmap-node">
       <Handle
         type="target"
         position={Position.Top}
-        className="target-handle nodrag"
+        style={handleStyle}
         isConnectable={true}
       />
       <div className="node-content">
         <input
           ref={inputRef}
-          value={data.label}
+          value={data?.label || ''}
           onChange={onChange}
           className="nodrag node-input"
           placeholder="Enter text..."
@@ -31,7 +39,7 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="source-handle nodrag"
+        style={handleStyle}
         isConnectable={true}
       />
     </div>

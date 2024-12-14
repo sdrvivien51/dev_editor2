@@ -38,41 +38,72 @@
   background: rgba(0, 0, 0, 0.05);
 }
 
-.target-handle {
-  width: 8px !important;
-  height: 8px !important;
-  background: #784be8 !important;
-  border: 2px solid white !important;
-  top: -4px !important;
-}
-
-.source-handle {
-  width: 8px !important;
-  height: 8px !important;
-  background: #784be8 !important;
-  border: 2px solid white !important;
-  bottom: -4px !important;
-}
-
 .react-flow__handle {
+  width: 12px !important;
+  height: 12px !important;
   background: #784be8 !important;
   border: 2px solid white !important;
+  box-shadow: 0 0 6px 2px rgba(120, 75, 232, 0.3);
+  transition: all 0.2s ease;
+  opacity: 1 !important;
+  z-index: 1000;
+  cursor: crosshair !important;
+  pointer-events: all !important;
+  visibility: visible !important;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 8px 4px rgba(120, 75, 232, 0.4);
 }
 
 .react-flow__handle-top {
-  top: -4px;
+  top: -6px !important;
+  transform: translateX(-50%);
 }
 
 .react-flow__handle-bottom {
-  bottom: -4px;
+  bottom: -6px !important;
+  transform: translateX(-50%);
 }
 
-.react-flow__handle-left {
-  left: -6px;
+.react-flow__handle-connecting {
+  background: #ff0072 !important;
 }
 
-.react-flow__handle-right {
-  right: -6px;
+.react-flow__handle.connectionindicator {
+  background: #784be8 !important;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(120, 75, 232, 0.5);
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 3px rgba(120, 75, 232, 0.5);
+}
+
+.react-flow__handle.source {
+  cursor: grab;
+}
+
+.react-flow__handle:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px #784be8;
+}
+
+.react-flow__edge {
+  pointer-events: all;
+}
+
+.react-flow__edge-path {
+  stroke: #784be8;
+  stroke-width: 2;
+  pointer-events: all;
+}
+
+.react-flow__connection-path {
+  stroke: #784be8;
+  stroke-width: 2;
 }
 
 .mindmap-node .delete-button {

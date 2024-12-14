@@ -34,18 +34,26 @@ const edgeTypes = {
   floating: FloatingEdge,
 };
 
-const connectionLineStyle = {
-  stroke: '#b1b1b7',
-  strokeWidth: 2,
-};
-
 const defaultEdgeOptions = {
   type: 'floating',
+  animated: true,
+  style: { 
+    stroke: '#784be8',
+    strokeWidth: 3,
+    opacity: 0.8,
+  },
   markerEnd: {
     type: MarkerType.ArrowClosed,
-    color: '#b1b1b7',
+    color: '#784be8',
+    width: 25,
+    height: 25,
   },
-  style: { stroke: '#b1b1b7', strokeWidth: 2 },
+};
+
+const connectionLineStyle = {
+  stroke: '#784be8',
+  strokeWidth: 3,
+  opacity: 0.8,
 };
 
 let id = 1;
@@ -57,7 +65,16 @@ function Flow() {
   
   const onConnect = useCallback((params: Connection) => {
     useStore.setState((state) => ({
-      edges: addEdge(params, state.edges),
+      edges: addEdge({ 
+        ...params, 
+        type: 'floating',
+        animated: true,
+        style: { stroke: '#784be8', strokeWidth: 2 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: '#784be8',
+        },
+      }, state.edges),
     }));
   }, []);
 
