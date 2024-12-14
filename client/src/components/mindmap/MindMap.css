@@ -16,14 +16,52 @@
 }
 
 .react-flow__handle {
-  width: 8px !important;
-  height: 8px !important;
+  width: 10px !important;
+  height: 10px !important;
   background: #1a192b !important;
   border: 2px solid white !important;
-  box-shadow: 0 0 6px 2px rgba(120, 75, 232, 0.3) !important;
-  transition: all 0.2s ease !important;
   opacity: 1 !important;
-  visibility: visible !important;
+  cursor: crosshair !important;
+  pointer-events: all !important;
+}
+
+.react-flow__handle.source {
+  right: 0;
+  top: 0;
+  transform: none;
+  background: transparent !important;
+  border: none !important;
+  height: 100% !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+  cursor: crosshair !important;
+}
+
+.react-flow__handle.target {
+  visibility: hidden;
+}
+
+.inputWrapper {
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.dragHandle {
+  cursor: grab;
+  pointer-events: all;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.node-input {
+  pointer-events: all;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 4px;
+  min-width: 100px;
 }
 
 .react-flow__edge {
