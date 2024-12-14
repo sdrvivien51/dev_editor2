@@ -16,6 +16,7 @@ import {
 import { initialNodes, initialEdges } from './InitialElements';
 import MindMapNode from './MindMapNode';
 import FloatingEdge from './FloatingEdge';
+import CustomConnectionLine from './CustomConnectionLine';
 import { NodeData } from './types';
 import './MindMap.css';
 
