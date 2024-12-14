@@ -13,21 +13,60 @@
 }
 
 .mindmap-node {
-  position: relative;
+  padding: 10px;
+  border-radius: 5px;
   background: white;
-  border-radius: 4px;
-  padding: 8px;
+  border: 1px solid #1a192b;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  width: auto;
+  min-width: 150px;
+  position: relative;
 }
 
 .node-input {
   background: transparent;
   border: none;
+  border-radius: 3px;
   outline: none;
-  padding: 4px;
+  padding: 4px 8px;
   font-size: 14px;
   width: 100%;
   text-align: center;
+}
+
+.node-input:focus {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: #784be8 !important;
+  border: 2px solid white !important;
+}
+
+.source-handle {
+  bottom: -4px !important;
+}
+
+.target-handle {
+  top: -4px !important;
+}
+
+.react-flow__handle-top {
+  top: -4px;
+}
+
+.react-flow__handle-bottom {
+  bottom: -4px;
+}
+
+.react-flow__handle-left {
+  left: -6px;
+}
+
+.react-flow__handle-right {
+  right: -6px;
 }
 
 .mindmap-node .delete-button {
@@ -61,56 +100,10 @@
   padding: 4px 8px;
 }
 
-.react-flow__handle {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #784be8;
-  border: 2px solid white;
-  transition: all 0.2s ease;
-  position: absolute;
-  z-index: 1;
-}
-
-.source-handle {
-  bottom: -10px;
-}
-
-.target-handle {
-  top: -10px;
-}
-
-.react-flow__handle:hover {
-  background-color: #5a3eb7;
-  transform: scale(1.2);
-}
-
-.react-flow__handle:hover {
-  width: 10px;
-  height: 10px;
-  background-color: #5a3eb7;
-}
-
-.react-flow__handle-top {
-  top: -6px;
-}
-
-.react-flow__handle-bottom {
-  bottom: -6px;
-}
-
-.react-flow__handle-left {
-  left: -6px;
-}
-
-.react-flow__handle-right {
-  right: -6px;
-}
 
 .react-flow__connection-path {
   stroke: #784be8;
   stroke-width: 2;
-  stroke-opacity: 0.75;
 }
 
 .react-flow__edge-path {

@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { nanoid } from 'nanoid/non-secure';
 import {
+  Connection,
   Edge,
-  Node,
   EdgeChange,
   NodeChange,
   XYPosition,
   applyNodeChanges,
   applyEdgeChanges,
 } from '@xyflow/react';
-import { RFState, MindMapNode, MindMapData } from './types';
+import { RFState, MindMapNode, MindMapEdge } from './types';
 
 const useStore = create<RFState>((set, get) => ({
   nodes: [
@@ -18,13 +18,12 @@ const useStore = create<RFState>((set, get) => ({
       type: 'mindmap',
       data: { label: 'New Mind Map' },
       position: { x: 0, y: 0 },
-      style: { backgroundColor: 'white', padding: '10px', borderRadius: '5px' }
     },
   ],
   edges: [],
   onNodesChange: (changes: NodeChange[]) => {
     set({
-      nodes: applyNodeChanges(changes, get().nodes) as MindMapNode[],
+      nodes: applyNodeChanges(changes, get().nodes),
     });
   },
   onEdgesChange: (changes: EdgeChange[]) => {
@@ -32,22 +31,18 @@ const useStore = create<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
-  addChildNode: (parentNode: Node, position: XYPosition) => {
+  addChildNode: (parentNode: MindMapNode, position: XYPosition) => {
     const newNode: MindMapNode = {
       id: nanoid(),
       type: 'mindmap',
       data: { label: 'New Node' },
       position,
-      style: { backgroundColor: 'white', padding: '10px', borderRadius: '5px' }
     };
 
-    const newEdge: Edge = {
+    const newEdge: MindMapEdge = {
       id: nanoid(),
       source: parentNode.id,
       target: newNode.id,
-      type: 'default',
-      animated: false,
-      style: { stroke: '#784be8', strokeWidth: 2 }
     };
 
     set({
