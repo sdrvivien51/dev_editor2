@@ -62,11 +62,25 @@
 }
 
 .react-flow__handle {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background-color: #784be8;
+  border: 2px solid white;
   transition: all 0.2s ease;
+}
+
+.source-handle {
+  top: -5px;
+}
+
+.target-handle {
+  bottom: -5px;
+}
+
+.react-flow__handle:hover {
+  background-color: #5a3eb7;
+  transform: scale(1.2);
 }
 
 .react-flow__handle:hover {
