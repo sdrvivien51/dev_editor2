@@ -1,11 +1,14 @@
-import { API, BlockTool, BlockToolData } from '@editorjs/editorjs';
+
+import { API, BlockTool } from '@editorjs/editorjs';
 import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import MindMap from '@/components/mindmap/MindMap';
+import { ReactFlowProvider } from '@xyflow/react';
 
 export default class ReactFlowTool implements BlockTool {
   private api: API;
   private wrapper: HTMLElement;
+  private root: ReturnType<typeof createRoot> | null = null;
 
   static get toolbox() {
     return {
@@ -18,12 +21,24 @@ export default class ReactFlowTool implements BlockTool {
     this.api = api;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('reactflow-block');
+    this.wrapper.style.width = '100%';
+    this.wrapper.style.height = '400px';
   }
 
   render() {
-    const root = createRoot(this.wrapper);
-    root.render(createElement(MindMap));
+    this.root = createRoot(this.wrapper);
+    this.root.render(
+      createElement(ReactFlowProvider, null,
+        createElement(MindMap)
+      )
+    );
     return this.wrapper;
+  }
+
+  destroy() {
+    if (this.root) {
+      this.root.unmount();
+    }
   }
 
   save() {
