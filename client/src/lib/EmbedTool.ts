@@ -18,12 +18,15 @@ export default class EmbedTool implements BlockTool {
       youtube: {
         regex: /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
         embedUrl: 'https://www.youtube.com/embed/<%= remote_id %>',
-        html: '<iframe style="width:100%;" height="320" frameborder="0" allowfullscreen></iframe>'
+        html: '<iframe style="width:100%;" height="320" frameborder="0" allowfullscreen></iframe>',
+        height: 320
       },
       codepen: {
-        regex: /https?:\/\/codepen\.io\/([^\/]+)\/pen\/([^\/]+)/,
-        embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&default-tab=result',
-        html: '<iframe height="300" style="width:100%;" scrolling="no" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>'
+        regex: /https?:\/\/codepen\.io\/([^\/\?\&]*)\/pen\/([^\/\?\&]*)/,
+        embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&theme-id=0&default-tab=result',
+        html: '<iframe height="300" scrolling="no" frameborder="no" allowtransparency="true" allowfullscreen="true" style="width:100%;"></iframe>',
+        height: 300,
+        id: (groups) => groups.join('/embed/')
       }
     };
   }
@@ -56,7 +59,7 @@ export default class EmbedTool implements BlockTool {
               source: url,
               embed: EmbedTool.services[service].embedUrl.replace('<%= remote_id %>', remote_id),
               width: 600,
-              height: service === 'codepen' ? 300 : 320
+              height: EmbedTool.services[service].height || 320
             };
             this._createPreview();
           }
