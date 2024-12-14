@@ -1,7 +1,7 @@
-
 import { useCallback } from 'react';
 import { useStore, getStraightPath } from '@xyflow/react';
-import { getEdgeParams } from './utils';
+
+import { getEdgeParams } from './utils.js';
 
 function FloatingEdge({ id, source, target, markerEnd, style }) {
   const sourceNode = useStore(useCallback((store) => store.nodeInternals.get(source), [source]));

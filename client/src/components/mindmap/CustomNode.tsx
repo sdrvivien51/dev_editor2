@@ -1,17 +1,37 @@
+import { Handle, Position, useStore } from '@xyflow/react';
 
-import React from 'react';
-import { Handle, Position } from '@xyflow/react';
+const connectionNodeIdSelector = (state) => state.connectionNodeId;
 
-function CustomNode() {
+export default function CustomNode({ id }) {
+  const connectionNodeId = useStore(connectionNodeIdSelector);
+  const isTarget = connectionNodeId && connectionNodeId !== id;
+
+  const targetHandleStyle = { zIndex: isTarget ? 3 : 1 };
+  const label = isTarget ? 'Drop here' : 'Drag to connect';
+
   return (
-    <div className="custom-node">
-      <Handle type="target" position={Position.Top} />
-      <Handle type="target" position={Position.Left} />
-      <div>Custom Node</div>
-      <Handle type="source" position={Position.Right} />
-      <Handle type="source" position={Position.Bottom} />
+    <div className="customNode">
+      <div
+        className="customNodeBody"
+        style={{
+          borderStyle: isTarget ? 'dashed' : 'solid',
+          backgroundColor: isTarget ? '#ffcce3' : '#ccd9f6',
+        }}
+      >
+        <Handle
+          className="targetHandle"
+          style={{ zIndex: 2 }}
+          position={Position.Right}
+          type="source"
+        />
+        <Handle
+          className="targetHandle"
+          style={targetHandleStyle}
+          position={Position.Left}
+          type="target"
+        />
+        {label}
+      </div>
     </div>
   );
 }
-
-export default CustomNode;
