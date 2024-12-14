@@ -11,6 +11,7 @@ export const EDITOR_JS_TOOLS = {
     inlineToolbar: true,
     config: {
       services: {
+        youtube: true,
         youtube: {
           regex: /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)/,
           embedUrl: 'https://www.youtube.com/embed/{{remote_id}}',
