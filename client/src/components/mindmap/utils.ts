@@ -1,7 +1,9 @@
+import { Position, MarkerType } from "@xyflow/react";
 
-import { Position, MarkerType } from '@xyflow/react';
-
-function getNodeIntersection(intersectionNode: any, targetNode: any) {
+// this helper function returns the intersection point
+// of the line between the center of the intersectionNode and the target node
+function getNodeIntersection(intersectionNode, targetNode) {
+  // https://math.stackexchange.com/questions/1724792/an-algorithm-for-finding-the-intersection-point-between-a-center-of-vision-and-a
   const {
     width: intersectionNodeWidth,
     height: intersectionNodeHeight,
@@ -28,22 +30,32 @@ function getNodeIntersection(intersectionNode: any, targetNode: any) {
   return { x, y };
 }
 
-function getEdgePosition(node: any, intersectionPoint: any) {
+// returns the position (top,right,bottom or right) passed node compared to the intersection point
+function getEdgePosition(node, intersectionPoint) {
   const n = { ...node.positionAbsolute, ...node };
   const nx = Math.round(n.x);
   const ny = Math.round(n.y);
   const px = Math.round(intersectionPoint.x);
   const py = Math.round(intersectionPoint.y);
 
-  if (px <= nx + 1) return Position.Left;
-  if (px >= nx + n.width - 1) return Position.Right;
-  if (py <= ny + 1) return Position.Top;
-  if (py >= n.y + n.height - 1) return Position.Bottom;
+  if (px <= nx + 1) {
+    return Position.Left;
+  }
+  if (px >= nx + n.width - 1) {
+    return Position.Right;
+  }
+  if (py <= ny + 1) {
+    return Position.Top;
+  }
+  if (py >= n.y + n.height - 1) {
+    return Position.Bottom;
+  }
 
   return Position.Top;
 }
 
-export function getEdgeParams(source: any, target: any) {
+// returns the parameters (sx, sy, tx, ty, sourcePos, targetPos) you need to create an edge
+export function getEdgeParams(source, target) {
   const sourceIntersectionPoint = getNodeIntersection(source, target);
   const targetIntersectionPoint = getNodeIntersection(target, source);
 
@@ -58,4 +70,33 @@ export function getEdgeParams(source: any, target: any) {
     sourcePos,
     targetPos,
   };
+}
+
+export function createNodesAndEdges() {
+  const nodes = [];
+  const edges = [];
+  const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  nodes.push({ id: 'target', data: { label: 'Target' }, position: center });
+
+  for (let i = 0; i < 8; i++) {
+    const degrees = i * (360 / 8);
+    const radians = degrees * (Math.PI / 180);
+    const x = 250 * Math.cos(radians) + center.x;
+    const y = 250 * Math.sin(radians) + center.y;
+
+    nodes.push({ id: `${i}`, data: { label: 'Source' }, position: { x, y } });
+
+    edges.push({
+      id: `edge-${i}`,
+      target: 'target',
+      source: `${i}`,
+      type: 'floating',
+      markerEnd: {
+        type: MarkerType.Arrow,
+      },
+    });
+  }
+
+  return { nodes, edges };
 }
