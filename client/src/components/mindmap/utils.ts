@@ -1,11 +1,12 @@
 import { Position } from '@xyflow/react';
 
 function getNodeIntersection(intersectionNode: any, targetNode: any) {
-  const { width: sourceWidth = 0, height: sourceHeight = 0 } = intersectionNode?.measured || {};
-  const sourcePos = intersectionNode?.internals?.positionAbsolute || { x: 0, y: 0 };
-  const targetPos = targetNode?.internals?.positionAbsolute || { x: 0, y: 0 };
-  const targetWidth = targetNode?.measured?.width || 0;
-  const targetHeight = targetNode?.measured?.height || 0;
+  const sourceWidth = intersectionNode?.width || 0;
+  const sourceHeight = intersectionNode?.height || 0;
+  const sourcePos = intersectionNode?.position || { x: 0, y: 0 };
+  const targetPos = targetNode?.position || { x: 0, y: 0 };
+  const targetWidth = targetNode?.width || 0;
+  const targetHeight = targetNode?.height || 0;
 
   // Calculate center points
   const sourceCenter = {
@@ -30,20 +31,16 @@ function getNodeIntersection(intersectionNode: any, targetNode: any) {
   let y = sourceCenter.y;
 
   // Determine intersection point based on angle
-  const PI = Math.PI;
-  const slope = Math.abs(dy / dx);
-  const nodeSlope = halfHeight / halfWidth;
-
-  if (slope > nodeSlope) {
-    // Intersects with top or bottom
-    const sign = dy > 0 ? 1 : -1;
-    y = sourceCenter.y + sign * halfHeight;
-    x = sourceCenter.x + sign * halfHeight / Math.tan(angle);
-  } else {
+  if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) {
     // Intersects with left or right
-    const sign = dx > 0 ? 1 : -1;
+    const sign = Math.cos(angle) >= 0 ? 1 : -1;
     x = sourceCenter.x + sign * halfWidth;
-    y = sourceCenter.y + sign * halfWidth * Math.tan(angle);
+    y = sourceCenter.y + Math.tan(angle) * sign * halfWidth;
+  } else {
+    // Intersects with top or bottom
+    const sign = Math.sin(angle) >= 0 ? 1 : -1;
+    y = sourceCenter.y + sign * halfHeight;
+    x = sourceCenter.x + (sign * halfHeight) / Math.tan(angle);
   }
 
   return { x, y };

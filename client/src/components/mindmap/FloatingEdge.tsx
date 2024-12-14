@@ -1,9 +1,18 @@
-import { getSmoothStepPath, useInternalNode, EdgeProps } from '@xyflow/react';
+import { BaseEdge, EdgeProps, getSmoothStepPath, useReactFlow } from '@xyflow/react';
 import { getEdgeParams } from './utils';
 
-function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps) {
-  const sourceNode = useInternalNode(source);
-  const targetNode = useInternalNode(target);
+function FloatingEdge({ 
+  id, 
+  source, 
+  target, 
+  markerEnd, 
+  style = {},
+  data,
+  selected
+}: EdgeProps) {
+  const { getNode } = useReactFlow();
+  const sourceNode = getNode(source);
+  const targetNode = getNode(target);
 
   if (!sourceNode || !targetNode) {
     return null;
@@ -11,41 +20,42 @@ function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps) {
 
   const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode);
 
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX: sx,
     sourceY: sy,
     sourcePosition: sourcePos,
     targetX: tx,
     targetY: ty,
     targetPosition: targetPos,
-    borderRadius: 12,
-    offset: 16,
+    borderRadius: 10,
   });
 
   return (
-    <g className="react-flow__edge-group">
-      <path
+    <>
+      <BaseEdge
         id={id}
-        className="react-flow__edge-path"
-        d={edgePath}
+        path={edgePath}
         markerEnd={markerEnd}
         style={{
           ...style,
-          strokeWidth: 3,
-          stroke: style?.stroke || '#784be8',
-          opacity: 1,
+          strokeWidth: selected ? 4 : 3,
+          stroke: selected ? '#ff0072' : '#784be8',
           pointerEvents: 'all',
-          filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))',
         }}
+        className="react-flow__edge-floating"
       />
-      <path
-        d={edgePath}
-        stroke="transparent"
-        strokeWidth={20}
-        fill="none"
-        className="react-flow__edge-interaction"
-      />
-    </g>
+      {data?.label && (
+        <text
+          x={labelX}
+          y={labelY}
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          className="react-flow__edge-text"
+        >
+          {data.label}
+        </text>
+      )}
+    </>
   );
 }
 

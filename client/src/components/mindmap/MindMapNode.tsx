@@ -9,27 +9,37 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
   const connection = useConnection();
   
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-    updateNodeLabel(id, value);
+    updateNodeLabel(id, evt.target.value || '');
   }, [id, updateNodeLabel]);
 
   const isTarget = connection?.inProgress && connection?.fromNode?.id !== id;
   const isSource = connection?.inProgress && connection?.fromNode?.id === id;
+
+  const handleStyle = {
+    width: '12px',
+    height: '12px',
+    background: '#784be8',
+    border: '2px solid white',
+    borderRadius: '50%',
+    opacity: 1,
+    zIndex: 1000,
+  };
 
   return (
     <div className="mindmap-node">
       <Handle
         type="target"
         position={Position.Left}
-        className={`customHandle ${isTarget ? 'connecting' : ''}`}
-        isConnectable={true}
-        style={{
-          opacity: 1,
-          visibility: 'visible',
-          backgroundColor: isTarget ? '#ff0072' : '#784be8',
-          border: '2px solid white',
-          zIndex: 1000
-        }}
+        className={`handle-left ${isTarget ? 'connecting' : ''}`}
+        style={{ ...handleStyle, backgroundColor: isTarget ? '#ff0072' : '#784be8' }}
+        isConnectableStart={false}
+      />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className={`handle-top ${isTarget ? 'connecting' : ''}`}
+        style={{ ...handleStyle, backgroundColor: isTarget ? '#ff0072' : '#784be8' }}
+        isConnectableStart={false}
       />
       <div className="node-content">
         <input
@@ -43,15 +53,14 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
       <Handle
         type="source"
         position={Position.Right}
-        className={`customHandle ${isSource ? 'connecting' : ''}`}
-        isConnectable={true}
-        style={{
-          opacity: 1,
-          visibility: 'visible',
-          backgroundColor: isSource ? '#ff0072' : '#784be8',
-          border: '2px solid white',
-          zIndex: 1000
-        }}
+        className={`handle-right ${isSource ? 'connecting' : ''}`}
+        style={{ ...handleStyle, backgroundColor: isSource ? '#ff0072' : '#784be8' }}
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className={`handle-bottom ${isSource ? 'connecting' : ''}`}
+        style={{ ...handleStyle, backgroundColor: isSource ? '#ff0072' : '#784be8' }}
       />
     </div>
   );

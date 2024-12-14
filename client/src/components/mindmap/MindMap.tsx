@@ -36,17 +36,16 @@ const edgeTypes = {
 
 const defaultEdgeOptions = {
   type: 'floating',
-  animated: true,
+  animated: false,
   style: { 
     stroke: '#784be8',
     strokeWidth: 3,
-    opacity: 0.8,
   },
   markerEnd: {
     type: MarkerType.ArrowClosed,
     color: '#784be8',
-    width: 25,
-    height: 25,
+    width: 20,
+    height: 20,
   },
 };
 
@@ -64,23 +63,26 @@ function Flow() {
   const { screenToFlowPosition } = useReactFlow();
   
   const onConnect = useCallback((params: Connection) => {
+    const edge = {
+      ...params,
+      type: 'floating',
+      animated: true,
+      style: { 
+        stroke: '#784be8',
+        strokeWidth: 3,
+        opacity: 1,
+        pointerEvents: 'all',
+      },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: '#784be8',
+        width: 20,
+        height: 20,
+      },
+    };
+    
     useStore.setState((state) => ({
-      edges: addEdge({
-        ...params,
-        type: 'floating',
-        animated: true,
-        style: { 
-          stroke: '#784be8',
-          strokeWidth: 3,
-          opacity: 0.8
-        },
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-          color: '#784be8',
-          width: 20,
-          height: 20,
-        },
-      }, state.edges),
+      edges: addEdge(edge, state.edges),
     }));
   }, []);
 
