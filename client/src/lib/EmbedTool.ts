@@ -57,7 +57,7 @@ export default class EmbedTool implements BlockTool {
     // Handle YouTube URLs
     const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     if (youtubeMatch) {
-      embedUrl = `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0`;
+      embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
     }
     
     // Handle CodePen URLs
