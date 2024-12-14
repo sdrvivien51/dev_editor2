@@ -1,50 +1,34 @@
+
 import { useCallback } from 'react';
-import { useStore, getBezierPath, BaseEdge } from '@xyflow/react';
+import { useStore, getStraightPath } from '@xyflow/react';
 import { getEdgeParams } from './utils';
 
-interface FloatingEdgeProps {
-  id: string;
-  source: string;
-  target: string;
-  markerEnd?: string;
-  style?: React.CSSProperties;
-}
-
-const FloatingEdge = ({ id, source, target, markerEnd, style }: FloatingEdgeProps) => {
-  const sourceNode = useStore(
-    useCallback((store) => store.nodes.find((n) => n.id === source), [source])
-  );
-  const targetNode = useStore(
-    useCallback((store) => store.nodes.find((n) => n.id === target), [target])
-  );
+function FloatingEdge({ id, source, target, markerEnd, style }) {
+  const sourceNode = useStore(useCallback((store) => store.nodeInternals.get(source), [source]));
+  const targetNode = useStore(useCallback((store) => store.nodeInternals.get(target), [target]));
 
   if (!sourceNode || !targetNode) {
     return null;
   }
 
-  const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode);
+  const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
 
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getStraightPath({
     sourceX: sx,
     sourceY: sy,
-    sourcePosition: sourcePos,
-    targetPosition: targetPos,
     targetX: tx,
     targetY: ty,
   });
 
   return (
-    <BaseEdge
+    <path
       id={id}
-      path={edgePath}
+      className="react-flow__edge-path"
+      d={edgePath}
       markerEnd={markerEnd}
-      style={{
-        ...style,
-        strokeWidth: 2,
-        stroke: '#222',
-      }}
+      style={style}
     />
   );
-};
+}
 
 export default FloatingEdge;
