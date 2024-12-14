@@ -67,6 +67,13 @@ export default class EmbedTool implements BlockTool {
       input.placeholder = 'Paste your link here...';
       input.classList.add('embed-tool__input');
       
+      input.addEventListener('input', (event) => {
+        const text = (event.target as HTMLInputElement).value;
+        if (text) {
+          this.embedUrlHandle(text, wrapper);
+        }
+      });
+      
       input.addEventListener('paste', (event) => {
         event.preventDefault();
         const text = event.clipboardData?.getData('text');
@@ -92,9 +99,14 @@ export default class EmbedTool implements BlockTool {
         const remote_id = pattern.id ? pattern.id(match.slice(1)) : match[1];
         const embedUrl = pattern.embedUrl.replace('<%= remote_id %>', remote_id);
         
-        const html = pattern.html
-          .replace('src=""', `src="${embedUrl}"`)
-          .replace('height="320"', `height="${pattern.height}"`);
+        const html = `<iframe 
+          width="100%" 
+          height="${pattern.height}" 
+          src="${embedUrl}" 
+          frameborder="0" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>`;
         
         if (pattern.width) {
           html.replace('width="100%"', `width="${pattern.width}"`);
