@@ -29,6 +29,11 @@ const edgeTypes = {
   floating: FloatingEdge,
 };
 
+const connectionLineStyle = {
+  stroke: '#222',
+  strokeWidth: 2,
+};
+
 let id = 1;
 const getId = () => `${id++}`;
 
@@ -187,6 +192,8 @@ const Flow = () => {
         onInit={setReactFlowInstance}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        connectionLineStyle={connectionLineStyle}
+        connectionLineComponent={CustomConnectionLine}
         fitView
         style={{ background: '#F7F9FB' }}
       >
