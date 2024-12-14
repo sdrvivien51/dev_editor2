@@ -52,13 +52,28 @@ export default class EmbedTool implements BlockTool {
 
     if (!url) return;
 
+    let embedUrl = url;
+    
+    // Handle YouTube URLs
+    const youtubeMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    if (youtubeMatch) {
+      embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    }
+    
+    // Handle CodePen URLs
+    const codepenMatch = url.match(/codepen\.io\/([^\/]+)\/pen\/([^\/]+)/);
+    if (codepenMatch) {
+      const [_, user, hash] = codepenMatch;
+      embedUrl = `https://codepen.io/${user}/embed/${hash}?default-tab=result`;
+    }
+
     this.embedPreview = document.createElement('div');
     this.embedPreview.className = 'embed-tool__content';
     this.embedPreview.style.position = 'relative';
     this.embedPreview.style.paddingTop = '56.25%';
     
     const iframe = document.createElement('iframe');
-    iframe.src = url;
+    iframe.src = embedUrl;
     iframe.style.position = 'absolute';
     iframe.style.top = '0';
     iframe.style.left = '0';
@@ -66,6 +81,7 @@ export default class EmbedTool implements BlockTool {
     iframe.style.height = '100%';
     iframe.style.border = 'none';
     iframe.setAttribute('allowfullscreen', 'true');
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
     
     this.embedPreview.appendChild(iframe);
     this.wrapper.appendChild(this.embedPreview);
