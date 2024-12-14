@@ -1,3 +1,4 @@
+
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Image from '@editorjs/image';
@@ -5,7 +6,6 @@ import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
 import ChartTool from './ChartTool';
 import TradingViewTool from './TradingViewTool';
-import MindMapTool from './MindMapTool';
 
 export const editorConfig: Partial<EditorConfig> = {
   tools: {
@@ -30,10 +30,6 @@ export const editorConfig: Partial<EditorConfig> = {
     },
     tradingview: {
       class: TradingViewTool,
-      inlineToolbar: false,
-    },
-    mindmap: {
-      class: MindMapTool,
       inlineToolbar: false,
     },
     image: {
