@@ -52,37 +52,22 @@ export default class EmbedTool implements BlockTool {
 
     if (!url) return;
 
-    const services = (this.api.configuration as any)?.tools?.embed?.config?.services || {};
-    const foundService = Object.entries(services).find(([_, service]: [string, any]) => {
-      return service.regex && service.regex.test(url);
-    });
-
-    if (!foundService) return;
-
-    const [_, service] = foundService;
-    const match = url.match(service.regex);
-    if (!match) return;
-
-    const remoteId = service.id ? service.id(match.slice(1)) : match[1];
-    const embedUrl = service.embedUrl.replace('<%= remote_id %>', remoteId);
-    const embed = service.html.replace(/src=".*?"/g, `src="${embedUrl}"`);
-
     this.embedPreview = document.createElement('div');
     this.embedPreview.className = 'embed-tool__content';
     this.embedPreview.style.position = 'relative';
-    this.embedPreview.style.paddingTop = '56.25%'; // 16:9 aspect ratio
-    this.embedPreview.innerHTML = embed;
+    this.embedPreview.style.paddingTop = '56.25%';
     
-    const iframe = this.embedPreview.querySelector('iframe');
-    if (iframe) {
-      iframe.style.position = 'absolute';
-      iframe.style.top = '0';
-      iframe.style.left = '0';
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.setAttribute('allowfullscreen', 'true');
-    }
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.position = 'absolute';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.setAttribute('allowfullscreen', 'true');
     
+    this.embedPreview.appendChild(iframe);
     this.wrapper.appendChild(this.embedPreview);
   }
 
