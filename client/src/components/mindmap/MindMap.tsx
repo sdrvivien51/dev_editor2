@@ -3,57 +3,65 @@ import {
   ReactFlow,
   Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  Connection,
-  Edge,
-  Node,
-  OnConnectStart,
-  OnConnectEnd,
   useReactFlow,
-  Panel
+  ConnectionLineType,
+  Panel,
+  type Node,
+  type Edge,
+  type OnConnectStart,
+  type OnConnectEnd,
 } from '@xyflow/react';
+import { useShallow } from 'zustand/shallow';
 import { Trash2 } from 'lucide-react';
+
+import useStore, { type RFState } from './store';
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
 
-const initialNodes: Node[] = [
-  {
-    id: '1',
-    type: 'mindmap',
-    data: { label: 'Mind Map' },
-    position: { x: 250, y: 250 },
-  },
-];
+const selector = (state: RFState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  addChildNode: state.addChildNode,
+  updateNodeLabel: state.updateNodeLabel,
+});
 
 interface MindMapNodeProps {
   id: string;
   data: { label: string };
 }
 
-const MindMapNode = ({ id, data }: MindMapNodeProps) => (
-  <div className="mindmap-node">
-    <div className="node-content">{data.label}</div>
-    <button className="delete-button">
-      <Trash2 className="h-4 w-4" />
-    </button>
-  </div>
-);
+const MindMapNode = ({ id, data }: MindMapNodeProps) => {
+  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
+
+  return (
+    <div className="mindmap-node">
+      <input
+        value={data.label}
+        onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+        className="node-input"
+      />
+      <button className="delete-button">
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+};
 
 const nodeTypes = {
   mindmap: MindMapNode,
 };
 
+const connectionLineStyle = { stroke: '#F6AD55', strokeWidth: 3 };
+const defaultEdgeOptions = { style: connectionLineStyle, type: 'default' };
+
 function MindMap() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
+    useShallow(selector)
+  );
   const connectingNodeId = useRef<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
-
-  const onConnect = useCallback((params: Connection | Edge) => {
-    setEdges((eds) => addEdge(params, eds));
-  }, [setEdges]);
 
   const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
@@ -68,37 +76,32 @@ function MindMap() {
       );
 
       if (targetIsPane && connectingNodeId.current) {
+        const { nodeLookup } = store.getState();
+        const parentNode = nodeLookup.get(connectingNodeId.current);
+
+        if (!parentNode) return;
+
         const position = screenToFlowPosition({
           x: event.clientX,
           y: event.clientY,
         });
 
-        const newNode: Node = {
-          id: `node-${Date.now()}`,
-          type: 'mindmap',
-          position,
-          data: { label: `Node ${nodes.length + 1}` },
-        };
-
-        setNodes((nds) => [...nds, newNode]);
-        setEdges((eds) => [
-          ...eds,
-          {
-            id: `edge-${Date.now()}`,
-            source: connectingNodeId.current!,
-            target: newNode.id,
-            type: 'default'
-          }
-        ]);
+        addChildNode(parentNode, position);
       }
     },
-    [screenToFlowPosition, nodes.length, setNodes, setEdges]
+    [screenToFlowPosition, addChildNode]
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    setNodes((nds) => nds.filter((n) => n.id !== node.id));
-    setEdges((eds) => eds.filter((e) => e.source !== node.id && e.target !== node.id));
-  }, [setNodes, setEdges]);
+    const isDeleteButton = (event.target as Element).closest('.delete-button');
+    if (isDeleteButton) {
+      const updatedNodes = nodes.filter((n) => n.id !== node.id);
+      const updatedEdges = edges.filter(
+        (e) => e.source !== node.id && e.target !== node.id
+      );
+      useStore.setState({ nodes: updatedNodes, edges: updatedEdges });
+    }
+  }, [nodes, edges]);
 
   return (
     <div style={{ width: '100%', height: '500px' }}>
@@ -107,11 +110,12 @@ function MindMap() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
+        connectionLineType={ConnectionLineType.Straight}
         fitView
       >
         <Background />

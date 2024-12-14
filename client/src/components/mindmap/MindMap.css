@@ -14,6 +14,20 @@
 
 .mindmap-node {
   position: relative;
+  background: white;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.node-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 4px;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
 }
 
 .mindmap-node .delete-button {
@@ -31,10 +45,16 @@
   justify-content: center;
   cursor: pointer;
   padding: 2px;
+  transition: all 0.2s ease;
 }
 
 .mindmap-node:hover .delete-button {
   display: flex;
+}
+
+.mindmap-node .delete-button:hover {
+  transform: scale(1.1);
+  background-color: #ff7875;
 }
 
 .node-content {
