@@ -65,14 +65,20 @@ function Flow() {
   
   const onConnect = useCallback((params: Connection) => {
     useStore.setState((state) => ({
-      edges: addEdge({ 
-        ...params, 
+      edges: addEdge({
+        ...params,
         type: 'floating',
         animated: true,
-        style: { stroke: '#784be8', strokeWidth: 2 },
+        style: { 
+          stroke: '#784be8',
+          strokeWidth: 3,
+          opacity: 0.8
+        },
         markerEnd: {
           type: MarkerType.ArrowClosed,
           color: '#784be8',
+          width: 20,
+          height: 20,
         },
       }, state.edges),
     }));

@@ -1,7 +1,7 @@
 import React from 'react';
 import { getStraightPath } from '@xyflow/react';
 
-function CustomConnectionLine({ fromX, fromY, toX, toY, connectionLineStyle }: any) {
+function CustomConnectionLine({ fromX, fromY, toX, toY }: any) {
   const [edgePath] = getStraightPath({
     sourceX: fromX,
     sourceY: fromY,
@@ -9,9 +9,16 @@ function CustomConnectionLine({ fromX, fromY, toX, toY, connectionLineStyle }: a
     targetY: toY,
   });
 
+  const defaultStyle = {
+    stroke: '#784be8',
+    strokeWidth: 3,
+    strokeDasharray: '5,5',
+    fill: 'none',
+  };
+
   return (
     <g>
-      <path style={connectionLineStyle} fill="none" d={edgePath} />
+      <path style={defaultStyle} d={edgePath} />
     </g>
   );
 }
