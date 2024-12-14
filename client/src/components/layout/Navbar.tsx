@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -7,11 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useSupabaseSession } from "@/lib/supabase";
+import { useSupabaseSession, supabase } from "@/lib/supabase";
 import { AuthModal } from "../auth/AuthModal";
 
 export function Navbar() {
   const session = useSupabaseSession();
+  const [_, setLocation] = useLocation();
 
   return (
     <nav className="border-b">

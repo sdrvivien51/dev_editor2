@@ -5,6 +5,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Home() {
   const { data: posts, isLoading } = useQuery({
     queryKey: ["/api/posts"],
+    queryFn: async () => {
+      const response = await fetch("/api/posts");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    },
   });
 
   if (isLoading) {
