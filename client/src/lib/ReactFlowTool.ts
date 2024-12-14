@@ -3,18 +3,14 @@ import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import MindMap from '@/components/mindmap/MindMap';
 
-export interface ReactFlowData {
-  type: 'mindmap';
-}
-
 export default class ReactFlowTool implements BlockTool {
   private api: API;
   private wrapper: HTMLElement;
 
   static get toolbox() {
     return {
-      title: 'React Flow',
-      icon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 17V7M3 7H21M3 7L7 3H17L21 7M21 17V7M21 17H3M21 17L17 21H7L3 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      title: 'Flow Chart',
+      icon: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8V5H7V8H3Z M17 8V5H21V8H17Z M10 19V16H14V19H10Z M10 12L17 8 M7 8L10 12 M10 12V16"/></svg>'
     };
   }
 
@@ -22,7 +18,6 @@ export default class ReactFlowTool implements BlockTool {
     this.api = api;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('reactflow-block');
-    this.wrapper.style.height = '500px';
   }
 
   render() {
@@ -33,11 +28,11 @@ export default class ReactFlowTool implements BlockTool {
 
   save() {
     return {
-      type: 'mindmap'
+      flowchart: true
     };
   }
 
   validate(savedData: any) {
-    return savedData.type === 'mindmap';
+    return savedData.flowchart === true;
   }
 }
