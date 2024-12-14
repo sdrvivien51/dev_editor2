@@ -1,4 +1,3 @@
-
 import Embed from "@editorjs/embed";
 import List from "@editorjs/list";
 import Header from "@editorjs/header";
@@ -11,14 +10,16 @@ export const EDITOR_JS_TOOLS = {
     inlineToolbar: true,
     config: {
       services: {
-        youtube: true,
         youtube: {
-          regex: /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)/,
-          embedUrl: 'https://www.youtube.com/embed/{{remote_id}}',
+          regex: /(?:https?:\/\/)(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]+)/,
+          embedUrl: "https://www.youtube.com/embed/{{remote_id}}",
           html: '<iframe width="560" height="315" src="{{embedUrl}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
           height: 315,
           width: 560,
-          id: (groups) => groups[1]
+          id: (url) => {
+            const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+            return match ? match[1] : null;
+          }
         },
         coub: true,
         codepen: true,
