@@ -48,6 +48,7 @@ const useStore = create<RFState>((set, get) => ({
       data: { label: 'New Node' },
       position,
       parentNode: parentNode.id,
+      draggable: true,
     };
 
     const newEdge = {
@@ -55,6 +56,7 @@ const useStore = create<RFState>((set, get) => ({
       source: parentNode.id,
       target: newNode.id,
       type: 'default',
+      animated: true,
     };
 
     set({

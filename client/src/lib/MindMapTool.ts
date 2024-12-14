@@ -2,14 +2,12 @@ import { API, BlockTool, BlockToolData } from '@editorjs/editorjs';
 import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import MindMap from '@/components/mindmap/MindMap';
-
-export interface MindMapData {
-  type: 'mindmap';
-}
+import { ReactFlowProvider } from '@xyflow/react';
 
 export default class MindMapTool implements BlockTool {
   private api: API;
   private wrapper: HTMLElement;
+  private root: ReturnType<typeof createRoot> | null = null;
 
   static get toolbox() {
     return {
@@ -25,9 +23,21 @@ export default class MindMapTool implements BlockTool {
   }
 
   render() {
-    const root = createRoot(this.wrapper);
-    root.render(createElement(MindMap));
+    this.root = createRoot(this.wrapper);
+    this.root.render(
+      createElement(ReactFlowProvider, null,
+        createElement('div', { style: { width: '100%', height: '500px' } },
+          createElement(MindMap)
+        )
+      )
+    );
     return this.wrapper;
+  }
+
+  destroy() {
+    if (this.root) {
+      this.root.unmount();
+    }
   }
 
   save() {

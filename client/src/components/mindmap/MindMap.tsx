@@ -3,15 +3,15 @@ import {
   ReactFlow,
   Controls,
   Background,
-  useReactFlow,
   ConnectionLineType,
-  Panel,
-  ReactFlowProvider,
   Connection,
+  Node,
+  useReactFlow,
+  ReactFlowProvider,
+  NodeMouseHandler,
   OnConnectStart,
   OnConnectEnd,
-  Node,
-  NodeMouseHandler
+  XYPosition
 } from '@xyflow/react';
 import { useShallow } from 'zustand/shallow';
 import { Trash2 } from 'lucide-react';
@@ -60,21 +60,46 @@ const connectionLineStyle = { stroke: '#784be8', strokeWidth: 3 };
 const defaultEdgeOptions = { style: connectionLineStyle, type: 'default' };
 
 function Flow() {
-  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
-    useShallow(selector)
-  );
+  const store = useStore();
+  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = store;
   const connectingNodeId = useRef<string | null>(null);
   const { screenToFlowPosition } = useReactFlow();
 
-  const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
-    connectingNodeId.current = nodeId;
+  const onConnectStart = useCallback<OnConnectStart>((_, { nodeId }) => {
+    if (nodeId) {
+      connectingNodeId.current = nodeId;
+    }
   }, []);
+
+  const getChildNodePosition = useCallback(
+    (event: MouseEvent | TouchEvent, parentNode?: Node) => {
+      if (!parentNode?.position) {
+        return;
+      }
+
+      const isTouchEvent = 'touches' in event;
+      const x = isTouchEvent ? event.touches[0].clientX : event.clientX;
+      const y = isTouchEvent ? event.touches[0].clientY : event.clientY;
+
+      // Convert screen coordinates to flow coordinates
+      const panePosition = screenToFlowPosition({
+        x,
+        y,
+      });
+
+      return {
+        x: panePosition.x - parentNode.position.x,
+        y: panePosition.y - parentNode.position.y,
+      };
+    },
+    [screenToFlowPosition]
+  );
 
   const onConnectEnd: OnConnectEnd = useCallback(
     (event) => {
       if (!event || !(event instanceof MouseEvent)) return;
 
-      const targetIsPane = (event.target as Element).classList.contains(
+      const targetIsPane = (event.target as Element)?.classList?.contains(
         'react-flow__pane'
       );
 
@@ -83,15 +108,21 @@ function Flow() {
 
         if (!parentNode) return;
 
-        const position = screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
+        // Use client coordinates for position calculation
+        const position = getChildNodePosition(event, parentNode);
 
-        addChildNode(parentNode, position);
+        if (position) {
+          // Add the new node with correct position relative to parent
+          addChildNode(parentNode, {
+            x: position.x,
+            y: position.y
+          });
+        }
       }
+      // Reset the connecting node id
+      connectingNodeId.current = null;
     },
-    [screenToFlowPosition, addChildNode, nodes]
+    [getChildNodePosition, addChildNode, nodes]
   );
 
   const onNodeClick: NodeMouseHandler = useCallback((event: React.MouseEvent, node: Node) => {
@@ -134,10 +165,14 @@ function Flow() {
   );
 }
 
-export default function MindMap() {
+const MindMapWrapper = () => {
   return (
-    <ReactFlowProvider>
-      <Flow />
-    </ReactFlowProvider>
+    <div style={{ width: '100%', height: '500px' }}>
+      <ReactFlowProvider>
+        <Flow />
+      </ReactFlowProvider>
+    </div>
   );
 }
+
+export default MindMapWrapper;
