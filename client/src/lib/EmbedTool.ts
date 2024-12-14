@@ -4,8 +4,7 @@ import { API, BlockTool } from '@editorjs/editorjs';
 export default class EmbedTool implements BlockTool {
   private api: API;
   private data: any;
-  private wrapper: HTMLElement;
-  private embedPreview: HTMLElement | null = null;
+  private element: HTMLElement;
 
   static get toolbox() {
     return {
@@ -14,87 +13,81 @@ export default class EmbedTool implements BlockTool {
     };
   }
 
-  constructor({ data, api }: { data: any; api: API }) {
-    this.api = api;
-    this.data = data;
-    this.wrapper = document.createElement('div');
-  }
-
-  render() {
-    this.wrapper.innerHTML = '';
-    const input = document.createElement('input');
-    input.className = 'embed-tool__input';
-    input.placeholder = 'Paste an embed URL...';
-    input.value = this.data?.url || '';
-    
-    input.addEventListener('paste', () => {
-      setTimeout(() => this._createPreview(input.value), 100);
-    });
-
-    input.addEventListener('change', () => {
-      this._createPreview(input.value);
-    });
-
-    this.wrapper.appendChild(input);
-    
-    if (this.data?.url) {
-      this._createPreview(this.data.url);
-    }
-
-    return this.wrapper;
-  }
-
-  _createPreview(url: string) {
-    if (this.embedPreview) {
-      this.embedPreview.remove();
-      this.embedPreview = null;
-    }
-
-    if (!url) return;
-
-    let embedUrl = url;
-    
-    // Handle YouTube URLs
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (youtubeMatch) {
-      embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}`;
-    }
-    
-    // Handle CodePen URLs
-    const codepenMatch = url.match(/codepen\.io\/([^\/]+)\/pen\/([^\/]+)/);
-    if (codepenMatch) {
-      const [_, user, hash] = codepenMatch;
-      embedUrl = `https://codepen.io/${user}/embed/${hash}?default-tab=result`;
-    }
-
-    this.embedPreview = document.createElement('div');
-    this.embedPreview.className = 'embed-tool__content';
-    this.embedPreview.style.position = 'relative';
-    this.embedPreview.style.paddingTop = '56.25%';
-    
-    const iframe = document.createElement('iframe');
-    iframe.src = embedUrl;
-    iframe.style.position = 'absolute';
-    iframe.style.top = '0';
-    iframe.style.left = '0';
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-    iframe.setAttribute('allowfullscreen', 'true');
-    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-    
-    this.embedPreview.appendChild(iframe);
-    this.wrapper.appendChild(this.embedPreview);
-  }
-
-  save() {
-    const input = this.wrapper.querySelector('input');
+  static get services() {
     return {
-      url: input?.value || ''
+      youtube: {
+        regex: /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+        embedUrl: 'https://www.youtube.com/embed/<%= remote_id %>',
+        html: '<iframe style="width:100%;" height="320" frameborder="0" allowfullscreen></iframe>'
+      },
+      codepen: {
+        regex: /https?:\/\/codepen\.io\/([^\/]+)\/pen\/([^\/]+)/,
+        embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&default-tab=result',
+        html: '<iframe height="300" style="width:100%;" scrolling="no" frameborder="no" allowtransparency="true" allowfullscreen="true"></iframe>'
+      }
     };
   }
 
+  constructor({ data, api }: { data: any; api: API }) {
+    this.api = api;
+    this.data = data;
+    this.element = document.createElement('div');
+  }
+
+  render() {
+    if (!this.data.service) {
+      const input = document.createElement('input');
+      input.classList.add('cdx-input');
+      input.placeholder = 'Paste URL from YouTube, CodePen, etc...';
+      input.type = 'url';
+      
+      input.addEventListener('paste', (event) => {
+        const url = event.clipboardData?.getData('text');
+        const service = Object.keys(EmbedTool.services).find((key) => 
+          EmbedTool.services[key].regex.test(url)
+        );
+        
+        if (service && url) {
+          const matches = url.match(EmbedTool.services[service].regex);
+          if (matches) {
+            const remote_id = service === 'codepen' ? `${matches[1]}/embed/${matches[2]}` : matches[1];
+            this.data = {
+              service,
+              source: url,
+              embed: EmbedTool.services[service].embedUrl.replace('<%= remote_id %>', remote_id),
+              width: 600,
+              height: service === 'codepen' ? 300 : 320
+            };
+            this._createPreview();
+          }
+        }
+      });
+
+      this.element.appendChild(input);
+      return this.element;
+    }
+
+    return this._createPreview();
+  }
+
+  private _createPreview() {
+    this.element.innerHTML = '';
+    const iframe = document.createElement('iframe');
+    iframe.src = this.data.embed;
+    iframe.style.width = '100%';
+    iframe.height = this.data.height;
+    iframe.frameBorder = '0';
+    iframe.allowFullscreen = true;
+    
+    this.element.appendChild(iframe);
+    return this.element;
+  }
+
+  save() {
+    return this.data;
+  }
+
   validate(savedData: any) {
-    return Boolean(savedData.url && savedData.url.trim());
+    return savedData.service && savedData.source;
   }
 }
