@@ -1,3 +1,4 @@
+
 import React, { useCallback } from 'react';
 import {
   ReactFlow,
@@ -11,30 +12,16 @@ import {
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
 
-import CustomNode from './CustomNode';
+import MindMapNode from './MindMapNode';
 import FloatingEdge from './FloatingEdge';
 import CustomConnectionLine from './CustomConnectionLine';
 
 const initialNodes = [
   {
     id: '1',
-    type: 'custom',
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: '2',
-    type: 'custom',
-    position: { x: 250, y: 320 },
-  },
-  {
-    id: '3',
-    type: 'custom',
-    position: { x: 40, y: 300 },
-  },
-  {
-    id: '4',
-    type: 'custom',
-    position: { x: 300, y: 0 },
+    type: 'mindmap',
+    data: { label: 'Main Idea' },
+    position: { x: 250, y: 200 },
   },
 ];
 
@@ -46,7 +33,7 @@ const connectionLineStyle = {
 };
 
 const nodeTypes = {
-  custom: CustomNode,
+  mindmap: MindMapNode,
 };
 
 const edgeTypes = {
@@ -84,6 +71,7 @@ const MindMap = () => {
       defaultEdgeOptions={defaultEdgeOptions}
       connectionLineComponent={CustomConnectionLine}
       connectionLineStyle={connectionLineStyle}
+      proOptions={{ hideAttribution: true }}
     />
   );
 };
