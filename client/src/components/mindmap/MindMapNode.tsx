@@ -1,30 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import useStore from './store';
-import { MindMapData } from './types';
+import { NodeData } from './types';
 
-function MindMapNode({ id, data }: NodeProps<MindMapData>) {
-  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
-  
+function MindMapNode({ data, id }: NodeProps<NodeData>) {
+  const [label, setLabel] = useState(data.label);
+
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    updateNodeLabel(id, evt.target.value || '');
-  }, [id, updateNodeLabel]);
+    setLabel(evt.target.value);
+  }, []);
 
   return (
-    <div className="mindmap-node">
-      <Handle 
+    <div className="mindmap-node nodrag">
+      <Handle
         type="target"
         position={Position.Top}
-        className="handle"
+        className="react-flow__handle handle-top"
       />
       <Handle
         type="target"
         position={Position.Left}
-        className="handle"
+        className="react-flow__handle handle-left"
       />
       <div className="node-content">
         <input
-          value={data?.label || ''}
+          type="text"
+          value={label}
           onChange={onChange}
           className="nodrag node-input"
           placeholder="Enter text..."
@@ -33,15 +33,15 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
       <Handle
         type="source"
         position={Position.Right}
-        className="handle"
+        className="react-flow__handle handle-right"
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        className="handle"
+        className="react-flow__handle handle-bottom"
       />
     </div>
   );
 }
 
-export default MindMapNode;
+export default memo(MindMapNode);
