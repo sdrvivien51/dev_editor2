@@ -43,7 +43,7 @@ const defaultEdgeOptions = { style: connectionLineStyle, type: 'mindmap' };
  
 function Flow() {
   const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
-    useShallow(selector),
+    shallow(selector),
   );
   const connectingNodeId = useRef<string | null>(null);
   const store = useStoreApi();

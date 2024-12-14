@@ -10,29 +10,8 @@ import {
   type XYPosition,
 } from '@xyflow/react';
 import { create } from 'zustand';
-import {
-  applyNodeChanges,
-  applyEdgeChanges,
-  type Edge,
-  type EdgeChange,
-  type Node,
-  type NodeChange,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type XYPosition,
-} from '@xyflow/react';
 import { nanoid } from 'nanoid/non-secure';
 
-export type RFState = {
-  nodes: Node[];
-  edges: Edge[];
-  onNodesChange: OnNodesChange;
-  onEdgesChange: OnEdgesChange;
-  addChildNode: (parentNode: Node, position: XYPosition) => void;
-  updateNodeLabel: (nodeId: string, label: string) => void;
-};
-import { nanoid } from 'nanoid/non-secure';
- 
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
