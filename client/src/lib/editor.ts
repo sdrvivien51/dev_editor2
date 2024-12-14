@@ -6,6 +6,7 @@ import { supabase } from './supabase';
 import ChartTool from './ChartTool';
 import TradingViewTool from './TradingViewTool';
 import ReactFlowTool from './ReactFlowTool';
+import MindMapTool from './MindMapTool';
 
 export const editorConfig: Partial<EditorConfig> = {
   tools: {
@@ -34,6 +35,10 @@ export const editorConfig: Partial<EditorConfig> = {
     },
     reactflow: {
       class: ReactFlowTool,
+      inlineToolbar: false,
+    },
+    mindmap: {
+      class: MindMapTool,
       inlineToolbar: false,
     },
     image: {
