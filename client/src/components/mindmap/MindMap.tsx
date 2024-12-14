@@ -103,6 +103,13 @@ function Flow() {
     }
   }, [nodes, edges]);
 
+  const onConnect = useCallback((params) => {
+    // Add the new edge to the store
+    useStore.setState({
+      edges: [...edges, { ...params, id: nanoid(), type: 'default' }]
+    });
+  }, [edges]);
+
   return (
     <div style={{ width: '100%', height: '500px' }}>
       <ReactFlow
@@ -112,6 +119,7 @@ function Flow() {
         onEdgesChange={onEdgesChange}
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
+        onConnect={onConnect}
         onNodeClick={onNodeClick}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}

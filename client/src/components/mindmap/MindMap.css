@@ -66,20 +66,38 @@
   height: 8px;
   border-radius: 50%;
   background-color: #784be8;
+  transition: all 0.2s ease;
+}
+
+.react-flow__handle:hover {
+  width: 10px;
+  height: 10px;
+  background-color: #5a3eb7;
 }
 
 .react-flow__handle-top {
-  top: -4px;
+  top: -6px;
 }
 
 .react-flow__handle-bottom {
-  bottom: -4px;
+  bottom: -6px;
 }
 
 .react-flow__handle-left {
-  left: -4px;
+  left: -6px;
 }
 
 .react-flow__handle-right {
-  right: -4px;
+  right: -6px;
+}
+
+.react-flow__connection-path {
+  stroke: #784be8;
+  stroke-width: 2;
+  stroke-opacity: 0.75;
+}
+
+.react-flow__edge-path {
+  stroke: #784be8;
+  stroke-width: 2;
 }
