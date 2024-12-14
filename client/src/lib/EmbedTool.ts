@@ -5,6 +5,7 @@ export default class EmbedTool implements BlockTool {
   private api: API;
   private data: any;
   private wrapper: HTMLElement;
+  private embedPreview: HTMLElement | null = null;
 
   static get toolbox() {
     return {
@@ -20,17 +21,58 @@ export default class EmbedTool implements BlockTool {
   }
 
   render() {
+    this.wrapper.innerHTML = '';
     const input = document.createElement('input');
+    input.className = 'embed-tool__input';
     input.placeholder = 'Paste an embed URL...';
     input.value = this.data?.url || '';
+    
+    input.addEventListener('paste', (event) => {
+      this._createPreview(input.value);
+    });
+
+    input.addEventListener('change', (event) => {
+      this._createPreview(input.value);
+    });
+
     this.wrapper.appendChild(input);
+    
+    if (this.data?.url) {
+      this._createPreview(this.data.url);
+    }
+
     return this.wrapper;
+  }
+
+  _createPreview(url: string) {
+    if (this.embedPreview) {
+      this.embedPreview.remove();
+      this.embedPreview = null;
+    }
+
+    const services = (this.api.configuration as any)?.tools?.embed?.config?.services || {};
+    const foundService = Object.entries(services).find(([name, service]: [string, any]) => {
+      return service.regex.test(url);
+    });
+
+    if (!foundService) return;
+
+    const [serviceName, service] = foundService;
+    const match = url.match(service.regex);
+    const embed = service.html.replace(
+      '<%= remote_id %>',
+      service.id ? service.id(match.slice(1)) : match[1]
+    );
+
+    this.embedPreview = document.createElement('div');
+    this.embedPreview.innerHTML = embed;
+    this.wrapper.appendChild(this.embedPreview);
   }
 
   save() {
     const input = this.wrapper.querySelector('input');
     return {
-      url: input?.value
+      url: input?.value || ''
     };
   }
 
