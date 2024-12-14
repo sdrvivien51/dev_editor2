@@ -26,12 +26,8 @@
     --radius: 0.5rem;
   }
 
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 }
 
