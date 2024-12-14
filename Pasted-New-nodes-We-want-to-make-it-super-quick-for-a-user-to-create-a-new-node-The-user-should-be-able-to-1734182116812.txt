@@ -1,0 +1,305 @@
+New nodes
+We want to make it super quick for a user to create a new node. The user should be able to add a new node by clicking on a node and drag to the position where a new node should be placed. This functionality is not built into React Flow, but we can implement it by using the onConnectStart and onConnectEnd handlers.
+
+We are using the start handler to remember the node that was clicked and the end handler to create the new node:
+
+Add to src/App/index.tsx
+const connectingNodeId = useRef<string | null>(null);
+ 
+const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
+  connectingNodeId.current = nodeId;
+}, []);
+ 
+const onConnectEnd: OnConnectEnd = useCallback((event) => {
+  // we only want to create a new node if the connection ends on the pane
+  const targetIsPane = (event.target as Element).classList.contains(
+    'react-flow__pane',
+  );
+ 
+  if (targetIsPane && connectingNodeId.current) {
+    console.log(`add new node with parent node ${connectingNodeId.current}`);
+  }
+}, []);
+Since our nodes are managed by the store, we create an action to add a new node and its edge. This is how our addChildNode action looks:
+
+New action in src/store.ts
+addChildNode: (parentNode: Node, position: XYPosition) => {
+  const newNode = {
+    id: nanoid(),
+    type: 'mindmap',
+    data: { label: 'New Node' },
+    position,
+    parentNode: parentNode.id,
+  };
+ 
+  const newEdge = {
+    id: nanoid(),
+    source: parentNode.id,
+    target: newNode.id,
+  };
+ 
+  set({
+    nodes: [...get().nodes, newNode],
+    edges: [...get().edges, newEdge],
+  });
+};
+We are using the passed node as a parent. Normally this feature is used to implement grouping or sub flows. Here we are using it to move all child nodes when their parent is moved. It enables us to clean up and re-order the mind map so that we don’t have to move all child nodes manually. Let’s use the new action in our onConnectEnd handler:
+
+Adjustments in src/App/index.tsx
+const store = useStoreApi();
+ 
+const onConnectEnd: OnConnectEnd = useCallback(
+  (event) => {
+    const { nodeLookup } = store.getState();
+    const targetIsPane = (event.target as Element).classList.contains(
+      'react-flow__pane',
+    );
+ 
+    if (targetIsPane && connectingNodeId.current) {
+      const parentNode = nodeLookup.get(connectingNodeId.current);
+      const childNodePosition = getChildNodePosition(event, parentNode);
+ 
+      if (parentNode && childNodePosition) {
+        addChildNode(parentNode, childNodePosition);
+      }
+    }
+  },
+  [getChildNodePosition],
+);
+First we are getting the nodeLookup from the React Flow store via store.getState(). nodeLookup is a map that contains all nodes and their current state. We need it to get the position and dimensions of the clicked node. Then we check if the target of the onConnectEnd event is the React Flow pane. If it is, we want to add a new node. For this we are using our addChildNode and the newly created getChildNodePosition helper function.
+
+Helper function in src/App/index.tsx
+const getChildNodePosition = (event: MouseEvent, parentNode?: Node) => {
+  const { domNode } = store.getState();
+ 
+  if (
+    !domNode ||
+    // we need to check if these properites exist, because when a node is not initialized yet,
+    // it doesn't have a positionAbsolute nor a width or height
+    !parentNode?.computed?.positionAbsolute ||
+    !parentNode?.computed?.width ||
+    !parentNode?.computed?.height
+  ) {
+    return;
+  }
+ 
+  const panePosition = screenToFlowPosition({
+    x: event.clientX,
+    y: event.clientY,
+  });
+ 
+  // we are calculating with positionAbsolute here because child nodes are positioned relative to their parent
+  return {
+    x:
+      panePosition.x -
+      parentNode.computed?.positionAbsolute.x +
+      parentNode.computed?.width / 2,
+    y:
+      panePosition.y -
+      parentNode.computed?.positionAbsolute.y +
+      parentNode.computed?.height / 2,
+  };
+};
+This function returns the position of the new node we want to add to our store. We are using the project function to convert screen coordinates into React Flow coordinates. As mentioned earlier, child nodes are positioned relative to their parents. That’s why we need to subtract the parent position from the child node position. That was a lot to take in, let’s see it in action:
+
+Open in Stackblitz
+Open in Codesandbox
+App.tsx
+MindMapEdge.tsx
+MindMapNode.tsx
+index.css
+index.html
+index.tsx
+store.ts
+import React, { useCallback, useRef } from 'react';
+import {
+  ReactFlow,
+  Controls,
+  Panel,
+  useStoreApi,
+  useReactFlow,
+  ReactFlowProvider,
+  ConnectionLineType,
+  type NodeOrigin,
+  type InternalNode,
+  type OnConnectEnd,
+  type OnConnectStart,
+} from '@xyflow/react';
+import { useShallow } from 'zustand/shallow';
+ 
+import useStore, { type RFState } from './store';
+import MindMapNode from './MindMapNode';
+import MindMapEdge from './MindMapEdge';
+ 
+// we need to import the React Flow styles to make it work
+import '@xyflow/react/dist/style.css';
+ 
+const selector = (state: RFState) => ({
+  nodes: state.nodes,
+  edges: state.edges,
+  onNodesChange: state.onNodesChange,
+  onEdgesChange: state.onEdgesChange,
+  addChildNode: state.addChildNode,
+});
+ 
+const nodeTypes = {
+  mindmap: MindMapNode,
+};
+ 
+const edgeTypes = {
+  mindmap: MindMapEdge,
+};
+ 
+const nodeOrigin: NodeOrigin = [0.5, 0.5];
+const connectionLineStyle = { stroke: '#F6AD55', strokeWidth: 3 };
+const defaultEdgeOptions = { style: connectionLineStyle, type: 'mindmap' };
+ 
+function Flow() {
+  // whenever you use multiple values, you should use shallow for making sure that the component only re-renders when one of the values change
+  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
+    useShallow(selector),
+  );
+  const connectingNodeId = useRef<string | null>(null);
+  const store = useStoreApi();
+  const { screenToFlowPosition } = useReactFlow();
+ 
+  const getChildNodePosition = (
+    event: MouseEvent | TouchEvent,
+    parentNode?: InternalNode,
+  ) => {
+    const { domNode } = store.getState();
+ 
+    if (
+      !domNode ||
+      // we need to check if these properites exist, because when a node is not initialized yet,
+      // it doesn't have a positionAbsolute nor a width or height
+      !parentNode?.internals.positionAbsolute ||
+      !parentNode?.measured.width ||
+      !parentNode?.measured.height
+    ) {
+      return;
+    }
+ 
+    const isTouchEvent = 'touches' in event;
+    const x = isTouchEvent ? event.touches[0].clientX : event.clientX;
+    const y = isTouchEvent ? event.touches[0].clientY : event.clientY;
+    // we need to remove the wrapper bounds, in order to get the correct mouse position
+    const panePosition = screenToFlowPosition({
+      x,
+      y,
+    });
+ 
+    // we are calculating with positionAbsolute here because child nodes are positioned relative to their parent
+    return {
+      x:
+        panePosition.x -
+        parentNode.internals.positionAbsolute.x +
+        parentNode.measured.width / 2,
+      y:
+        panePosition.y -
+        parentNode.internals.positionAbsolute.y +
+        parentNode.measured.height / 2,
+    };
+  };
+ 
+  const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
+    connectingNodeId.current = nodeId;
+  }, []);
+ 
+  const onConnectEnd: OnConnectEnd = useCallback(
+    (event) => {
+      const { nodeLookup } = store.getState();
+      const targetIsPane = (event.target as Element).classList.contains(
+        'react-flow__pane',
+      );
+ 
+      if (targetIsPane && connectingNodeId.current) {
+        const parentNode = nodeLookup.get(connectingNodeId.current);
+        const childNodePosition = getChildNodePosition(event, parentNode);
+ 
+        if (parentNode && childNodePosition) {
+          addChildNode(parentNode, childNodePosition);
+        }
+      }
+    },
+    [getChildNodePosition],
+  );
+ 
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      onConnectStart={onConnectStart}
+      onConnectEnd={onConnectEnd}
+      nodeOrigin={nodeOrigin}
+      connectionLineStyle={connectionLineStyle}
+      defaultEdgeOptions={defaultEdgeOptions}
+      connectionLineType={ConnectionLineType.Straight}
+      fitView
+    >
+      <Controls showInteractive={false} />
+      <Panel position="top-left">React Flow Mind Map</Panel>
+    </ReactFlow>
+  );
+}
+ 
+export default () => (
+  <ReactFlowProvider>
+    <Flow />
+  </ReactFlowProvider>
+);
+To test the new functionality you can start a connection from a handle and then end it on the pane. You should see a new node being added to the mind map.
+
+🤝 Keep data in sync
+We can already update the labels but we are not updating the nodes data object. This is important to keep our app in sync and if we want to save our nodes on the server for example. To achieve this we add a new action called updateNodeLabel to the store. This action takes a node id and a label. The implementation is pretty straight forward: we iterate over the existing nodes and update the matching one with the passed label:
+
+src/store.ts
+updateNodeLabel: (nodeId: string, label: string) => {
+  set({
+    nodes: get().nodes.map((node) => {
+      if (node.id === nodeId) {
+        // it's important to create a new object here, to inform React Flow about the changes
+        node.data = { ...node.data, label };
+      }
+ 
+      return node;
+    }),
+  });
+},
+Let’s use the new action in our MindmapNode component:
+
+src/App/MindmapNode/index.tsx
+import { Handle, NodeProps, Position } from '@xyflow/react';
+ 
+import useStore from '../store';
+ 
+export type NodeData = {
+  label: string;
+};
+ 
+function MindMapNode({ id, data }: NodeProps<NodeData>) {
+  const updateNodeLabel = useStore((state) => state.updateNodeLabel);
+ 
+  return (
+    <>
+      <input
+        // from now on we can use value instead of defaultValue
+        // this makes sure that the input always shows the current label of the node
+        value={data.label}
+        onChange={(evt) => updateNodeLabel(id, evt.target.value)}
+        className="input"
+      />
+ 
+      <Handle type="target" position={Position.Top} />
+      <Handle type="source" position={Position.Top} />
+    </>
+  );
+}
+ 
+export default MindMapNode;
+That was quick! The input fields of the custom nodes now display the current label of the nodes. You could take your nodes data, save it on the server and then load it again.
+

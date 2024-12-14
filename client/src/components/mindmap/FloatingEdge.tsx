@@ -1,33 +1,46 @@
 import { useCallback } from 'react';
-import { useStore, getStraightPath } from '@xyflow/react';
-import { getEdgeParams } from './utils.js';
+import { BaseEdge, EdgeProps, getSimpleBezierPath } from '@xyflow/react';
 
-function FloatingEdge({ id, source, target, markerEnd, style }) {
-  const sourceNode = useStore(useCallback((store) => store.nodeLookup.get(source), [source]));
-  const targetNode = useStore(useCallback((store) => store.nodeLookup.get(target), [target]));
-
-  if (!sourceNode || !targetNode) {
-    return null;
-  }
-
-  const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
-
-  const [edgePath] = getStraightPath({
-    sourceX: sx,
-    sourceY: sy,
-    targetX: tx,
-    targetY: ty,
+export default function FloatingEdge({
+  id,
+  source,
+  target,
+  markerEnd,
+  style,
+  data,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+}: EdgeProps) {
+  const [edgePath] = getSimpleBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
   });
 
+  const onEdgeClick = useCallback((evt: React.MouseEvent<SVGGElement, MouseEvent>, id: string) => {
+    evt.stopPropagation();
+    // Handle edge click if needed
+  }, []);
+
   return (
-    <path
+    <BaseEdge
       id={id}
-      className="react-flow__edge-path"
-      d={edgePath}
+      path={edgePath}
       markerEnd={markerEnd}
-      style={style}
+      style={{
+        ...style,
+        strokeWidth: 2,
+        stroke: '#b1b1b7',
+      }}
+      interactionWidth={20}
+      onClick={(event) => onEdgeClick(event, id)}
     />
   );
 }
-
-export default FloatingEdge;

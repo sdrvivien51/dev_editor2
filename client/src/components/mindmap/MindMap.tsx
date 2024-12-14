@@ -1,123 +1,138 @@
-
-import React, { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import {
   ReactFlow,
   Controls,
-  Panel,
-  useStoreApi,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Edge,
   useReactFlow,
-  ConnectionLineType,
-  type NodeOrigin,
-  type InternalNode,
-  type OnConnectEnd,
-  type OnConnectStart,
+  ConnectionMode,
+  Node,
 } from '@xyflow/react';
-import { useShallow } from 'zustand/shallow';
+import { nanoid } from 'nanoid';
 
-import useStore, { type RFState } from './store';
+import FloatingEdge from './FloatingEdge';
 import MindMapNode from './MindMapNode';
-import MindMapEdge from './MindMapEdge';
+import { initialNodes, initialEdges, MindMapNode as MindMapNodeType } from './InitialElements';
+import { getClosestEdge } from './utils';
 
-const selector = (state: RFState) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  addChildNode: state.addChildNode,
-});
+import '@xyflow/react/dist/style.css';
+import './MindMap.css';
 
-const nodeTypes = {
-  mindmap: MindMapNode,
-};
+const MIN_DISTANCE = 200;
+const nodeTypes = { mindmap: MindMapNode };
+const edgeTypes = { floating: FloatingEdge };
 
-const edgeTypes = {
-  mindmap: MindMapEdge,
-};
-
-const nodeOrigin: NodeOrigin = [0.5, 0.5];
-const connectionLineStyle = { stroke: '#F6AD55', strokeWidth: 3 };
-const defaultEdgeOptions = { style: connectionLineStyle, type: 'mindmap' };
-
-function MindMap() {
-  const { nodes, edges, onNodesChange, onEdgesChange, addChildNode } = useStore(
-    useShallow(selector),
-  );
-  const connectingNodeId = useRef<string | null>(null);
-  const store = useStoreApi();
-  const { screenToFlowPosition } = useReactFlow();
-
-  const getChildNodePosition = (
-    event: MouseEvent | TouchEvent,
-    parentNode?: InternalNode,
-  ) => {
-    const { domNode } = store.getState();
-
-    if (
-      !domNode ||
-      !parentNode?.internals.positionAbsolute ||
-      !parentNode?.measured.width ||
-      !parentNode?.measured.height
-    ) {
-      return;
-    }
-
-    const isTouchEvent = 'touches' in event;
-    const x = isTouchEvent ? event.touches[0].clientX : event.clientX;
-    const y = isTouchEvent ? event.touches[0].clientY : event.clientY;
-    const panePosition = screenToFlowPosition({
-      x,
-      y,
-    });
-
-    return {
-      x: panePosition.x - parentNode.internals.positionAbsolute.x + parentNode.measured.width / 2,
-      y: panePosition.y - parentNode.internals.positionAbsolute.y + parentNode.measured.height / 2,
-    };
-  };
-
-  const onConnectStart: OnConnectStart = useCallback((_, { nodeId }) => {
-    connectingNodeId.current = nodeId;
-  }, []);
-
-  const onConnectEnd: OnConnectEnd = useCallback(
-    (event) => {
-      const { nodeLookup } = store.getState();
-      const targetIsPane = (event.target as Element).classList.contains('react-flow__pane');
-
-      if (targetIsPane && connectingNodeId.current) {
-        const parentNode = nodeLookup.get(connectingNodeId.current);
-        const childNodePosition = getChildNodePosition(event, parentNode);
-
-        if (parentNode && childNodePosition) {
-          addChildNode(parentNode, childNodePosition);
-        }
-      }
+export default function MindMap() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { project } = useReactFlow();
+  
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const edge: Edge = {
+        ...params,
+        type: 'floating',
+        id: `edge-${params.source}-${params.target}`,
+        style: { stroke: '#b1b1b7' }
+      };
+      setEdges((eds) => addEdge(edge, eds));
     },
-    [getChildNodePosition],
+    [setEdges]
+  );
+
+  const onNodeDrag = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      const closeEdge = getClosestEdge(node, nodes, MIN_DISTANCE);
+      
+      setEdges((es) => {
+        const nextEdges = es.filter((e) => e.className !== 'temp');
+        
+        if (closeEdge && !nextEdges.find(
+          (ne) => ne.source === closeEdge.source && ne.target === closeEdge.target
+        )) {
+          nextEdges.push({
+            ...closeEdge,
+            className: 'temp',
+            style: { stroke: '#b1b1b7', strokeDasharray: '5,5' }
+          });
+        }
+        
+        return nextEdges;
+      });
+    },
+    [nodes, setEdges]
+  );
+
+  const onNodeDragStop = useCallback(
+    (_: React.MouseEvent, node: Node) => {
+      const closeEdge = getClosestEdge(node, nodes, MIN_DISTANCE);
+      
+      setEdges((es) => {
+        const nextEdges = es.filter((e) => e.className !== 'temp');
+        
+        if (closeEdge && !nextEdges.find(
+          (ne) => ne.source === closeEdge.source && ne.target === closeEdge.target
+        )) {
+          nextEdges.push({
+            ...closeEdge,
+            style: { stroke: '#b1b1b7' }
+          });
+        }
+        
+        return nextEdges;
+      });
+    },
+    [nodes, setEdges]
+  );
+
+  const onConnectEnd = useCallback(
+    (event: MouseEvent) => {
+      const targetIsPane = (event.target as Element)?.classList.contains('react-flow__pane');
+      if (!targetIsPane) return;
+
+      const id = nanoid();
+      const { clientX, clientY } = event;
+      const position = project({ x: clientX, y: clientY });
+
+      const newNode: MindMapNodeType = {
+        id,
+        type: 'mindmap',
+        position,
+        data: { label: '🔵' }
+      };
+
+      setNodes((nds) => [...nds, newNode]);
+    },
+    [project, setNodes]
   );
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      onConnectStart={onConnectStart}
-      onConnectEnd={onConnectEnd}
-      nodeOrigin={nodeOrigin}
-      connectionLineStyle={connectionLineStyle}
-      defaultEdgeOptions={defaultEdgeOptions}
-      connectionLineType={ConnectionLineType.Straight}
-      fitView
-    >
-      <Controls showInteractive={false} />
-      <Panel position="top-left" className="header">
-        React Flow Mind Map
-      </Panel>
-    </ReactFlow>
+    <div className="mindmap-container" style={{ width: '100%', height: '600px' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onConnectEnd={onConnectEnd}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        connectionMode={ConnectionMode.Loose}
+        defaultViewport={{ x: 0, y: 0, zoom: 1.5 }}
+        minZoom={0.2}
+        maxZoom={4}
+        fitView
+        className="mindmap-flow"
+      >
+        <Background color="#b1b1b7" />
+        <Controls />
+      </ReactFlow>
+    </div>
   );
 }
-
-export default MindMap;

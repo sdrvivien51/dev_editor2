@@ -1,0 +1,138 @@
+Installation
+Get the package
+
+yarn add @editorjs/embed
+Include module at your application
+
+import Embed from '@editorjs/embed';
+Optionally, you can load this tool from CDN JsDelivr CDN
+
+Usage
+Add a new Tool to the tools property of the Editor.js initial config.
+
+var editor = EditorJS({
+  ...
+
+  tools: {
+    ...
+    embed: Embed,
+  },
+
+  ...
+});
+Available configuration
+Enabling / disabling services
+Embed Tool supports some services by default (see above). You can specify services you would like to use:
+
+var editor = EditorJS({
+  ...
+
+  tools: {
+    ...
+    embed: {
+      class: Embed,
+      config: {
+        services: {
+          youtube: true,
+          coub: true
+        }
+      }
+    },
+  },
+
+  ...
+});
+Note that if you pass services you want to use like in the example above, others will not be enabled.
+
+Add more services
+You can provide your own services using simple configuration.
+
+First, you should create a Service configuration object. It contains following fields:
+
+Field	Type	Description
+regex	RegExp	Pattern of pasted URLs. You should use regexp groups to extract resource id
+embedUrl	string	Url of resource`s embed page. Use <%= remote_id %> to substitute resource identifier
+html	string	HTML code of iframe with embedded content. embedUrl will be set as iframe src
+height	number	Optional. Height of inserted iframe
+width	number	Optional. Width of inserted iframe
+id	Function	Optional. If your id is complex you can provide function to make the id from extraced regexp groups
+Example:
+
+{
+  regex: /https?:\/\/codepen.io\/([^\/\?\&]*)\/pen\/([^\/\?\&]*)/,
+  embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&theme-id=0&default-tab=css,result&embed-version=2',
+  html: "<iframe height='300' scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'></iframe>",
+  height: 300,
+  width: 600,
+  id: (groups) => groups.join('/embed/')
+}
+When you create a Service configuration object, you can provide it with Tool`s configuration:
+
+var editor = EditorJS({
+  ...
+
+  tools: {
+    ...
+    embed: {
+      class: Embed,
+      config: {
+        services: {
+          youtube: true,
+          coub: true,
+          codepen: {
+            regex: /https?:\/\/codepen.io\/([^\/\?\&]*)\/pen\/([^\/\?\&]*)/,
+            embedUrl: 'https://codepen.io/<%= remote_id %>?height=300&theme-id=0&default-tab=css,result&embed-version=2',
+            html: "<iframe height='300' scrolling='no' frameborder='no' allowtransparency='true' allowfullscreen='true' style='width: 100%;'></iframe>",
+            height: 300,
+            width: 600,
+            id: (groups) => groups.join('/embed/')
+          }
+        }
+      }
+    },
+  },
+
+  ...
+});
+Inline Toolbar
+Editor.js provides useful inline toolbar. You can allow it`s usage in the Embed Tool caption by providing inlineToolbar: true.
+
+var editor = EditorJS({
+  ...
+
+  tools: {
+    ...
+    embed: {
+      class: Embed,
+      inlineToolbar: true
+    },
+  },
+
+  ...
+});
+Output data
+Field	Type	Description
+service	string	service unique name
+source	string	source URL
+embed	string	URL for source embed page
+width	number	embedded content width
+height	number	embedded content height
+caption	string	content caption
+{
+  "type" : "embed",
+  "data" : {
+    "service" : "coub",
+    "source" : "https://coub.com/view/1czcdf",
+    "embed" : "https://coub.com/embed/1czcdf",
+    "width" : 580,
+    "height" : 320,
+    "caption" : "My Life"
+  }
+}
+About CodeX
+
+
+CodeX is a team of digital specialists around the world interested in building high-quality open source products on a global market. We are open for young people who want to constantly improve their skills and grow professionally with experiments in cutting-edge technologies.
+
+🌐	Join 👋	Twitter	Instagram
+codex.so	codex.so/join	@codex_team	@codex_team

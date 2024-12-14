@@ -1,227 +1,41 @@
-.mindmap-wrapper {
-  width: 100%;
-  height: 100%;
-  position: relative;
+.mindmap-flow {
+  flex-grow: 1;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .mindmap-node {
-  padding: 10px;
-  border-radius: 5px;
+  padding: 16px;
+  border-radius: 8px;
   background: white;
-  border: 1px solid #1a192b;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  width: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
   min-width: 150px;
-  position: relative;
 }
 
-.react-flow__handle {
-  width: 10px !important;
-  height: 10px !important;
-  background: #1a192b !important;
-  border: 2px solid white !important;
-  opacity: 1 !important;
-  cursor: crosshair !important;
-  pointer-events: all !important;
-}
-
-.react-flow__handle.source {
-  right: 0;
-  top: 0;
-  transform: none;
-  background: transparent !important;
-  border: none !important;
-  height: 100% !important;
-  width: 100% !important;
-  border-radius: 0 !important;
-  cursor: crosshair !important;
-}
-
-.react-flow__handle.target {
-  visibility: hidden;
-}
-
-.inputWrapper {
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-}
-
-.dragHandle {
-  cursor: grab;
-  pointer-events: all;
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
-.node-input {
-  pointer-events: all;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 4px;
-  min-width: 100px;
-}
-
-.react-flow__edge {
-  pointer-events: all !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  z-index: 1000 !important;
-}
-
-.react-flow__edge-path {
-  stroke: #222;
-  stroke-width: 2;
-  pointer-events: all !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  z-index: 1000 !important;
-}
-
-.react-flow__handle {
-  opacity: 1 !important;
-  z-index: 1001 !important;
-}
-
-.react-flow__edge.selected .react-flow__edge-path {
-  stroke: #555;
-  stroke-width: 3;
-}
-
-.react-flow__edge:hover .react-flow__edge-path {
-  stroke-width: 3;
-}
-
-.temp-edge .react-flow__edge-path {
-  stroke: #222;
-  stroke-dasharray: 5;
-  animation: dashdraw 0.5s linear infinite;
-}
-
-@keyframes dashdraw {
-  from {
-    stroke-dashoffset: 10;
-  }
-}
-
-.handle-top {
-  top: -6px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-}
-
-.handle-right {
-  right: -6px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.handle-bottom {
-  bottom: -6px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-}
-
-.handle-left {
-  left: -6px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-}
-
-.node-content {
-  padding: 4px 8px;
-}
-
-.node-input {
-  background: transparent;
-  border: none;
-  border-radius: 3px;
-  outline: none;
-  padding: 4px 8px;
-  font-size: 14px;
-  width: 100%;
+.mindmap-node-content {
   text-align: center;
+  font-size: 14px;
+  color: #1a202c;
 }
 
-.node-input:focus {
-  background: rgba(0, 0, 0, 0.05);
+.temp {
+  stroke-dasharray: 5 5;
 }
 
-.customHandle {
-  width: 10px;
-  height: 10px;
-  background: #784be8;
-  border: 2px solid white;
-  border-radius: 50%;
-  opacity: 1;
-  visibility: visible;
-  pointer-events: all;
-  cursor: crosshair;
-}
-
-.customHandle {
-  opacity: 1 !important;
-  z-index: 1;
-}
-
-.customHandle:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 2px rgba(120, 75, 232, 0.5);
-}
-
-.react-flow__handle {
-  opacity: 1 !important;
-  z-index: 1;
-  background: #1a192b !important;
-}
-
-.customHandle.connecting {
-  background: #ff0072;
-}
-
-.react-flow__edge-text {
-  font-size: 12px;
-  fill: #222;
-}
-
-
-.react-flow__edge-textbg {
-  fill: white;
-}
-
-.react-flow__node {
-  cursor: grab;
-}
-
-.react-flow__node.selected {
-  box-shadow: 0 0 0 2px #784be8;
-}
-
-.mindmap-node .delete-button {
+.mindmap-controls {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  font-size: 12px;
+}
+
+.mindmap-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 4px 8px;
+  border-radius: 4px;
   cursor: pointer;
-  padding: 2px;
-  transition: all 0.2s ease;
-}
-
-.mindmap-node:hover .delete-button {
-  display: flex;
-}
-
-.mindmap-node .delete-button:hover {
-  transform: scale(1.1);
-  background-color: #ff7875;
+  margin-left: 4px;
 }

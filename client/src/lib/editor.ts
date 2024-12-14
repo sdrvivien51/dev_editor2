@@ -4,8 +4,8 @@ import List from '@editorjs/list';
 import Image from '@editorjs/image';
 import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
-import ChartTool from './ChartTool';
-import TradingViewTool from './TradingViewTool';
+import ChartTool from '@/components/editor/ChartTool';
+import TradingViewTool from '@/components/editor/TradingViewTool';
 import EmbedTool from './EmbedTool';
 
 export const editorConfig: Partial<EditorConfig> = {
@@ -51,12 +51,7 @@ export const editorConfig: Partial<EditorConfig> = {
             height: 505,
             width: 400
           },
-          youtube: {
-            regex: /(?:https?:\/\/)?(?:www\.)?(?:(?:youtu\.be\/)|(?:youtube\.com)\/(?:v\/|u\/\w\/|embed\/|watch))(?:(?:\?v=)?([^#&?]*))/,
-            embedUrl: 'https://www.youtube.com/embed/<%= remote_id %>',
-            html: '<iframe style="width:100%;" height="320" frameborder="0" allowfullscreen></iframe>',
-            height: 320
-          },
+          youtube: true,
           twitter: {
             regex: /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)(?:\/.*)?$/,
             embedUrl: 'https://platform.twitter.com/embed/Tweet.html?id=<%= remote_id %>',
