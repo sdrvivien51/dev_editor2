@@ -5,7 +5,6 @@ import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
 import ChartTool from './ChartTool';
 import TradingViewTool from './TradingViewTool';
-import ReactFlowTool from './ReactFlowTool';
 import MindMapTool from './MindMapTool';
 
 export const editorConfig: Partial<EditorConfig> = {
@@ -31,10 +30,6 @@ export const editorConfig: Partial<EditorConfig> = {
     },
     tradingview: {
       class: TradingViewTool,
-      inlineToolbar: false,
-    },
-    reactflow: {
-      class: ReactFlowTool,
       inlineToolbar: false,
     },
     mindmap: {
