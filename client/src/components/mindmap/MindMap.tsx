@@ -21,13 +21,15 @@ import MindMapEdge from './MindMapEdge';
 import '@xyflow/react/dist/style.css';
 import './MindMap.css';
 
-const selector = (state: ReturnType<typeof useStore>) => ({
-  nodes: state.nodes,
-  edges: state.edges,
-  onNodesChange: state.onNodesChange,
-  onEdgesChange: state.onEdgesChange,
-  addChildNode: state.addChildNode,
-});
+const selector = (state: RFState) => {
+  return {
+    nodes: state.nodes,
+    edges: state.edges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    addChildNode: state.addChildNode,
+  };
+};
  
 const nodeTypes = {
   mindmap: MindMapNode,

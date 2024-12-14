@@ -65,10 +65,7 @@ const useStore = create<RFState>((set, get) => ({
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === nodeId) {
-          return {
-            ...node,
-            data: { ...node.data, label },
-          };
+          return { ...node, data: { ...node.data, label } };
         }
         return node;
       }),
