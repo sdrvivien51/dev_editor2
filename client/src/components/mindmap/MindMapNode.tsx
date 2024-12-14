@@ -13,15 +13,9 @@ const MindMapNode = ({ data, isConnectable }: CustomNodeProps) => {
     <div className="mindmap-node nodrag">
       <Handle
         type="target"
-        position={Position.Top}
-        isConnectable={isConnectable}
-        className="react-flow__handle handle-top"
-      />
-      <Handle
-        type="target"
         position={Position.Left}
         isConnectable={isConnectable}
-        className="react-flow__handle handle-left"
+        className="react-flow__handle"
       />
       <div className="node-content">
         <input
@@ -36,13 +30,7 @@ const MindMapNode = ({ data, isConnectable }: CustomNodeProps) => {
         type="source"
         position={Position.Right}
         isConnectable={isConnectable}
-        className="react-flow__handle handle-right customHandle"
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        isConnectable={isConnectable}
-        className="react-flow__handle handle-bottom"
+        className="react-flow__handle"
       />
     </div>
   );

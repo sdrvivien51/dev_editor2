@@ -1,52 +1,37 @@
-import { Position } from '@xyflow/react';
 
-const nodeDefaults = {
-  sourcePosition: Position.Right,
-  targetPosition: Position.Left,
-  style: {
-    borderRadius: '100%',
-    backgroundColor: '#fff',
-    width: 50,
-    height: 50,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-};
+import { Position } from '@xyflow/react';
 
 export const initialNodes = [
   {
     id: '1',
+    type: 'mindmap',
+    data: { label: 'Node 1' },
     position: { x: 0, y: 0 },
-    data: {
-      label: '⬛️',
+    style: {
+      width: 150,
+      height: 40,
     },
-    ...nodeDefaults,
   },
   {
     id: '2',
+    type: 'mindmap',
+    data: { label: 'Node 2' },
     position: { x: 250, y: -100 },
-    data: {
-      label: '🟩',
+    style: {
+      width: 150,
+      height: 40,
     },
-    ...nodeDefaults,
   },
   {
     id: '3',
+    type: 'mindmap',
+    data: { label: 'Node 3' },
     position: { x: 250, y: 100 },
-    data: {
-      label: '🟧',
+    style: {
+      width: 150,
+      height: 40,
     },
-    ...nodeDefaults,
-  },
-  {
-    id: '4',
-    position: { x: 500, y: 0 },
-    data: {
-      label: '🟦',
-    },
-    ...nodeDefaults,
-  },
+  }
 ];
 
 export const initialEdges = [
@@ -54,10 +39,12 @@ export const initialEdges = [
     id: 'e1-2',
     source: '1',
     target: '2',
+    type: 'floating',
   },
   {
     id: 'e1-3',
     source: '1',
     target: '3',
-  },
+    type: 'floating',
+  }
 ];
