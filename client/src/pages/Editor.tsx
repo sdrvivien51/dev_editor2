@@ -1,9 +1,12 @@
+
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import EditorJS, { OutputData } from "@editorjs/editorjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import { editorConfig } from "@/lib/editor";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function Editor() {
   const editorRef = useRef<EditorJS | null>(null);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -31,7 +35,7 @@ export default function Editor() {
     },
     onSuccess: () => {
       toast({ title: "Post published successfully" });
-      setLocation("/"); // Redirect to home after successful save
+      setLocation("/");
     },
     onError: (error: Error) => {
       toast({ 
@@ -44,49 +48,35 @@ export default function Editor() {
 
   useEffect(() => {
     const initEditor = async () => {
-      try {
-        if (!editorRef.current) {
-          const editor = new EditorJS({
-            holder: 'editorjs',
-            data: {
-              blocks: [
-                {
-                  type: "paragraph",
-                  data: {
-                    text: "Start writing your amazing post..."
-                  }
+      if (!editorRef.current) {
+        const editor = new EditorJS({
+          holder: 'editorjs',
+          data: {
+            blocks: [
+              {
+                type: "paragraph",
+                data: {
+                  text: "Start writing your amazing post..."
                 }
-              ]
-            },
-            tools: editorConfig.tools,
-            placeholder: editorConfig.placeholder,
-            onChange: () => {
-              // You can add auto-save functionality here
-            }
-          });
-          
-          await editor.isReady;
-          editorRef.current = editor;
-        }
-      } catch (error) {
-        console.error('Editor initialization failed:', error);
+              }
+            ]
+          },
+          tools: editorConfig.tools,
+          placeholder: editorConfig.placeholder,
+        });
+        
+        await editor.isReady;
+        editorRef.current = editor;
       }
     };
 
     initEditor();
 
     return () => {
-      const destroyEditor = async () => {
-        if (editorRef.current) {
-          try {
-            await editorRef.current.destroy();
-            editorRef.current = null;
-          } catch (error) {
-            console.error('Editor destruction failed:', error);
-          }
-        }
-      };
-      destroyEditor();
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
     };
   }, []);
 
@@ -119,27 +109,43 @@ export default function Editor() {
   };
 
   return (
-    <Card className="p-6 max-w-5xl mx-auto">
-      <div className="mb-6">
-        <Input
-          className="text-3xl font-bold mb-4"
-          placeholder="Post Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-      <div id="editorjs" className="min-h-[500px] prose max-w-none" />
-      <div className="mt-6 flex justify-end gap-4">
-        <Button variant="outline" onClick={() => setLocation("/")}>
-          Cancel
-        </Button>
+    <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="flex justify-between items-center mb-6">
+        <Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink>New Post</BreadcrumbLink>
+          </BreadcrumbItem>
+        </Breadcrumb>
         <Button 
           onClick={handleSave} 
           disabled={isLoading || !title.trim()}
         >
-          {isLoading ? "Publishing..." : "Publish Post"}
+          {isLoading ? "Saving..." : "Save Post"}
         </Button>
       </div>
-    </Card>
+
+      <div className="space-y-4">
+        <Input
+          className="text-4xl font-bold border-none px-0 focus-visible:ring-0"
+          placeholder="Enter your post title..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <Textarea
+          className="text-lg border-none px-0 focus-visible:ring-0 resize-none"
+          placeholder="Add a brief description..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={2}
+        />
+      </div>
+
+      <Separator className="my-8" />
+      
+      <div id="editorjs" className="prose max-w-none" />
+    </div>
   );
 }
