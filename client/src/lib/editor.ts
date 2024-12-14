@@ -6,6 +6,7 @@ import { type EditorConfig } from '@editorjs/editorjs';
 import { supabase } from './supabase';
 import ChartTool from './ChartTool';
 import TradingViewTool from './TradingViewTool';
+import EmbedTool from './EmbedTool';
 
 export const editorConfig: Partial<EditorConfig> = {
   tools: {
@@ -31,6 +32,13 @@ export const editorConfig: Partial<EditorConfig> = {
     tradingview: {
       class: TradingViewTool,
       inlineToolbar: false,
+    },
+    embed: {
+      class: EmbedTool,
+      inlineToolbar: true,
+      config: {
+        services: EmbedTool.services
+      }
     },
     image: {
       class: Image,
