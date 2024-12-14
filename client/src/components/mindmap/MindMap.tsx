@@ -41,12 +41,14 @@ const edgeTypes = {
 };
 
 const defaultEdgeOptions = {
-  style: { strokeWidth: 3, stroke: 'black' },
+  style: { strokeWidth: 3, stroke: 'black', zIndex: 1000 },
   type: 'floating',
+  deletable: true,
   markerEnd: {
     type: MarkerType.ArrowClosed,
     color: 'black',
   },
+  animated: true,
 };
 
 const MindMap = () => {

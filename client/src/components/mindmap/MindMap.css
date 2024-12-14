@@ -68,14 +68,21 @@
   pointer-events: all !important;
   opacity: 1 !important;
   visibility: visible !important;
+  z-index: 1000 !important;
 }
 
 .react-flow__edge-path {
   stroke: #222;
   stroke-width: 2;
-  pointer-events: all;
+  pointer-events: all !important;
   opacity: 1 !important;
   visibility: visible !important;
+  z-index: 1000 !important;
+}
+
+.react-flow__handle {
+  opacity: 1 !important;
+  z-index: 1001 !important;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
