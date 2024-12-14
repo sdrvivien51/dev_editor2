@@ -9,38 +9,50 @@ function MindMapNode({ id, data }: NodeProps<MindMapData>) {
   const connection = useConnection();
   
   const onChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    updateNodeLabel(id, evt.target.value);
+    const value = evt.target.value;
+    updateNodeLabel(id, value);
   }, [id, updateNodeLabel]);
 
-  const isTarget = connection?.inProgress && connection.fromNode?.id !== id;
+  const isTarget = connection?.inProgress && connection?.fromNode?.id !== id;
+  const isSource = connection?.inProgress && connection?.fromNode?.id === id;
 
   return (
     <div className="mindmap-node">
-      {(!connection?.inProgress || isTarget) && (
-        <Handle
-          type="target"
-          position={Position.Left}
-          className="customHandle"
-          isConnectable={true}
-        />
-      )}
+      <Handle
+        type="target"
+        position={Position.Left}
+        className={`customHandle ${isTarget ? 'connecting' : ''}`}
+        isConnectable={true}
+        style={{
+          opacity: 1,
+          visibility: 'visible',
+          backgroundColor: isTarget ? '#ff0072' : '#784be8',
+          border: '2px solid white',
+          zIndex: 1000
+        }}
+      />
       <div className="node-content">
         <input
           ref={inputRef}
-          value={data.label || ''}
+          value={data?.label || ''}
           onChange={onChange}
           className="nodrag node-input"
           placeholder="Enter text..."
         />
       </div>
-      {!connection?.inProgress && (
-        <Handle
-          type="source"
-          position={Position.Right}
-          className="customHandle"
-          isConnectable={true}
-        />
-      )}
+      <Handle
+        type="source"
+        position={Position.Right}
+        className={`customHandle ${isSource ? 'connecting' : ''}`}
+        isConnectable={true}
+        style={{
+          opacity: 1,
+          visibility: 'visible',
+          backgroundColor: isSource ? '#ff0072' : '#784be8',
+          border: '2px solid white',
+          zIndex: 1000
+        }}
+      />
     </div>
   );
 }

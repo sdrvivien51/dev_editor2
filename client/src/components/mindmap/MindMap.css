@@ -62,11 +62,12 @@
   border: 2px solid white;
   box-shadow: 0 0 6px 2px rgba(120, 75, 232, 0.3);
   transition: all 0.2s ease;
-  opacity: 1;
-  z-index: 1000;
+  opacity: 1 !important;
+  z-index: 1000 !important;
   cursor: crosshair;
   pointer-events: all;
-  visibility: visible;
+  visibility: visible !important;
+  position: relative;
 }
 
 .react-flow__handle:hover {
@@ -78,11 +79,62 @@
   stroke: #784be8;
   stroke-width: 3;
   pointer-events: all;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .react-flow__connection-path {
   stroke: #784be8;
   stroke-width: 3;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.react-flow__edge {
+  pointer-events: all;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.react-flow__edge-group {
+  pointer-events: all;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.react-flow__connection-line {
+  stroke: #784be8;
+  stroke-width: 3;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #ff0072;
+  stroke-width: 4;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke-width: 4;
+}
+
+.react-flow__edge.selected {
+  z-index: 1001 !important;
+}
+
+.react-flow__edge:hover {
+  z-index: 1001 !important;
+}
+
+.react-flow__edge.animated path {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
 }
 
 .react-flow__node {

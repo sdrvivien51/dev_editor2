@@ -4,6 +4,7 @@ export interface MindMapData extends Record<string, unknown> {
   label: string;
   width?: number;
   height?: number;
+  [key: string]: unknown;
 }
 
 export type MindMapNode = Node<MindMapData>;
