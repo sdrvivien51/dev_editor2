@@ -1,6 +1,11 @@
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import ChartTool from '@/components/editor/tool/ChartTool';
+import TradingViewTool from '@/components/editor/tool/TradingViewTool';
+import '@/components/editor/tool/chart.css';
+// Ensure Chart.js is registered with all necessary components
+import { Chart, registerables } from 'chart.js/auto';
+Chart.register(...registerables);
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
 import Paragraph from '@editorjs/paragraph';
@@ -18,7 +23,6 @@ import Marker from '@editorjs/marker';
 import Raw from '@editorjs/raw';
 import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
-import TradingViewTool from '@/components/editor/TradingViewTool';
 
 export interface EditorConfig {
   holder: string;
@@ -43,37 +47,26 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
       },
       chart: {
         class: ChartTool,
-        inlineToolbar: false,
+        inlineToolbar: true,
+        shortcut: 'CMD+SHIFT+C',
         config: {
-          placeholder: 'Add chart data...',
+          placeholder: 'Add a chart',
           defaultType: 'bar',
-          defaultPalette: 'pastel',
-          supportedTypes: ['bar', 'line', 'pie', 'doughnut', 'radar', 'polarArea'],
-          defaultColors: ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFB3F7', '#B3FFF7'],
-          chartjs: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  usePointStyle: true
-                }
-              }
-            }
+          types: ['bar', 'line', 'pie', 'doughnut'],
+          colors: {
+            background: 'transparent',
+            border: '#3366FF'
           }
         }
       },
       tradingview: {
         class: TradingViewTool,
-        inlineToolbar: false,
+        inlineToolbar: true,
+        shortcut: 'CMD+SHIFT+T',
         config: {
-          placeholder: 'Add TradingView widget...',
+          placeholder: 'Add TradingView widget',
           defaultSymbol: 'NASDAQ:AAPL',
-          container: 'tradingview-container',
-          height: 400,
-          width: '100%',
-          defaultInterval: '1D'
+          defaultInterval: 'D'
         }
       },
       paragraph: {
