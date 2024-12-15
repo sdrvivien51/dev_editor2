@@ -11,7 +11,6 @@ interface TradingViewConfig {
   theme?: 'light' | 'dark';
   width?: string;
   height?: string;
-  symbol?: string;
   settings: Record<string, any>;
 }
 
@@ -28,6 +27,7 @@ const WIDGET_TYPES = {
       locale: 'en',
       enable_publishing: false,
       allow_symbol_change: true,
+      container_id: undefined,
     }
   },
   STOCK_HEATMAP: {
@@ -60,11 +60,6 @@ const WIDGET_TYPES = {
 };
 
 export default class TradingViewTool {
-  private data: TradingViewConfig;
-  private container: HTMLDivElement | null = null;
-  private modalRoot: HTMLDivElement | null = null;
-  private modalContainer: any = null;
-
   static get toolbox() {
     return {
       title: 'TradingView',
@@ -72,13 +67,22 @@ export default class TradingViewTool {
     };
   }
 
+  private data: TradingViewConfig;
+  private container: HTMLDivElement | null = null;
+  private modalRoot: HTMLDivElement | null = null;
+  private modalContainer: any = null;
+
   constructor({ data }: { data?: TradingViewConfig }) {
+    const defaultType = 'ADVANCED_CHART';
     this.data = {
-      widgetType: data?.widgetType || 'ADVANCED_CHART',
+      widgetType: data?.widgetType || defaultType,
       theme: data?.theme || 'light',
       width: data?.width || '100%',
       height: data?.height || '400',
-      settings: data?.settings || { ...WIDGET_TYPES['ADVANCED_CHART'].defaults }
+      settings: {
+        ...WIDGET_TYPES[defaultType].defaults,
+        ...(data?.settings || {})
+      }
     };
   }
 
@@ -158,7 +162,7 @@ export default class TradingViewTool {
     );
   };
 
-  renderModal(isOpen: boolean) {
+  private renderModal(isOpen: boolean) {
     if (!this.modalRoot) {
       this.modalRoot = document.createElement('div');
       document.body.appendChild(this.modalRoot);
@@ -166,9 +170,11 @@ export default class TradingViewTool {
     }
 
     const handleClose = () => {
-      this.modalContainer.render(
-        <this.TradingViewModal isOpen={false} onClose={handleClose} />
-      );
+      if (this.modalContainer) {
+        this.modalContainer.render(
+          <this.TradingViewModal isOpen={false} onClose={handleClose} />
+        );
+      }
     };
 
     this.modalContainer.render(
@@ -179,20 +185,27 @@ export default class TradingViewTool {
   private renderWidget() {
     if (!this.container) return;
 
+    // Clear previous widget if exists
     const widgetContainer = this.container.querySelector('.tradingview-widget-container');
     if (widgetContainer) {
       widgetContainer.innerHTML = '';
-    } else {
-      const div = document.createElement('div');
-      div.className = 'tradingview-widget-container';
-      this.container.appendChild(div);
     }
 
+    const div = document.createElement('div');
+    div.className = 'tradingview-widget-container';
+    
     const widgetDiv = document.createElement('div');
     widgetDiv.className = 'tradingview-widget-container__widget';
     widgetDiv.style.height = this.data.height || '400px';
-    widgetDiv.id = 'tradingview_' + Math.random().toString(36).substring(7);
+    const widgetId = 'tradingview_' + Math.random().toString(36).substring(7);
+    widgetDiv.id = widgetId;
     
+    div.appendChild(widgetDiv);
+    
+    if (!widgetContainer) {
+      this.container.appendChild(div);
+    }
+
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
@@ -201,8 +214,8 @@ export default class TradingViewTool {
       ...this.data.settings,
       width: this.data.width,
       height: this.data.height,
-      colorTheme: this.data.theme,
-      container_id: widgetDiv.id
+      theme: this.data.theme,
+      container_id: widgetId
     };
 
     switch (this.data.widgetType) {
@@ -225,11 +238,7 @@ export default class TradingViewTool {
         break;
     }
 
-    const container = this.container.querySelector('.tradingview-widget-container');
-    if (container) {
-      container.appendChild(widgetDiv);
-      container.appendChild(script);
-    }
+    div.appendChild(script);
   }
 
   render() {
@@ -251,7 +260,9 @@ export default class TradingViewTool {
     );
 
     this.container.appendChild(configButton);
-    setTimeout(() => this.renderWidget(), 0);
+
+    // Important: Render widget after a small delay to ensure the container is mounted
+    setTimeout(() => this.renderWidget(), 100);
 
     return this.container;
   }
