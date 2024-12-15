@@ -57,8 +57,12 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
     inlineToolbar: false,
     config: {
       css: {
-        "btnColor": "custom-button",
+        "btnColor": "btn--primary",
       }
     }
+  },
+  Marker: {
+    class: Marker,
+    shortcut: 'CMD+SHIFT+M'
   }
 }
