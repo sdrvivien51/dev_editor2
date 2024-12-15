@@ -15,7 +15,11 @@ import Warning from '@editorjs/warning'
 import Paragraph from '@editorjs/paragraph'
 import ChartTool from './Chart/ChartTool'
 import MermaidTool from 'editorjs-mermaid'
+import AnyButton from 'editorjs-button'
 import './Chart/Chart.css'
+import TradingViewTool from './TradingView/TradingViewTool'
+import './Chart/Chart.css'
+import './TradingView/TradingView.css'
 
 // We use any here because some Editor.js tools don't have proper TypeScript definitions
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
@@ -34,6 +38,7 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   delimiter: Delimiter,
   inlineCode: InlineCode,
   simpleImage: SimpleImage,
+  tradingview: TradingViewTool,
   chart: {
     class: ChartTool,
     inlineToolbar: true,
@@ -45,6 +50,15 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
     class: MermaidTool,
     config: {
       theme: 'neutral'
+    }
+  },
+  AnyButton: {
+    class: AnyButton,
+    inlineToolbar: false,
+    config: {
+      css: {
+        "btnColor": "btn--primary",
+      }
     }
   }
 }
