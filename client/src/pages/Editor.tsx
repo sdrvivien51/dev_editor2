@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS from "@editorjs/editorjs";
+import EditorJS, { type OutputData } from "@editorjs/editorjs";
+import Header from '@editorjs/header';
+import List from '@editorjs/list';
+import Embed from '@editorjs/embed';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
-import { createEditorConfig } from "@/lib/editor";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,11 +17,12 @@ export default function Editor() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditorReady, setIsEditorReady] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
   const saveMutation = useMutation({
-    mutationFn: async ({ title, content }: { title: string; content: any }) => {
+    mutationFn: async ({ title, content }: { title: string; content: OutputData }) => {
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,43 +49,102 @@ export default function Editor() {
   });
 
   useEffect(() => {
+    // Wait for DOM to be ready
     const initEditor = async () => {
-      if (!document.getElementById('editorjs')) {
-        console.error('Editor holder element not found');
+      // Check if editor element exists
+      const editorElement = document.getElementById('editorjs');
+      if (!editorElement) {
+        console.error('Editor element not found');
         return;
       }
 
-      try {
-        if (editorRef.current) {
+      // Destroy existing instance if any
+      if (editorRef.current) {
+        try {
           await editorRef.current.destroy();
           editorRef.current = null;
+        } catch (e) {
+          console.error('Error destroying editor:', e);
         }
+      }
 
-        const editor = new EditorJS(createEditorConfig({
+      try {
+        const editor = new EditorJS({
           holder: 'editorjs',
-          onChange: async (outputData) => {
-            console.log('Content changed:', outputData);
+          tools: {
+            header: {
+              class: Header,
+              config: {
+                placeholder: 'Enter a header',
+                levels: [2, 3, 4],
+                defaultLevel: 2
+              }
+            },
+            list: {
+              class: List,
+              inlineToolbar: true,
+              config: {
+                defaultStyle: 'unordered'
+              }
+            },
+            embed: {
+              class: Embed,
+              inlineToolbar: true,
+              config: {
+                services: {
+                  youtube: true,
+                  codesandbox: true,
+                  codepen: true
+                }
+              }
+            }
+          },
+          placeholder: 'Start writing your post...',
+          minHeight: 200,
+          onChange: async () => {
+            try {
+              const data = await editor.save();
+              console.log('Content changed:', data);
+            } catch (e) {
+              console.error('Error saving editor content:', e);
+            }
           }
-        }));
-        
-        editorRef.current = editor;
+        });
+
+        // Wait for editor to be ready
         await editor.isReady;
+        editorRef.current = editor;
+        setIsEditorReady(true);
         console.log('Editor initialized successfully');
       } catch (error) {
-        console.error('Editor.js initialization error:', error);
+        console.error('Editor initialization error:', error);
+        toast({
+          title: "Editor initialization failed",
+          description: "Please refresh the page and try again",
+          variant: "destructive"
+        });
       }
     };
 
-    initEditor();
+    // Initialize editor with a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(initEditor, 100);
 
     return () => {
+      clearTimeout(timeoutId);
+      // Cleanup
       if (editorRef.current) {
-        editorRef.current.destroy()
-          .catch(e => console.error('Error destroying editor:', e));
-        editorRef.current = null;
+        const cleanup = async () => {
+          try {
+            await editorRef.current?.destroy();
+            editorRef.current = null;
+          } catch (e) {
+            console.error('Error during cleanup:', e);
+          }
+        };
+        cleanup();
       }
     };
-  }, []);
+  }, [toast]);
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -94,9 +156,18 @@ export default function Editor() {
       return;
     }
 
+    if (!isEditorReady || !editorRef.current) {
+      toast({
+        title: "Editor not ready",
+        description: "Please wait for the editor to initialize",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const content = await editorRef.current?.save();
+      const content = await editorRef.current.save();
       if (!content) throw new Error("No content to save");
       
       await saveMutation.mutateAsync({ title, content });
@@ -125,7 +196,7 @@ export default function Editor() {
         </Breadcrumb>
         <Button 
           onClick={handleSave} 
-          disabled={isLoading || !title.trim()}
+          disabled={isLoading || !title.trim() || !isEditorReady}
         >
           {isLoading ? "Saving..." : "Save Post"}
         </Button>
@@ -149,7 +220,7 @@ export default function Editor() {
 
       <Separator className="my-8" />
       
-      <div id="editorjs" className="prose max-w-none" />
+      <div id="editorjs" className="prose max-w-none min-h-[200px]" />
     </div>
   );
 }
