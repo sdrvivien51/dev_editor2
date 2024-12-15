@@ -2,6 +2,7 @@ import React from 'react';
 import EditorJS from '@editorjs/editorjs';
 import { EDITOR_JS_TOOLS } from './Tool';
 import './Chart/Chart.css';
+import './editor.css';
 
 interface EditorProps {
   data: EditorJS.OutputData;

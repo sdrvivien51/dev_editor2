@@ -1,0 +1,56 @@
+
+/* Clean minimalist styles for the editor */
+.ce-block {
+  transition: background-color 0.2s ease;
+  padding: 0.5rem 0;
+}
+
+.ce-block:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Remove caption borders and style inputs */
+.cdx-input {
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+  padding: 8px 0;
+  background: transparent;
+}
+
+.cdx-input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--primary);
+}
+
+/* 3D button effect */
+.cdx-button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transform: translateY(0);
+  box-shadow: 0 4px 0 0 hsl(var(--primary) / 0.5);
+}
+
+.cdx-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 hsl(var(--primary) / 0.5);
+}
+
+.cdx-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 hsl(var(--primary) / 0.5);
+}
+
+/* Clean toolbar styles */
+.ce-toolbar__content {
+  max-width: 100% !important;
+}
+
+.ce-block__content {
+  max-width: 100% !important;
+  padding: 0 1rem;
+}
