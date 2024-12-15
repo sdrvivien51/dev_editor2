@@ -1,0 +1,42 @@
+[plugin:vite:react-babel] /home/runner/New-Repl/client/src/components/editor/editor.tsx: A type-only import can specify a default import or named bindings, but not both. (4:0)
+  7 | import Header from '@editorjs/header';
+/home/runner/New-Repl/client/src/components/editor/editor.tsx:4:0
+2  |  import { useRef, useCallback } from "react";
+3  |  import { createReactEditorJS } from "react-editor-js";
+4  |  import type EditorJS, { OutputData } from '@editorjs/editorjs';
+   |  ^
+5  |  import { Chart, registerables } from 'chart.js/auto';
+6  |  Chart.register(...registerables);
+    at constructor (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:359:19)
+    at TypeScriptParserMixin.raise (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:3266:19)
+    at TypeScriptParserMixin.parseImport (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:9086:12)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12369:27)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:9167:18)
+    at TypeScriptParserMixin.parseStatementLike (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12261:17)
+    at TypeScriptParserMixin.parseModuleItem (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12238:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12814:36)
+    at TypeScriptParserMixin.parseBlockBody (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12807:10)
+    at TypeScriptParserMixin.parseProgram (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12135:10)
+    at TypeScriptParserMixin.parseTopLevel (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:12125:25)
+    at TypeScriptParserMixin.parse (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:13933:10)
+    at TypeScriptParserMixin.parse (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:9781:18)
+    at parse (/home/runner/New-Repl/client/node_modules/@babel/parser/lib/index.js:13967:38)
+    at parser (/home/runner/New-Repl/client/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (/home/runner/New-Repl/client/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (/home/runner/New-Repl/client/node_modules/@babel/core/lib/transformation/index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (/home/runner/New-Repl/client/node_modules/@babel/core/lib/transform.js:22:33)
+    at transform.next (<anonymous>)
+    at step (/home/runner/New-Repl/client/node_modules/gensync/index.js:261:32)
+    at /home/runner/New-Repl/client/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/home/runner/New-Repl/client/node_modules/gensync/index.js:223:11)
+    at /home/runner/New-Repl/client/node_modules/gensync/index.js:189:28
+    at /home/runner/New-Repl/client/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+    at /home/runner/New-Repl/client/node_modules/gensync/index.js:113:33
+    at step (/home/runner/New-Repl/client/node_modules/gensync/index.js:287:14)
+    at /home/runner/New-Repl/client/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/home/runner/New-Repl/client/node_modules/gensync/index.js:223:11
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.ts.

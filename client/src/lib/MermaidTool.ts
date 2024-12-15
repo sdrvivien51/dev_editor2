@@ -1,1 +1,0 @@
-//This file is empty because the MermaidTool class and its associated components have been removed.

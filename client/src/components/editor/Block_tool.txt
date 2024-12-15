@@ -1,0 +1,839 @@
+The first plugin
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+We'll build the Simple Image plugin that will allow us to add images to our articles. You can view the final result of the plugin.
+
+
+Preparation of a playground
+At first, we need to create some files where we will develop and test our new Tool. Create a folder with these three files:
+
+/simple-image
+ ├╴ simple-image.js
+ ├╴ simple-image.css
+ └╴ example.html
+
+In example.html we will test our plugin, so let's add some markup and connect Editor.js there:
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+<script src="simple-image.js"></script>
+<link href="simple-image.css" rel="stylesheet"/>
+
+<div id="editorjs"></div>
+
+<script>
+    const editor = new EditorJS({
+      autofocus: true
+    });
+</script>
+
+If you open this page in a browser, you'll see an empty Editor with the only internal Paragraph Tool available. Now we a ready to start creating our own plugin.
+
+
+Render and Save
+Ok, let's get started with creating a JavaScript class for our Tool in simple-image.js file.
+
+class SimpleImage {
+
+}
+
+We need at least of two methods to create a Block Tool for Editor.js — render and save.
+
+The render method will create a UI of a Block that will be appended when our Tool will be selected from the Toolbox. The second method, save will extract the Block's data from that UI.
+
+Our UI will be quite simple: just an input in which users will paste an image URL. So let's implement a render method:
+
+class SimpleImage {
+  render(){
+    return document.createElement('input');
+  }
+}
+
+Then we need to provide a save method for extracting a Block data from the UI:
+
+class SimpleImage {
+  render(){
+    return document.createElement('input');
+  }
+
+  save(blockContent){
+    return {
+      url: blockContent.value
+    }
+  }
+}
+
+On saving, Editor.js will pass Block's content to the save method and we should implement the logic of which data we should save by our Tool. Block content is the Element returned by render with actual state of that.
+
+So in our case, we just need to get input's value and return our Tool's data object:
+
+{
+  url: '//pasted-image-url.png'
+}
+
+We will add a «caption» and other fields to our Block later.
+
+
+Displaying at the Toolbox
+Our Block Plugin is almost done. To make that appear at the Toolbox, we should provide an icon and a title with a static getter toolbox.
+
+class SimpleImage {
+  static get toolbox() {
+    return {
+      title: 'Image',
+      icon: '<svg width="17" height="15" viewBox="0 0 336 276" xmlns="http://www.w3.org/2000/svg"><path d="M291 150V79c0-19-15-34-34-34H79c-19 0-34 15-34 34v42l67-44 81 72 56-29 42 30zm0 52l-43-30-56 30-81-67-66 39v23c0 19 15 34 34 34h178c17 0 31-13 34-29zM79 0h178c44 0 79 35 79 79v118c0 44-35 79-79 79H79c-44 0-79-35-79-79V79C0 35 35 0 79 0z"/></svg>'
+    };
+  }
+
+  render(){
+    return document.createElement('input');
+  }
+
+  save(blockContent){
+    return {
+      url: blockContent.value
+    }
+  }
+}
+
+Our Tool is ready. It's time to connect it with the Editor.
+
+
+Connecting to the Editor
+Let's add a tools property to the configuration object at the example.html.
+
+<script>
+    const editor = new EditorJS({
+      autofocus: true,
+      tools: {
+        image: SimpleImage
+      }
+    });
+</script>
+
+Open example.html in a browser: if everything is fine, you will see a Plus Button of a Toolbox. Press Tab or click on the Plus Button and our Tool will be there.
+
+Our new Tool is ready to use. Icon and title got from the toolbox getter.
+Our new Tool is ready to use. Icon and title got from the toolbox getter.
+After you select an Image Tool, the render will be called and returned input will be placed as a new Block. You can add some CSS classes to it and place styles at simple-image.css file.
+
+
+Testing the save method
+To the final test, we need to check how saving method works. Add a Save-button and output-zone to the example.html
+
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+<script src="simple-image.js"></script>
+<link href="simple-image.css" rel="stylesheet"/>
+
+<div id="editorjs"></div>
+
+<button id="save-button">Save</button>
+<pre id="output"></pre>
+
+<script>
+    const editor = new EditorJS({
+      autofocus: true,
+      tools: {
+        image: SimpleImage
+      }
+    });
+
+    const saveButton = document.getElementById('save-button');
+    const output = document.getElementById('output');
+
+    saveButton.addEventListener('click', () => {
+      editor.save().then( savedData => {
+        output.innerHTML = JSON.stringify(savedData, null, 4);
+      })
+    })
+</script>
+
+Now everything is ready. You can add Image Block at Editor, paste image URL and click on the Save button. In output zone you will see saved Editor.js data:
+
+{
+    "time": 1552744582955,
+    "blocks": [
+        {
+            "type": "image",
+            "data": {
+                "url": "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+        }
+    ],
+    "version": "2.11.10"
+}
+
+We've created some preparation stuff for our playground, but actually all you need to create a Block Tool plugin is the simplest save and render methods. If you want to put your Tool in Toolbox, static getter toolbox with the icon and the title allows you to do that. 
+
+In the next chapter, we'll learn how to show previously saved data of our tool.
+
+
+
+Fill Block with saved data
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+In the previous guide, we have learned how to create a basic Tool class with minimal required methods. In this part, we consider how to render previously saved data.
+
+
+Accepting saved data
+When user will edit previously saved article, Editor will get saved data by the data property. Then the Editor will render Blocks one-by-one and pass them their data.
+
+Let's add a saved data we got in the previous part to initialization at the example.html:
+
+<script>
+    const editor = new EditorJS({
+      autofocus: true,
+      tools: {
+        image: SimpleImage
+      },
+      data: {
+        time: 1552744582955,
+        blocks: [
+          {
+            type: "image",
+            data: {
+              url: "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+          }
+        ],
+        version: "2.11.10"
+      }
+    });
+
+    // ... save-buttons stuff
+</script>
+
+We should provide a mechanism for showing saved data by our Tool. It is quite simple: data will be passed to the class's constructor, so we can save it at the property, for example this.data and access later by any method, including render:
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  constructor({data}){
+    this.data = data;
+  }
+
+  render(){
+    const input = document.createElement('input');
+    input.value = this.data && this.data.url ? this.data.url : '';
+    return input;
+  }
+
+  // ... save method
+}
+
+If you open the example.html, you will see our Image Block after Editor initialization. The saved URL will be set at the input of the Block.
+
+Before we go further, let's improve our UI: add a wrapper and some CSS styles.
+
+
+Improving a render
+We will create a wrapper where all Tool's elements will be placed, add a placeholder and CSS class for Tool. Don't forget to modify the save method: Block content will be a wrapper instead of input, so we need to get an input by ourselves. Now our class looks like this.
+
+class SimpleImage {
+  static get toolbox() {
+    return {
+      title: 'Image',
+      icon: '<svg width="17" height="15" viewBox="0 0 336 276" xmlns="http://www.w3.org/2000/svg"><path d="M291 150V79c0-19-15-34-34-34H79c-19 0-34 15-34 34v42l67-44 81 72 56-29 42 30zm0 52l-43-30-56 30-81-67-66 39v23c0 19 15 34 34 34h178c17 0 31-13 34-29zM79 0h178c44 0 79 35 79 79v118c0 44-35 79-79 79H79c-44 0-79-35-79-79V79C0 35 35 0 79 0z"/></svg>'
+    };
+  }
+
+  constructor({data}){
+    this.data = data;
+  }
+
+  render(){
+    const wrapper = document.createElement('div');
+    const input = document.createElement('input');
+
+    wrapper.classList.add('simple-image');
+    wrapper.appendChild(input);
+
+    input.placeholder = 'Paste an image URL...';
+    input.value = this.data && this.data.url ? this.data.url : '';
+
+    return wrapper;
+  }
+
+  save(blockContent){
+    const input = blockContent.querySelector('input');
+
+    return {
+      url: input.value
+    }
+  }
+}
+
+☝️
+Note.
+We've just hardcoded the placeholder text. It's better to wrap it with the t() of the I18nAPI method to allow users of your tool to localize the UI.
+In the simple-image.css we can add some styles:
+
+.simple-image {
+    padding: 20px 0;
+}
+
+.simple-image input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e4e4e4;
+    border-radius: 3px;
+    outline: none;
+    font-size: 14px;
+}
+
+And the final result from this point is the Editor that shows filled Block.
+
+Saved data is visible in input. In empty block we can see a placeholder.
+Saved data is visible in input. In empty block we can see a placeholder.
+In the next chapter, we will learn how to validate Block data on saving. That will allow Editor to skip empty Blocks in output JSON.
+-----
+
+Saved data validation
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Let see what happens if we create several Blocks of Simple Image, left them empty and save the Editor:
+
+
+saved data will be following:
+
+{
+    "time": 1552751755369,
+    "blocks": [
+        {
+            "type": "image",
+            "data": {
+                "url": "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": ""
+            }
+        },
+        {
+            "type": "image",
+            "data": {
+                "url": ""
+            }
+        }
+    ],
+    "version": "2.11.10"
+}
+
+To skip empty or wrongly filled Blocks we can provide validate method. It will accept the saved Block's data returned by our save method, check it for correctness and returns a boolean value of validation result.
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  // ... constructor
+
+  // ... render
+
+  save(blockContent){
+    const input = blockContent.querySelector('input');
+
+    return {
+      url: input.value
+    }
+  }
+
+  validate(savedData){
+    if (!savedData.url.trim()){
+      return false;
+    }
+
+    return true;
+  }
+}
+
+lets see what we got with saving now:
+
+{
+    "time": 1552751783125,
+    "blocks": [
+        {
+            "type": "image",
+            "data": {
+                "url": "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+        }
+    ],
+    "version": "2.11.10"
+}
+
+As you can see, all empty Image Blocks was skipped due to our validation method. You can add any validation logic here.
+
+In the next guide we will consider how to change a Block view: when user pastes an URL, we will show the Image and Caption elements
+
+
+Changing a view
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+It's time to make our Tool more visually appealing. When user pastes an Image URL to the input, we will update Block's view and shows the Image.
+
+
+Accessing main element 
+At first, let's save a main Block wrapper to this.wrapper property to access it later:
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  constructor({data}){
+    this.data = data;
+    this.wrapper = undefined;
+  }
+
+  render(){
+    this.wrapper = document.createElement('div');
+    const input = document.createElement('input');
+
+    this.wrapper.classList.add('simple-image');
+    this.wrapper.appendChild(input);
+
+    input.placeholder = 'Paste an image URL...';
+    input.value = this.data && this.data.url ? this.data.url : '';
+
+    return this.wrapper;
+  }
+
+  // ... save
+
+  // ... validate
+}
+
+
+Change view by paste
+Next, add a paste handler to the input. 
+
+class SimpleImage {
+  // ... toolbox 
+
+  // ... constructor
+
+  render(){
+    this.wrapper = document.createElement('div');
+    const input = document.createElement('input');
+
+    this.wrapper.classList.add('simple-image');
+    this.wrapper.appendChild(input);
+
+    input.placeholder = 'Paste an image URL...';
+    input.value = this.data && this.data.url ? this.data.url : '';
+
+    input.addEventListener('paste', (event) => {
+      this._createImage(event.clipboardData.getData('text'));
+    });
+
+    return this.wrapper;
+  }
+
+  _createImage(url){
+    console.log(url);
+  }
+
+  // ... save
+
+  // ... validate
+}
+
+In _createImage method we will show Image and Caption elements. Underscore prefix is used for better determination of private method in our example.
+
+class SimpleImage {
+  // ... toolbox
+
+  // ... constructor
+
+  // ... render
+
+  _createImage(url){
+    const image = document.createElement('img');
+    const caption = document.createElement('input');
+
+    image.src = url;
+    caption.placeholder = 'Caption...';
+
+    this.wrapper.innerHTML = '';
+    this.wrapper.appendChild(image);
+    this.wrapper.appendChild(caption);
+  }
+
+  // ... save
+
+  // ... validate
+}
+
+and add some styles them
+
+.simple-image img {
+    max-width: 100%;
+    margin-bottom: 15px;
+}
+
+Now try to paste image URL to the input. If everything is fine, you will see an image and a caption field.
+
+
+
+Change save method
+Previously, on saving we extract an URL from the input. But for now, we does not have an input after pasting, so we need to get URL from the image source. Also, add a caption field to the our Block's data:
+
+class SimpleImage {
+  // ... toolbox
+
+  // ... constructor
+
+  // ... render
+
+  // ... _createImage
+
+  save(blockContent){
+    const image = blockContent.querySelector('img');
+    const caption = blockContent.querySelector('input');
+
+    return {
+      url: image.src,
+      caption: caption.value
+    }
+  }
+
+  // ... validate
+}
+
+Press «Save» on the demo page and take a look at the output JSON. There should be a correct image url and a caption field:
+
+{
+    "time": 1552754304939,
+    "blocks": [
+        {
+            "type": "image",
+            "data": {
+                "url": "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg",
+                "caption": ""
+            }
+        }
+    ],
+    "version": "2.11.10"
+}
+
+
+Render image from saved data 
+Last thing we need is to render an image and a caption when Editor will be initialised with previously saved data. Little modifications of render method will help us:
+
+class SimpleImage {
+  // ... toolbox
+
+  // ... constructor
+
+  render(){
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('simple-image');
+
+   if (this.data && this.data.url){
+     this._createImage(this.data.url, this.data.caption);
+     return this.wrapper;
+   }
+
+    const input = document.createElement('input');
+
+    input.placeholder = 'Paste an image URL...';
+    input.addEventListener('paste', (event) => {
+      this._createImage(event.clipboardData.getData('text'));
+    });
+
+    this.wrapper.appendChild(input);
+
+    return this.wrapper;
+  }
+
+ _createImage(url){
+ _createImage(url, captionText){
+    const image = document.createElement('img');
+    const caption = document.createElement('input');
+
+    image.src = url;
+    caption.placeholder = 'Caption...';
+   caption.value = captionText || '';
+
+    this.wrapper.innerHTML = '';
+    this.wrapper.appendChild(image);
+    this.wrapper.appendChild(caption);
+  }
+
+  // ... save
+
+  // ... validate
+}
+
+Also, we pass a captionText parameter to the _createImage method for showing saved caption.
+
+In next part we will learn how to enable Inline Formatting Toolbar for Caption field. 
+
+Paste substitutions
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Sometimes you need to handle pasted content with your plugin. For example, pasted headers should be handled by Header Tool and pasted images — by Image Tool.
+
+Tools API allows you to substitute pasted HTML tags, Files and string patterns. To make it work you need just two things: static getter pasteConfig and onPaste method.
+
+
+Paste configuration
+Static getter pasteConfigshould return an object with paste substitutions configuration:
+
+tags — array of tags to substitute
+files — object with mimeTypes and extensions arrays
+patterns — object where key is your pattern name and RegExp pattern as value
+For SimpleImage we need to substitute img tags, handle files with image/* MIME-type and handle URLs to images.
+
+
+Paste handling
+For each of substitutions (tags, files, and patterns) you need just one method — onPaste. It accepts CustomEvent object as an argument which can have three types: tag, file, and pattern. Each event provides info about pasted content in detail property.
+
+Tag event contains pasted HTML element in detail.data property.
+File event contains pasted file object in detail.file property.
+Pattern event contains pasted string in detail.data property and pattern name in detail.key.
+Lets add them step-by-step.
+
+
+Handle pasted tags
+To create our Image Blocks from pasted img tags we need to specify tags key of pasteConfig and implement a handler for tag event type at onPaste:
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  static get pasteConfig() {
+    return {
+      tags: ['IMG']
+    }
+  }
+
+  // ... constructor
+  // ... render
+  // ... _createImage
+  // ... save
+  // ... validate
+  // ... renderSettings
+  // ... _toggleTune
+  // ... _acceptTuneView
+
+  onPaste(event){
+    switch (event.type){
+      case 'tag':
+        const imgTag = event.detail.data;
+
+        this._createImage(imgTag.src);
+        break;
+    }
+  }
+}
+
+Thats it. Now you can open any external article, copy a text with images and paste to the Editor. You should see Image Blocks created from pasted content.
+
+
+Handle pasted files
+To create Blocks from pasted (by CTRL+V or by drag-n-drop) files, add the files key to the pasteConfig and handle a file event type with onPaste:
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  static get pasteConfig() {
+    return {
+      // ... tags
+      files: {
+        mimeTypes: ['image/*'],
+        extensions: ['gif', 'jpg', 'png'] // You can specify extensions instead of mime-types
+      }
+    }
+  }
+
+  // ... constructor
+  // ... render
+  // ... _createImage
+  // ... save
+  // ... validate
+  // ... renderSettings
+  // ... _toggleTune
+  // ... _acceptTuneView
+
+  onPaste(event){
+    switch (event.type){
+      // ... case 'tag'
+      case 'file':
+        /* We need to read file here as base64 string */
+        const file = event.detail.file;
+        const reader = new FileReader();
+
+        reader.onload = (loadEvent) => {
+          this._createImage(loadEvent.target.result);
+        };
+
+        reader.readAsDataURL(file);
+        break;
+    }
+  }
+}
+
+For now you can try to drag-n-drop or CTRL+V (CMD+V) image files into the Editor. Our Image Blocks should be created.
+
+
+Create Blocks from pasted link
+Let's add ability to create Image Blocks by pasting an image URL to the empty paragraph.
+
+For doing this, we should add a patterns key to the pasteConfig and implement a handler for pattern event type at onPaste
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  static get pasteConfig() {
+    return {
+      // ... tags
+      // ... files
+      patterns: {
+        image: /https?:\/\/\S+\.(gif|jpe?g|tiff|png)$/i
+      }
+    }
+  }
+
+  // ... constructor
+  // ... render
+  // ... _createImage
+  // ... save
+  // ... validate
+  // ... renderSettings
+  // ... _toggleTune
+  // ... _acceptTuneView
+
+  onPaste(event){
+    switch (event.type){
+      // ... case 'tag'
+      // ... case 'file'
+      case 'pattern':
+        const src = event.detail.data;
+
+        this._createImage(src);
+        break;
+    }
+  }
+}
+
+Now try to copy image URL from somewhere and paste it to the empty paragraph — an Image Block should be rendered.
+
+In next chapter we will learn how to sanitise output data from unsupported HTML entities.
+
+Provide custom configuration
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Let's suppose we want to allow a user of our Simple Image Tool to pass his own placeholder for the URL field. There is a config property of the Editor Configuration tools.<toolName> object for that purpose.
+
+Open example.html and add a config property with any fields you want. In our example, there is a placeholder field.
+
+<!-- html code -->
+
+<script>
+const editor = new EditorJS({
+  autofocus: true,
+  tools: {
+    image: {
+      class: SimpleImage,
+      inlineToolbar: true,
+     config: {
+       placeholder: 'Paste image URL'
+     }
+    }
+  },
+  // ... data field 
+});
+
+    // ... save button handler
+</script>
+
+This object will be passed to the class's constructor as config property. You can save it somewhere and access it from another method, for example, render.
+
+class SimpleImage {
+  // ... static get toolbox
+  // ... static get pasteConfig
+  // ... static get sanitize
+
+  constructor({data, api}){
+  constructor({data, api, config}){
+    this.api = api;
+   this.config = config || {};
+    // ... this.data
+    // ... this.wrapper
+    // ... this.settings
+  }
+
+  render(){
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('simple-image');
+
+    if (this.data && this.data.url){
+      this._createImage(this.data.url, this.data.caption);
+      return this.wrapper;
+    }
+
+    const input = document.createElement('input');
+
+   input.placeholder = 'Paste an image URL...';
+   input.placeholder = this.config.placeholder || 'Paste an image URL...';
+    input.addEventListener('paste', (event) => {
+      this._createImage(event.clipboardData.getData('text'));
+    });
+
+    this.wrapper.appendChild(input);
+
+    return this.wrapper;
+  }
+
+  // ... _createImage
+  // ... save
+  // ... validate
+  // ... renderSettings
+  // ... _toggleTune
+  // ... _acceptTuneView
+  // ... onPaste
+}
+
+Try to add new Block and check the placeholder of URL input — it should have passed text. 
+
+☝️
+Don't forget to describe properties supported by your configuration at the README.md of you Tool.  
+
+Use i18n API for all UI texts
+Even if you will support overriding of some of your tool's UI texts via config, it's better to wrap all the string with the t() method of the I18nAPI. It will allow users to localize all text via one dictionary. 
+
+class SimpleImage {
+  // ... 
+  constructor({data, api, config}){
+    this.api = api;
+    this.config = config || {};
+    //...
+  }
+
+  render(){
+    //...
+
+   input.placeholder = this.config.placeholder || 'Paste an image URL...';
+   input.placeholder = this.api.i18n.t(this.config.placeholder || 'Paste an image URL...');
+
+    // ...
+  }
+
+  //...
+}
+
+Our tool is done. You can view the final result of created tool or more complicated version of Simple Image Tool.
+
+
+Where to go from here
+After passing the Creating Block Tool guide series, you are able to create your own Block Tool. Try experimenting with more complex UI and functionality.
+
+All supported methods for Block Tools are described at the Tools API section. More information about Editor.js Core API you can find here.
+
+Editor.js also allows you to create your own Inline Tools — plugins for the Inline Formatting Toolbar, such as a Marker, Inline Code, etc. Follow the «Creating an Inline Tool» guide series to hit this target. 
+
+If you want to contribute cool Tools you made, please read these instructions.

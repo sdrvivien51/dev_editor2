@@ -1,5 +1,5 @@
 
-import './index.css';
+import './Chart.css';
 import Chart from 'chart.js/auto';
 
 export default class ChartTool {
