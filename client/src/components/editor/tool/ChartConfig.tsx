@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Settings, Plus, Trash2, PaintBucket } from 'lucide-react';
+import { Settings, Plus, Trash2 } from 'lucide-react';
+import { ChartType } from 'chart.js';
+import { ChartData } from './ChartTool';
 
-// Palettes de couleurs prédéfinies
+// Color palettes
 const colorPalettes = {
   pastel: ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFB3F7', '#B3FFF7'],
   vivid: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
@@ -16,12 +18,8 @@ const colorPalettes = {
 };
 
 interface ChartConfigProps {
-  onSave: (config: {
-    type: 'bar' | 'line' | 'pie' | 'doughnut';
-    labels: string[];
-    data: number[];
-    colors: string[];
-  }) => void;
+  onSave: (config: NonNullable<ChartData['chartData']>) => void;
+  initialData?: ChartData['chartData'];
 }
 
 interface DataEntry {
@@ -29,12 +27,26 @@ interface DataEntry {
   value: string;
 }
 
-export function ChartConfig({ onSave }: ChartConfigProps) {
-  const [type, setType] = useState<'bar' | 'line' | 'pie' | 'doughnut'>('bar');
-  const [entries, setEntries] = useState<DataEntry[]>([
-    { label: 'Label 1', value: '10' }
-  ]);
-  const [selectedPalette, setSelectedPalette] = useState('pastel');
+export function ChartConfig({ onSave, initialData }: ChartConfigProps) {
+  const [type, setType] = useState<ChartType>(initialData?.type || 'bar');
+  const [title, setTitle] = useState<string>(initialData?.title || '');
+  const [borderWidth, setBorderWidth] = useState<number>(initialData?.borderWidth || 1);
+  const [tension, setTension] = useState<number>(initialData?.tension || 0.1);
+  const [entries, setEntries] = useState<DataEntry[]>(
+    initialData
+      ? initialData.labels.map((label, index) => ({
+          label,
+          value: initialData.data[index].toString(),
+        }))
+      : [{ label: 'Label 1', value: '10' }]
+  );
+  const [selectedPalette, setSelectedPalette] = useState<keyof typeof colorPalettes>(() => {
+    if (!initialData?.colors?.length) return 'pastel';
+    const colorStr = initialData.colors.join(',');
+    return (Object.entries(colorPalettes).find(([_, colors]) =>
+      colors.slice(0, initialData.colors.length).join(',') === colorStr
+    )?.[0] as keyof typeof colorPalettes) || 'pastel';
+  });
 
   const addEntry = () => {
     setEntries([...entries, { label: `Label ${entries.length + 1}`, value: '0' }]);
@@ -54,10 +66,17 @@ export function ChartConfig({ onSave }: ChartConfigProps) {
     try {
       const labels = entries.map(e => e.label);
       const data = entries.map(e => Number(e.value));
-      const colors = colorPalettes[selectedPalette as keyof typeof colorPalettes]
-        .slice(0, entries.length);
+      const colors = colorPalettes[selectedPalette].slice(0, entries.length);
 
-      onSave({ type, labels, data, colors });
+      onSave({
+        type,
+        labels,
+        data,
+        colors,
+        title: title || undefined,
+        borderWidth,
+        tension: type === 'line' ? tension : undefined
+      });
     } catch (error) {
       console.error('Failed to save chart configuration:', error);
     }
@@ -83,7 +102,7 @@ export function ChartConfig({ onSave }: ChartConfigProps) {
 
             <div className="space-y-2">
               <Label>Chart Type</Label>
-              <Select value={type} onValueChange={(value: any) => setType(value)}>
+              <Select value={type} onValueChange={(value: ChartType) => setType(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select chart type" />
                 </SelectTrigger>
@@ -111,7 +130,7 @@ export function ChartConfig({ onSave }: ChartConfigProps) {
                 </SelectContent>
               </Select>
               <div className="flex gap-1 mt-1">
-                {colorPalettes[selectedPalette as keyof typeof colorPalettes]
+                {colorPalettes[selectedPalette]
                   .slice(0, 6)
                   .map((color, i) => (
                     <div
@@ -121,6 +140,40 @@ export function ChartConfig({ onSave }: ChartConfigProps) {
                     />
                   ))}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Chart Title</Label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter chart title (optional)"
+              />
+            </div>
+
+            {type === 'line' && (
+              <div className="space-y-2">
+                <Label>Line Tension</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  value={tension}
+                  onChange={(e) => setTension(Number(e.target.value))}
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Border Width</Label>
+              <Input
+                type="number"
+                min={0}
+                max={10}
+                value={borderWidth}
+                onChange={(e) => setBorderWidth(Number(e.target.value))}
+              />
             </div>
 
             <div className="space-y-2">

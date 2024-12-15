@@ -1,5 +1,6 @@
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
+import ChartTool from '@/components/editor/tool/ChartTool';
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
 import Paragraph from '@editorjs/paragraph';
@@ -17,6 +18,7 @@ import Marker from '@editorjs/marker';
 import Raw from '@editorjs/raw';
 import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
+import ChartTool from './ChartTool'; // Assuming ChartTool is in the same directory
 
 export interface EditorConfig {
   holder: string;
@@ -34,9 +36,16 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         class: Header,
         inlineToolbar: true,
         config: {
-          placeholder: 'Entrez un titre',
+          placeholder: 'Enter a title',
           levels: [1, 2, 3, 4, 5, 6],
           defaultLevel: 2
+        }
+      },
+      chart: {
+        class: ChartTool,
+        inlineToolbar: false,
+        config: {
+          placeholder: 'Add chart data...'
         }
       },
       paragraph: {
