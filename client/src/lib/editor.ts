@@ -1,6 +1,11 @@
 import EditorJS, { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
+import ChartTool from '@/components/editor/tool/ChartTool';
 import TradingViewTool from '@/components/editor/tool/TradingViewTool';
+import '@/components/editor/tool/chart.css';
+// Ensure Chart.js is registered with all necessary components
+import { Chart, registerables } from 'chart.js/auto';
+Chart.register(...registerables);
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
 import Paragraph from '@editorjs/paragraph';
@@ -40,7 +45,30 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
           defaultLevel: 2
         }
       },
-      tradingView: TradingViewTool,
+      chart: {
+        class: ChartTool,
+        inlineToolbar: true,
+        shortcut: 'CMD+SHIFT+C',
+        config: {
+          placeholder: 'Add a chart',
+          defaultType: 'bar',
+          types: ['bar', 'line', 'pie', 'doughnut'],
+          colors: {
+            background: 'transparent',
+            border: '#3366FF'
+          }
+        }
+      },
+      tradingview: {
+        class: TradingViewTool,
+        inlineToolbar: true,
+        shortcut: 'CMD+SHIFT+T',
+        config: {
+          placeholder: 'Add TradingView widget',
+          defaultSymbol: 'NASDAQ:AAPL',
+          defaultInterval: 'D'
+        }
+      },
       paragraph: {
         class: Paragraph,
         inlineToolbar: true,
