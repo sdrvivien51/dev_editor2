@@ -24,7 +24,11 @@ function TradingViewWidget() {
       save_image: false,
       details: true,
       hotlist: true,
-      support_host: "https://www.tradingview.com"
+      container_id: "tradingview_widget",
+      support_host: "https://www.tradingview.com",
+      popup_width: "1000",
+      popup_height: "650",
+      no_referral_id: true
     });
 
     container.current.appendChild(script);
