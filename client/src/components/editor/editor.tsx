@@ -18,6 +18,7 @@ export default function Editor({ data, setData }: EditorProps) {
     const editor = new EditorJS({
       holder: holderRef.current,
       tools: EDITOR_JS_TOOLS,
+      inlineToolbar: true,
       data,
       onReady: () => {
         MermaidTool.config({ theme: 'neutral' });

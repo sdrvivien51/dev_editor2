@@ -63,6 +63,14 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   },
   Marker: {
     class: Marker,
-    shortcut: 'CMD+SHIFT+M'
+    shortcut: 'CMD+SHIFT+M',
+    config: {
+      shortcut: 'CMD+M',
+      sanitize: {
+        mark: {
+          class: 'cdx-marker'
+        }
+      }
+    }
   }
 }
