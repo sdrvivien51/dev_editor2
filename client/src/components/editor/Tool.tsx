@@ -1,3 +1,4 @@
+
 import CheckList from '@editorjs/checklist'
 import Code from '@editorjs/code'
 import Delimiter from '@editorjs/delimiter'
@@ -12,17 +13,14 @@ import Raw from '@editorjs/raw'
 import SimpleImage from '@editorjs/simple-image'
 import Table from '@editorjs/table'
 import Warning from '@editorjs/warning'
+import Header from '@editorjs/header'
 import Paragraph from '@editorjs/paragraph'
 import ChartTool from './Chart/ChartTool'
 import MermaidTool from 'editorjs-mermaid'
-import AnyButton from 'editorjs-button'
 import './Chart/Chart.css'
 import TradingViewTool from './TradingView/TradingViewTool'
-import './Chart/Chart.css'
 import './TradingView/TradingView.css'
-
-// We use any here because some Editor.js tools don't have proper TypeScript definitions
-import Tooltip from 'editorjs-tooltip';
+import Tooltip from 'editorjs-tooltip'
 
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   paragraph: {
@@ -32,13 +30,21 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   tooltip: {
     class: Tooltip,
     config: {
-      location: 'top',
+      location: 'left',
       underline: true,
       placeholder: 'Add tooltip text',
       highlightColor: '#F8F9FA',
       backgroundColor: '#1F2937',
       textColor: '#FFFFFF',
       holder: 'editorjs-container'
+    }
+  },
+  header: {
+    class: Header,
+    config: {
+      placeholder: 'Enter a header',
+      levels: [2, 3, 4, 5, 6],
+      defaultLevel: 2
     }
   },
   embed: Embed,
@@ -67,15 +73,6 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
     class: MermaidTool,
     config: {
       theme: 'neutral'
-    }
-  },
-  AnyButton: {
-    class: AnyButton,
-    inlineToolbar: false,
-    config: {
-      css: {
-        "btnColor": "btn--primary",
-      }
     }
   },
   Marker: {
