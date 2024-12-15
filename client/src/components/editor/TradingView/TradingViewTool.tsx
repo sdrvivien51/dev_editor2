@@ -87,16 +87,48 @@ class TradingViewTool {
             </div>
 
             {widgetType.configFields.map(field => (
-              <div key={field} className="flex items-center space-x-4">
-                <label className="w-24">{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-                <Input
-                  value={config.settings[field]}
-                  onChange={(e) => setConfig({
-                    ...config,
-                    settings: { ...config.settings, [field]: e.target.value }
-                  })}
-                  placeholder={`Enter ${field}`}
-                />
+              <div key={field.name} className="flex items-center space-x-4">
+                <label className="w-24">{field.name.charAt(0).toUpperCase() + field.name.slice(1)}:</label>
+                {field.type === 'select' ? (
+                  <select
+                    value={config.settings[field.name]}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      settings: { ...config.settings, [field.name]: e.target.value }
+                    })}
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                  >
+                    {field.options.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                ) : field.type === 'multiSelect' ? (
+                  <select
+                    multiple
+                    value={config.settings[field.name] || []}
+                    onChange={(e) => {
+                      const values = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                      setConfig({
+                        ...config,
+                        settings: { ...config.settings, [field.name]: values }
+                      });
+                    }}
+                    className="flex h-32 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                  >
+                    {field.options.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    value={config.settings[field.name]}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      settings: { ...config.settings, [field.name]: e.target.value }
+                    })}
+                    placeholder={`Enter ${field.name}`}
+                  />
+                )}
               </div>
             ))}
           </div>

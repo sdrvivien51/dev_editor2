@@ -35,7 +35,11 @@ export const WIDGET_TYPES = {
   STOCK_HEATMAP: {
     title: 'Stock Market Heatmap',
     description: 'Visual representation of stock market sectors',
-    configFields: ['dataSource'],
+    configFields: [{
+      name: 'dataSource',
+      type: 'select',
+      options: ['SPX500', 'NASDAQ100', 'DOW30', 'RUSSELL2000']
+    }],
     defaults: {
       exchanges: [],
       dataSource: "SPX500",
@@ -52,9 +56,13 @@ export const WIDGET_TYPES = {
   FOREX_HEATMAP: {
     title: 'Forex Heatmap',
     description: 'Currency pairs strength visualization',
-    configFields: ['currencies'],
+    configFields: [{
+      name: 'currencies',
+      type: 'multiSelect',
+      options: ['EUR', 'USD', 'JPY', 'GBP', 'CHF', 'AUD', 'CAD', 'NZD', 'CNY']
+    }],
     defaults: {
-      currencies: ["EUR", "USD", "JPY", "GBP", "CHF", "AUD", "CAD", "NZD", "CNY"],
+      currencies: ["EUR", "USD", "JPY", "GBP"],
       isTransparent: false,
       locale: "en"
     }
