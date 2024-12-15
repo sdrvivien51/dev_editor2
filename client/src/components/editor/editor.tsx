@@ -223,11 +223,14 @@ export default function Editor({ data, setData }: EditorProps) {
     <div className="editor-container prose max-w-none">
       <h4 className="edit-mode-alert">Mode édition activé</h4>
       <ReactEditorJS
+        holder="editor-js-container"
         onInitialize={handleInitialize}
         tools={EDITOR_JS_TOOLS}
         onChange={handleSave}
         defaultValue={data}
-      />
+      >
+        <div id="editor-js-container" />
+      </ReactEditorJS>
     </div>
   );
 }
