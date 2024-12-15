@@ -44,7 +44,12 @@ type EditorCore = EditorJS & {
   isReady: Promise<void>;
 };
 
+import TradingViewTool from './tool/TradingViewTool';
+import ChartTool from './tool/ChartTool';
+
 const EDITOR_JS_TOOLS = {
+  tradingview: TradingViewTool,
+  chart: ChartTool,
   header: {
     class: Header,
     inlineToolbar: true,
