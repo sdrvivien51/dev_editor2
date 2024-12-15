@@ -57,7 +57,7 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
     inlineToolbar: false,
     config: {
       css: {
-        "btnColor": "btn--primary",
+        "btnColor": "custom-button",
       }
     }
   }
