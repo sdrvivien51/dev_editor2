@@ -5,59 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
-
-interface TradingViewConfig {
-  widgetType: string;
-  theme?: 'light' | 'dark';
-  width?: string;
-  height?: string;
-  settings: Record<string, any>;
-}
-
-const WIDGET_TYPES = {
-  ADVANCED_CHART: {
-    title: 'Advanced Chart',
-    description: 'Full-featured charting',
-    configFields: ['symbol'],
-    defaults: {
-      symbol: 'NASDAQ:AAPL',
-      interval: 'D',
-      timezone: 'exchange',
-      style: '1',
-      locale: 'en',
-      enable_publishing: false,
-      allow_symbol_change: true,
-      container_id: undefined,
-    }
-  },
-  STOCK_HEATMAP: {
-    title: 'Stock Market Heatmap',
-    description: 'Visual representation of stock market sectors',
-    configFields: ['dataSource'],
-    defaults: {
-      exchanges: [],
-      dataSource: "SPX500",
-      grouping: "sector",
-      blockSize: "market_cap_basic",
-      blockColor: "change",
-      locale: "en",
-      hasTopBar: false,
-      isDataSetEnabled: false,
-      isZoomEnabled: true,
-      hasSymbolTooltip: true
-    }
-  },
-  FOREX_HEATMAP: {
-    title: 'Forex Heatmap',
-    description: 'Currency pairs strength visualization',
-    configFields: ['currencies'],
-    defaults: {
-      currencies: ["EUR", "USD", "JPY", "GBP", "CHF", "AUD", "CAD", "NZD", "CNY"],
-      isTransparent: false,
-      locale: "en"
-    }
-  }
-};
+import { TradingViewConfig, TradingViewConstructorOptions, WIDGET_TYPES } from './types';
 
 export default class TradingViewTool {
   static get toolbox() {
@@ -72,7 +20,7 @@ export default class TradingViewTool {
   private modalRoot: HTMLDivElement | null = null;
   private modalContainer: any = null;
 
-  constructor({ data }: { data?: TradingViewConfig }) {
+  constructor({ data, config }: TradingViewConstructorOptions) {
     const defaultType = 'ADVANCED_CHART';
     this.data = {
       widgetType: data?.widgetType || defaultType,
@@ -92,7 +40,7 @@ export default class TradingViewTool {
     const handleWidgetTypeChange = (type: string) => {
       setConfig({
         ...config,
-        widgetType: type,
+        widgetType: type as keyof typeof WIDGET_TYPES,
         settings: { ...WIDGET_TYPES[type as keyof typeof WIDGET_TYPES].defaults }
       });
     };
@@ -103,7 +51,7 @@ export default class TradingViewTool {
       onClose();
     };
 
-    const widgetType = WIDGET_TYPES[config.widgetType as keyof typeof WIDGET_TYPES];
+    const widgetType = WIDGET_TYPES[config.widgetType];
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -185,7 +133,6 @@ export default class TradingViewTool {
   private renderWidget() {
     if (!this.container) return;
 
-    // Clear previous widget if exists
     const widgetContainer = this.container.querySelector('.tradingview-widget-container');
     if (widgetContainer) {
       widgetContainer.innerHTML = '';
@@ -260,8 +207,6 @@ export default class TradingViewTool {
     );
 
     this.container.appendChild(configButton);
-
-    // Important: Render widget after a small delay to ensure the container is mounted
     setTimeout(() => this.renderWidget(), 100);
 
     return this.container;
