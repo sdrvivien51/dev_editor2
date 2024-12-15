@@ -23,7 +23,10 @@ import './TradingView/TradingView.css'
 
 // We use any here because some Editor.js tools don't have proper TypeScript definitions
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
-  paragraph: Paragraph,
+  paragraph: {
+    class: Paragraph,
+    inlineToolbar: ['marker', 'inlineCode', 'link'],
+  },
   embed: Embed,
   table: Table,
   list: List,
