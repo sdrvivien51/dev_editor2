@@ -48,8 +48,20 @@ import TradingViewTool from './tool/TradingViewTool';
 import ChartTool from './tool/ChartTool';
 
 const EDITOR_JS_TOOLS = {
-  tradingview: TradingViewTool,
-  chart: ChartTool,
+  tradingview: {
+    class: TradingViewTool,
+    inlineToolbar: true,
+    config: {
+      height: 400
+    }
+  },
+  chart: {
+    class: ChartTool,
+    inlineToolbar: true,
+    config: {
+      height: 400
+    }
+  },
   header: {
     class: Header,
     inlineToolbar: true,
