@@ -210,6 +210,7 @@ class TradingViewTool {
     this.container.classList.add('tradingview-tool-container');
     
     const configButton = document.createElement('div');
+    configButton.className = 'tradingview-config-button';
     const buttonRoot = createRoot(configButton);
     buttonRoot.render(
       <Button
