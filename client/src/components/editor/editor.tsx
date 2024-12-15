@@ -66,27 +66,10 @@ const EDITOR_JS_TOOLS = {
     class: Header,
     inlineToolbar: true,
     config: {
-      placeholder: 'Enter a title',
-      levels: [1, 2, 3],
+      placeholder: 'Entrez un titre',
+      levels: [1, 2, 3, 4, 5, 6],
       defaultLevel: 2
-    },
-    toolbox: [
-      {
-        icon: '<svg width="16" height="14" viewBox="0 0 16 14"><path d="M3.29375 1.17188V12.8281H4.93125V7.85938H10.9562V12.8281H12.5938V1.17188H10.9562V6.21875H4.93125V1.17188H3.29375Z"/></svg>',
-        title: 'Heading 1',
-        data: { level: 1 }
-      },
-      {
-        icon: '<svg width="16" height="14" viewBox="0 0 16 14"><path d="M3.29375 1.17188V12.8281H4.93125V7.85938H10.9562V12.8281H12.5938V1.17188H10.9562V6.21875H4.93125V1.17188H3.29375Z" transform="scale(0.85)"/></svg>',
-        title: 'Heading 2',
-        data: { level: 2 }
-      },
-      {
-        icon: '<svg width="16" height="14" viewBox="0 0 16 14"><path d="M3.29375 1.17188V12.8281H4.93125V7.85938H10.9562V12.8281H12.5938V1.17188H10.9562V6.21875H4.93125V1.17188H3.29375Z" transform="scale(0.75)"/></svg>',
-        title: 'Heading 3',
-        data: { level: 3 }
-      }
-    ]
+    }
   },
   paragraph: {
     class: Paragraph,
