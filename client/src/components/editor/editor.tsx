@@ -1,7 +1,9 @@
 
 import { useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
-import type EditorJS from '@editorjs/editorjs';
+import type EditorJS, { OutputData } from '@editorjs/editorjs';
+import { Chart, registerables } from 'chart.js/auto';
+Chart.register(...registerables);
 import type { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
@@ -22,18 +24,6 @@ import Raw from '@editorjs/raw';
 import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
 
-// Import types from their respective packages
-import type { HeaderData, HeaderConfig } from '@editorjs/header';
-import type { ListData, ListConfig } from '@editorjs/list';
-import type { QuoteData, QuoteConfig } from '@editorjs/quote';
-import type { CodeData, CodeConfig } from '@editorjs/code';
-import type { LinkToolData, LinkToolConfig } from '@editorjs/link';
-import type { ImageToolData, ImageToolConfig } from '@editorjs/image';
-import type { EmbedToolData, EmbedToolConfig } from '@editorjs/embed';
-import type { TableData, TableConfig } from '@editorjs/table';
-import type { WarningData, WarningConfig } from '@editorjs/warning';
-import type { RawData, RawConfig } from '@editorjs/raw';
-import type { AttachesData, AttachesConfig } from '@editorjs/attaches';
 
 interface EditorProps {
   data: OutputData;
@@ -58,6 +48,7 @@ const EDITOR_JS_TOOLS = {
   chart: {
     class: ChartTool,
     inlineToolbar: true,
+    icon: '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">',
     config: {
       height: 400
     }
