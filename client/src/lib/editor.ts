@@ -18,7 +18,7 @@ import Marker from '@editorjs/marker';
 import Raw from '@editorjs/raw';
 import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
-import ChartTool from './ChartTool'; // Assuming ChartTool is in the same directory
+import TradingViewTool from '@/components/editor/TradingViewTool';
 
 export interface EditorConfig {
   holder: string;
@@ -45,7 +45,35 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         class: ChartTool,
         inlineToolbar: false,
         config: {
-          placeholder: 'Add chart data...'
+          placeholder: 'Add chart data...',
+          defaultType: 'bar',
+          defaultPalette: 'pastel',
+          supportedTypes: ['bar', 'line', 'pie', 'doughnut', 'radar', 'polarArea'],
+          defaultColors: ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFB3F7', '#B3FFF7'],
+          chartjs: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true
+                }
+              }
+            }
+          }
+        }
+      },
+      tradingview: {
+        class: TradingViewTool,
+        inlineToolbar: false,
+        config: {
+          placeholder: 'Add TradingView widget...',
+          defaultSymbol: 'NASDAQ:AAPL',
+          container: 'tradingview-container',
+          height: 400,
+          width: '100%',
+          defaultInterval: '1D'
         }
       },
       paragraph: {

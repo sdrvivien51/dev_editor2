@@ -3,6 +3,7 @@ import { Chart, ChartConfiguration, ChartType } from 'chart.js/auto';
 import { createRoot } from 'react-dom/client';
 import { createElement } from 'react';
 import { ChartConfig } from './ChartConfig';
+import './chart.css';
 
 Chart.register();
 
@@ -23,7 +24,7 @@ export interface ChartData extends BlockToolData {
 }
 
 export class ChartTool implements BlockTool {
-  private api: API;
+  private _api: API;
   private readOnly: boolean;
   private data: ChartData;
   private chart: Chart | null;
@@ -34,18 +35,25 @@ export class ChartTool implements BlockTool {
   static get toolbox() {
     return {
       title: 'Chart',
-      icon: '<svg width="17" height="15" viewBox="0 0 336 276" xmlns="http://www.w3.org/2000/svg"><path d="M291 150V79c0-19-15-34-34-34H79c-19 0-34 15-34 34v42l67-44 81 72 56-29 42 30zm0 52l-42-30-56 29-81-67-68 39v23c0 19 15 34 34 34h178c17 0 31-13 34-28z"/></svg>'
+      icon: `<svg width="17" height="15" viewBox="0 0 17 15" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 12H1a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h15a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM1 1.5v9h15v-9H1z"/>
+        <path d="M3 8.5v2h2v-2H3zm4-3v5h2v-5H7zm4-3v8h2v-8h-2z"/>
+      </svg>`
     };
   }
 
   constructor({ data, api, readOnly }: { data: ChartData; api: API; readOnly: boolean }) {
-    this.api = api;
+    this._api = api;
     this.readOnly = readOnly;
     this.data = data || {};
     this.chart = null;
     this.wrapper = null;
     this.canvas = null;
     this.configRoot = null;
+  }
+
+  get api(): API {
+    return this._api;
   }
 
   render(): HTMLElement {

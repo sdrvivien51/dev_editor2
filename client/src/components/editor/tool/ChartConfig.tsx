@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { ChartType } from 'chart.js';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings, Plus, Trash2 } from 'lucide-react';
-import { ChartType } from 'chart.js';
 import { ChartData } from './ChartTool';
 
 // Color palettes
@@ -117,7 +117,9 @@ export function ChartConfig({ onSave, initialData }: ChartConfigProps) {
 
             <div className="space-y-2">
               <Label>Color Palette</Label>
-              <Select value={selectedPalette} onValueChange={setSelectedPalette}>
+              <Select 
+                value={selectedPalette} 
+                onValueChange={(value: typeof selectedPalette) => setSelectedPalette(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select color palette" />
                 </SelectTrigger>
