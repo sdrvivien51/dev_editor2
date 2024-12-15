@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS, { OutputData } from "@editorjs/editorjs";
+import EditorJS from "@editorjs/editorjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,6 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/brea
 import { editorConfig } from "@/lib/editor";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { ImageUpload } from "@/components/editor/ImageUpload";
 
 export default function Editor() {
   const editorRef = useRef<EditorJS | null>(null);

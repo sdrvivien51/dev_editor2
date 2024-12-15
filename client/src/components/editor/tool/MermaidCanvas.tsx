@@ -3,12 +3,12 @@ import Draggable from 'react-draggable';
 import Xarrow, { Xwrapper } from 'react-xarrows';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Plus, Link as LinkIcon, Database, Square, Diamond, Hexagon } from 'lucide-react';
+import { Plus, Link as LinkIcon, Database, Square } from 'lucide-react';
 
 interface Node {
   id: string;
   text: string;
-  type: 'default' | 'decision' | 'process' | 'database' | 'input' | 'subgraph';
+  type: 'default' | 'decision' | 'process' | 'database';
   x: number;
   y: number;
   width?: number;
@@ -23,7 +23,7 @@ interface Connection {
 
 interface MermaidCanvasProps {
   onSave: (config: {
-    type: 'flowchart' | 'sequence' | 'mindmap';
+    type: 'flowchart' | 'sequence';
     code: string;
     caption: string;
   }) => void;
@@ -43,10 +43,6 @@ export function MermaidCanvas({ onSave }: MermaidCanvasProps) {
         return { width: 120, height: 80, shape: 'diamond' };
       case 'database':
         return { width: 100, height: 80, shape: 'cylinder' };
-      case 'input':
-        return { width: 120, height: 60, shape: 'parallelogram' };
-      case 'subgraph':
-        return { width: 160, height: 100, shape: 'rectangle', className: 'border-2' };
       default:
         return { width: 120, height: 60, shape: 'rectangle' };
     }
@@ -74,8 +70,6 @@ export function MermaidCanvas({ onSave }: MermaidCanvasProps) {
         return <Diamond className="h-4 w-4" />;
       case 'process':
         return <Square className="h-4 w-4" />;
-      case 'subgraph':
-        return <Hexagon className="h-4 w-4" />;
       default:
         return <Square className="h-4 w-4" />;
     }
@@ -143,12 +137,6 @@ export function MermaidCanvas({ onSave }: MermaidCanvasProps) {
                 Database
               </div>
             </SelectItem>
-            <SelectItem value="subgraph">
-              <div className="flex items-center gap-2">
-                <Hexagon className="h-4 w-4" />
-                Subgraph
-              </div>
-            </SelectItem>
           </SelectContent>
         </Select>
 
@@ -204,7 +192,6 @@ export function MermaidCanvas({ onSave }: MermaidCanvasProps) {
                 } ${startNode === node.id ? 'border-blue-500' : ''} ${
                   node.type === 'decision' ? 'rotate-45' :
                   node.type === 'database' ? 'rounded-b-xl' :
-                  node.type === 'subgraph' ? 'border-2 border-dashed' :
                   'rounded-lg'
                 }`}
                 style={{

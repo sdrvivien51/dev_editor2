@@ -2,11 +2,10 @@ import React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Settings } from 'lucide-react';
-import { MermaidCanvas } from './MermaidCanvas';
 
 interface MermaidConfigProps {
   onSave: (config: {
-    type: 'flowchart' | 'sequence' | 'mindmap';
+    type: 'flowchart' | 'sequence';
     code: string;
     caption: string;
   }) => void;
@@ -31,7 +30,8 @@ export function MermaidConfig({ onSave }: MermaidConfigProps) {
               </p>
             </div>
 
-            <MermaidCanvas onSave={onSave} />
+            {/* MermaidCanvas component removed */}
+
           </div>
         </PopoverContent>
       </Popover>

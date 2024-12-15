@@ -1,10 +1,29 @@
 
-import { EDITOR_JS_TOOLS } from "@/components/editor/Tools";
+import Header from "@editorjs/header";
+import List from "@editorjs/list";
 
 export const editorConfig = {
   holder: 'editorjs',
-  tools: EDITOR_JS_TOOLS,
+  tools: {
+    header: {
+      class: Header,
+      inlineToolbar: ['bold', 'italic'],
+      config: {
+        placeholder: 'Enter a header',
+        levels: [1, 2, 3],
+        defaultLevel: 2
+      }
+    },
+    list: {
+      class: List,
+      inlineToolbar: ['bold', 'italic'],
+      config: {
+        defaultStyle: 'unordered'
+      }
+    }
+  },
   placeholder: 'Start writing your amazing post...',
-  inlineToolbar: true,
+  inlineToolbar: ['bold', 'italic'],
   autofocus: true,
+  defaultBlock: 'paragraph'
 };
