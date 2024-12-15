@@ -196,6 +196,15 @@ class TradingViewTool {
     };
 
     switch (this.data.widgetType) {
+      case 'SYMBOL_OVERVIEW': {
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+        script.type = 'text/javascript';
+        script.async = true;
+        script.innerHTML = JSON.stringify(scriptConfig);
+        div.appendChild(script);
+        break;
+      }
       case 'ADVANCED_CHART': {
         const script = document.createElement('script');
         script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';

@@ -36,6 +36,52 @@ export const WIDGET_TYPES = {
       container_id: undefined,
     }
   },
+  SYMBOL_OVERVIEW: {
+    title: 'Symbol Comparison',
+    description: 'Compare multiple symbols',
+    configFields: [
+      { name: 'symbol', type: 'input', options: [] },
+      { name: 'compareSymbol', type: 'input', options: [] },
+      { name: 'colorTheme', type: 'select', options: ['light', 'dark'] },
+      { name: 'chartType', type: 'select', options: ['line', 'area', 'candlesticks'] }
+    ],
+    defaults: {
+      symbols: [["Apple", "AAPL|1D"]],
+      chartOnly: true,
+      width: 550,
+      height: 400,
+      locale: "en",
+      colorTheme: "light",
+      autosize: false,
+      showVolume: false,
+      showMA: false,
+      hideDateRanges: false,
+      hideMarketStatus: true,
+      hideSymbolLogo: true,
+      scalePosition: "right",
+      scaleMode: "Percentage",
+      fontFamily: "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+      fontSize: "10",
+      noTimeScale: false,
+      valuesTracking: "1",
+      changeMode: "price-only",
+      chartType: "line",
+      maLineColor: "#2962FF",
+      maLineWidth: 1,
+      maLength: 9,
+      lineWidth: 2,
+      lineType: 0,
+      compareSymbol: {
+        symbol: "NASDAQ:NVDA",
+        lineColor: "rgba(41, 98, 255, 1)",
+        lineWidth: 2
+      },
+      dateRanges: ["1w|15", "1m|60", "3m|60", "12m|1D"],
+      bottomColor: "rgba(255, 255, 255, 0)",
+      dateFormat: "MMM dd, yyyy",
+      timeHoursFormat: "12-hours"
+    }
+  },
   STOCK_HEATMAP: {
     title: 'Stock Market Heatmap',
     description: 'Visual representation of stock market sectors',
