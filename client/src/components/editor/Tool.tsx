@@ -38,7 +38,7 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
       highlightColor: '#F8F9FA',
       backgroundColor: '#1F2937',
       textColor: '#FFFFFF',
-      holder: 'holderRef'
+      holder: holderRef.current
     }
   },
   embed: Embed,
