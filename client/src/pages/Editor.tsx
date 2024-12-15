@@ -141,6 +141,7 @@ export default function Editor() {
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
         />
+        <ImageUpload />
       </div>
 
       <Separator className="my-8" />
