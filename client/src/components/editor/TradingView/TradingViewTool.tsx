@@ -4,37 +4,58 @@ import { Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { useState } from 'react';
 
 interface TradingViewConfig {
-  symbol: string;
+  widgetType: string;
+  theme?: 'light' | 'dark';
   width?: string;
   height?: string;
-  theme?: 'light' | 'dark';
-  widgetType: string;
+  symbol?: string;
+  settings: Record<string, any>;
 }
 
 const WIDGET_TYPES = {
+  ADVANCED_CHART: {
+    title: 'Advanced Chart',
+    description: 'Full-featured charting',
+    configFields: ['symbol'],
+    defaults: {
+      symbol: 'NASDAQ:AAPL',
+      interval: 'D',
+      timezone: 'exchange',
+      style: '1',
+      locale: 'en',
+      enable_publishing: false,
+      allow_symbol_change: true,
+    }
+  },
   STOCK_HEATMAP: {
     title: 'Stock Market Heatmap',
-    description: 'Visual representation of stock market sectors'
+    description: 'Visual representation of stock market sectors',
+    configFields: ['dataSource'],
+    defaults: {
+      exchanges: [],
+      dataSource: "SPX500",
+      grouping: "sector",
+      blockSize: "market_cap_basic",
+      blockColor: "change",
+      locale: "en",
+      hasTopBar: false,
+      isDataSetEnabled: false,
+      isZoomEnabled: true,
+      hasSymbolTooltip: true
+    }
   },
   FOREX_HEATMAP: {
     title: 'Forex Heatmap',
-    description: 'Currency pairs strength visualization'
-  },
-  TICKERS: {
-    title: 'Market Tickers',
-    description: 'Real-time price updates'
-  },
-  CRYPTO_SCREENER: {
-    title: 'Crypto Screener',
-    description: 'Cryptocurrency screening tool'
-  },
-  STOCK_SCREENER: {
-    title: 'Stock Screener', 
-    description: 'Stock market screening tool'
+    description: 'Currency pairs strength visualization',
+    configFields: ['currencies'],
+    defaults: {
+      currencies: ["EUR", "USD", "JPY", "GBP", "CHF", "AUD", "CAD", "NZD", "CNY"],
+      isTransparent: false,
+      locale: "en"
+    }
   }
 };
 
@@ -53,22 +74,32 @@ export default class TradingViewTool {
 
   constructor({ data }: { data?: TradingViewConfig }) {
     this.data = {
-      symbol: data?.symbol || 'NASDAQ:AAPL',
+      widgetType: data?.widgetType || 'ADVANCED_CHART',
+      theme: data?.theme || 'light',
       width: data?.width || '100%',
       height: data?.height || '400',
-      theme: data?.theme || 'light',
-      widgetType: data?.widgetType || 'STOCK_HEATMAP'
+      settings: data?.settings || { ...WIDGET_TYPES['ADVANCED_CHART'].defaults }
     };
   }
 
   private TradingViewModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
     const [config, setConfig] = useState(this.data);
 
+    const handleWidgetTypeChange = (type: string) => {
+      setConfig({
+        ...config,
+        widgetType: type,
+        settings: { ...WIDGET_TYPES[type as keyof typeof WIDGET_TYPES].defaults }
+      });
+    };
+
     const handleSave = () => {
       this.data = config;
       this.renderWidget();
       onClose();
     };
+
+    const widgetType = WIDGET_TYPES[config.widgetType as keyof typeof WIDGET_TYPES];
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -82,7 +113,7 @@ export default class TradingViewTool {
               <label className="w-24">Widget Type:</label>
               <select
                 value={config.widgetType}
-                onChange={(e) => setConfig({ ...config, widgetType: e.target.value })}
+                onChange={(e) => handleWidgetTypeChange(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
               >
                 {Object.entries(WIDGET_TYPES).map(([key, value]) => (
@@ -90,16 +121,7 @@ export default class TradingViewTool {
                 ))}
               </select>
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <label className="w-24">Symbol:</label>
-              <Input
-                value={config.symbol}
-                onChange={(e) => setConfig({ ...config, symbol: e.target.value })}
-                placeholder="NASDAQ:AAPL"
-              />
-            </div>
-            
+
             <div className="flex items-center space-x-4">
               <label className="w-24">Theme:</label>
               <select 
@@ -111,6 +133,20 @@ export default class TradingViewTool {
                 <option value="dark">Dark</option>
               </select>
             </div>
+
+            {widgetType.configFields.map(field => (
+              <div key={field} className="flex items-center space-x-4">
+                <label className="w-24">{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+                <Input
+                  value={config.settings[field]}
+                  onChange={(e) => setConfig({
+                    ...config,
+                    settings: { ...config.settings, [field]: e.target.value }
+                  })}
+                  placeholder={`Enter ${field}`}
+                />
+              </div>
+            ))}
           </div>
 
           <div className="flex justify-end space-x-2">
@@ -154,65 +190,41 @@ export default class TradingViewTool {
 
     const widgetDiv = document.createElement('div');
     widgetDiv.className = 'tradingview-widget-container__widget';
+    widgetDiv.style.height = this.data.height || '400px';
+    widgetDiv.id = 'tradingview_' + Math.random().toString(36).substring(7);
     
     const script = document.createElement('script');
     script.type = 'text/javascript';
     script.async = true;
 
+    const scriptConfig = {
+      ...this.data.settings,
+      width: this.data.width,
+      height: this.data.height,
+      colorTheme: this.data.theme,
+      container_id: widgetDiv.id
+    };
+
     switch (this.data.widgetType) {
+      case 'ADVANCED_CHART':
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.onload = () => {
+          // @ts-ignore
+          new TradingView.widget(scriptConfig);
+        };
+        break;
+
       case 'STOCK_HEATMAP':
         script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
-        script.innerHTML = JSON.stringify({
-          exchanges: [],
-          dataSource: "SPX500",
-          grouping: "sector",
-          blockSize: "market_cap_basic",
-          blockColor: "change",
-          locale: "en",
-          symbolUrl: "",
-          colorTheme: this.data.theme,
-          hasTopBar: false,
-          isDataSetEnabled: false,
-          isZoomEnabled: true,
-          hasSymbolTooltip: true,
-          width: this.data.width,
-          height: this.data.height
-        });
+        script.innerHTML = JSON.stringify(scriptConfig);
         break;
 
       case 'FOREX_HEATMAP':
         script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-forex-heat-map.js';
-        script.innerHTML = JSON.stringify({
-          width: this.data.width,
-          height: this.data.height,
-          currencies: ["EUR", "USD", "JPY", "GBP", "CHF", "AUD", "CAD", "NZD", "CNY"],
-          isTransparent: false,
-          colorTheme: this.data.theme,
-          locale: "en"
-        });
+        script.innerHTML = JSON.stringify(scriptConfig);
         break;
-
-      default:
-        script.src = 'https://s3.tradingview.com/tv.js';
-        script.onload = () => {
-          // @ts-ignore
-          new TradingView.widget({
-            width: this.data.width,
-            height: this.data.height,
-            symbol: this.data.symbol,
-            interval: "D",
-            timezone: "Etc/UTC",
-            theme: this.data.theme,
-            style: "1",
-            locale: "en",
-            enable_publishing: false,
-            allow_symbol_change: true,
-            container_id: widgetDiv.id
-          });
-        };
     }
 
-    widgetDiv.id = 'tradingview_' + Math.random().toString(36).substring(7);
     const container = this.container.querySelector('.tradingview-widget-container');
     if (container) {
       container.appendChild(widgetDiv);
@@ -223,7 +235,7 @@ export default class TradingViewTool {
   render() {
     this.container = document.createElement('div');
     this.container.classList.add('tradingview-tool-container');
-
+    
     const configButton = document.createElement('div');
     const buttonRoot = createRoot(configButton);
     buttonRoot.render(
@@ -231,7 +243,7 @@ export default class TradingViewTool {
         variant="outline"
         size="sm"
         onClick={() => this.renderModal(true)}
-        className="w-full mt-2"
+        className="w-full mb-2"
       >
         <Settings2 className="h-4 w-4 mr-2" />
         Configure TradingView Widget
@@ -239,7 +251,7 @@ export default class TradingViewTool {
     );
 
     this.container.appendChild(configButton);
-    this.renderWidget();
+    setTimeout(() => this.renderWidget(), 0);
 
     return this.container;
   }
@@ -250,11 +262,11 @@ export default class TradingViewTool {
 
   static get sanitize() {
     return {
-      symbol: true,
+      widgetType: true,
+      theme: true,
       width: true,
       height: true,
-      theme: true,
-      widgetType: true
+      settings: true
     };
   }
 
