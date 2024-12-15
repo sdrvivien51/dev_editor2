@@ -49,7 +49,7 @@ export default function Editor({ data, setData }: EditorProps) {
 
   return (
     <div className="relative min-h-[500px] w-full border rounded-md">
-      <div ref={holderRef} className="prose max-w-none" />
+      <div ref={holderRef} id="editorjs-container" className="prose max-w-none" />
     </div>
   );
 }
