@@ -17,7 +17,9 @@ import ChartTool from './Chart/ChartTool'
 
 
 
-export const EDITOR_JS_TOOLS = {
+import { API, ToolConstructable, ToolSettings } from '@editorjs/editorjs';
+
+export const EDITOR_JS_TOOLS: { [key: string]: ToolConstructable | ToolSettings } = {
   paragraph: {
     class: Paragraph,
     inlineToolbar: true,
@@ -40,5 +42,8 @@ export const EDITOR_JS_TOOLS = {
   delimiter: Delimiter,
   inlineCode: InlineCode,
   simpleImage: SimpleImage,
-  Chart: ChartTool,
+  chart: {
+    class: ChartTool,
+    inlineToolbar: true,
+  },
 }

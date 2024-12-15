@@ -1,48 +1,49 @@
-/* eslint-disable react/jsx-no-target-blank */
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import EditorJS, { OutputData as EditorData } from '@editorjs/editorjs';
+import { EDITOR_JS_TOOLS } from './Tool';
+import './Chart/Chart.css';
 
-import EditorJs from './editor-js'
+type OutputData = EditorData;
 
-import { EDITOR_JS_TOOLS } from './Tool'
-
-class App extends Component {
-  async onSave() {
-    const outputData = await this.editorInstance.save()
-    console.log('outputData', outputData)
-  }
-
-  render() {
-    return (
-      <div className="app">
-        <h1>
-          <a
-            href="https://github.com/natterstefan/react-editor-js"
-            target="_blank"
-          >
-            react-editor-js{' '}
-            <span role="img" aria-label="link">
-              🔗
-            </span>{' '}
-            <span role="img" aria-label="react">
-              ⚛️
-            </span>
-          </a>
-        </h1>
-        <div className="actions">
-          <button onClick={this.onSave.bind(this)} type="button">
-            Log Content to Console
-          </button>
-        </div>
-        <EditorJs
-          editorInstance={instance => (this.editorInstance = instance)}
-          tools={EDITOR_JS_TOOLS}
-          data={data}
-        />
-      </div>
-    )
-  }
+interface EditorProps {
+  data: OutputData;
+  setData: (data: OutputData) => void;
 }
 
-const rootElement = document.getElementById('root')
-ReactDOM.render(<App />, rootElement)
+export default function Editor({ data, setData }: EditorProps) {
+  const editorRef = React.useRef<EditorJS | null>(null);
+
+  React.useEffect(() => {
+    const initEditor = async () => {
+      if (!editorRef.current) {
+        const editor = new EditorJS({
+          holder: 'editor',
+          tools: EDITOR_JS_TOOLS,
+          data,
+          onChange: async () => {
+            const savedData = await editor.save();
+            setData(savedData);
+          },
+        });
+        
+        await editor.isReady;
+        editorRef.current = editor;
+      }
+    };
+
+    initEditor().catch(console.error);
+
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <div className="relative min-h-[500px] w-full border rounded-md">
+      <div id="editor" className="prose max-w-none" />
+    </div>
+  );
+}

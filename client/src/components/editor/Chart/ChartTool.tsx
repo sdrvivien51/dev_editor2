@@ -1,8 +1,20 @@
 
-import './Chart.css';
-import Chart from 'chart.js/auto';
+import { createRoot } from 'react-dom/client';
+import { Chart, ChartType } from 'chart.js/auto';
+import { ChartToolConfig, ChartToolData, ChartConstructorOptions } from './types';
+import { ChartConfigModal } from './ChartConfigModal';
+import { Settings2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default class ChartTool {
+  private data: ChartToolData;
+  private config: ChartToolConfig = {};
+  private api: any;
+  private chart: Chart | null = null;
+  private container: HTMLDivElement | null = null;
+  private modalRoot: HTMLDivElement | null = null;
+  private modalContainer: any = null;
+
   static get toolbox() {
     return {
       title: 'Chart',
@@ -10,10 +22,10 @@ export default class ChartTool {
     };
   }
 
-  constructor({ data, config, api }) {
+  constructor({ data }: ChartConstructorOptions) {
     this.data = {
-      chartType: data.chartType || 'bar',
-      chartData: data.chartData || {
+      chartType: data?.chartType || 'bar',
+      chartData: data?.chartData || {
         labels: ['Red', 'Blue', 'Yellow'],
         datasets: [{
           label: 'My Dataset',
@@ -32,61 +44,88 @@ export default class ChartTool {
         }]
       }
     };
-    this.api = api;
-    this.config = config;
+  }
+
+  renderModal(isOpen: boolean) {
+    if (!this.modalRoot) {
+      this.modalRoot = document.createElement('div');
+      document.body.appendChild(this.modalRoot);
+      this.modalContainer = createRoot(this.modalRoot);
+    }
+
+    const handleClose = () => {
+      this.modalContainer.render(
+        <ChartConfigModal
+          isOpen={false}
+          onClose={handleClose}
+          initialData={this.data.chartData}
+          chartType={this.data.chartType}
+          onSave={this.handleSave}
+        />
+      );
+    };
+
+    const handleSave = (chartData: ChartData, chartType: string) => {
+      this.data.chartData = chartData;
+      this.data.chartType = chartType as ChartType;
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      this.chart = this.createChart(
+        this.container?.querySelector('canvas') as HTMLCanvasElement,
+        this.data.chartType,
+        this.data.chartData
+      );
+    };
+
+    const boundHandleSave = handleSave.bind(this);
+
+    this.modalContainer.render(
+      <ChartConfigModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        initialData={this.data.chartData}
+        chartType={this.data.chartType}
+        onSave={boundHandleSave}
+      />
+    );
   }
 
   render() {
-    const container = document.createElement('div');
-    container.classList.add('chart-tool-container');
-
-    const chartTypeSelect = document.createElement('select');
-    chartTypeSelect.classList.add('chart-type-select');
-    ['bar', 'line', 'pie', 'doughnut'].forEach(type => {
-      const option = document.createElement('option');
-      option.value = type;
-      option.text = type.charAt(0).toUpperCase() + type.slice(1);
-      option.selected = type === this.data.chartType;
-      chartTypeSelect.appendChild(option);
-    });
-
-    const dataInput = document.createElement('textarea');
-    dataInput.classList.add('chart-data-input');
-    dataInput.placeholder = 'Enter chart data in JSON format';
-    dataInput.value = JSON.stringify(this.data.chartData, null, 2);
+    this.container = document.createElement('div');
+    this.container.classList.add('chart-tool-container');
 
     const canvas = document.createElement('canvas');
     canvas.classList.add('chart-canvas');
+    canvas.style.width = '100%';
+    canvas.style.height = '300px';
+    canvas.style.marginTop = '1rem';
 
-    container.appendChild(chartTypeSelect);
-    container.appendChild(dataInput);
-    container.appendChild(canvas);
+    const configButton = document.createElement('div');
+    const buttonRoot = createRoot(configButton);
+    buttonRoot.render(
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => this.renderModal(true)}
+        className="w-full mt-2"
+      >
+        <Settings2 className="h-4 w-4 mr-2" />
+        Configure Chart
+      </Button>
+    );
 
-    let chart = this.createChart(canvas, this.data.chartType, this.data.chartData);
+    this.container.appendChild(canvas);
+    this.container.appendChild(configButton);
 
-    chartTypeSelect.addEventListener('change', () => {
-      this.data.chartType = chartTypeSelect.value;
-      chart.destroy();
-      chart = this.createChart(canvas, this.data.chartType, this.data.chartData);
-    });
+    this.chart = this.createChart(canvas, this.data.chartType, this.data.chartData);
 
-    dataInput.addEventListener('change', () => {
-      try {
-        const newData = JSON.parse(dataInput.value);
-        this.data.chartData = newData;
-        chart.destroy();
-        chart = this.createChart(canvas, this.data.chartType, this.data.chartData);
-      } catch (e) {
-        console.error('Invalid JSON data');
-      }
-    });
-
-    return container;
+    return this.container;
   }
 
-  createChart(canvas, type, data) {
+  private createChart(canvas: HTMLCanvasElement, type: string, data: any): Chart {
     return new Chart(canvas, {
-      type,
+      type: type as ChartType,
       data,
       options: {
         responsive: true,
@@ -95,12 +134,21 @@ export default class ChartTool {
     });
   }
 
-  save() {
+  save(): ChartToolData {
     return this.data;
   }
 
-  validate(data) {
-    return data.chartType && data.chartData;
+  validate(data: ChartToolData): boolean {
+    return !!(data.chartType && data.chartData);
+  }
+
+  destroy() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+    if (this.modalRoot) {
+      document.body.removeChild(this.modalRoot);
+    }
   }
 
   static get sanitize() {
