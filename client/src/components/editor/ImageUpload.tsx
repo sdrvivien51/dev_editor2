@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 
-export function ImageUpload() {
+export default function ImageUpload() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {

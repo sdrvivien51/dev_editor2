@@ -10,6 +10,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/brea
 import { editorConfig } from "@/lib/editor";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "../components/editor/ImageUpload";
 
 export default function Editor() {
   const editorRef = useRef<EditorJS | null>(null);
@@ -47,11 +48,20 @@ export default function Editor() {
   });
 
   useEffect(() => {
+    let isMounted = true;
+    let destroyTimer: number;
+
     const initEditor = async () => {
-      if (!editorRef.current) {
+      if (!isMounted) return;
+      
+      const editorElement = document.getElementById('editorjs');
+      if (!editorElement || editorRef.current) return;
+
+      try {
         const editor = new EditorJS({
-          holder: 'editorjs',
+          ...createEditorConfig(editorElement),
           data: {
+            time: Date.now(),
             blocks: [
               {
                 type: "paragraph",
@@ -61,20 +71,45 @@ export default function Editor() {
               }
             ]
           },
-          tools: editorConfig.tools,
-          placeholder: editorConfig.placeholder,
+          onReady: () => {
+            console.log('Editor.js is ready to work!');
+          },
+          onChange: async () => {
+            if (editorRef.current) {
+              try {
+                const content = await editorRef.current.save();
+                console.log('Content changed:', content);
+              } catch (error) {
+                console.error('Save error:', error);
+              }
+            }
+          },
         });
-        
+
         await editor.isReady;
-        editorRef.current = editor;
+        if (isMounted) {
+          editorRef.current = editor;
+        }
+      } catch (error) {
+        console.error('Editor.js initialization error:', error);
       }
     };
 
-    initEditor();
+    // Ensure DOM is ready before initialization
+    if (document.readyState === 'complete') {
+      initEditor();
+    } else {
+      destroyTimer = window.setTimeout(initEditor, 100);
+    }
 
     return () => {
+      isMounted = false;
+      if (destroyTimer) {
+        clearTimeout(destroyTimer);
+      }
       if (editorRef.current) {
-        editorRef.current.destroy();
+        editorRef.current.destroy()
+          .catch(e => console.error('Editor destroy error:', e));
         editorRef.current = null;
       }
     };
