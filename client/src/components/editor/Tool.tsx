@@ -22,10 +22,24 @@ import './Chart/Chart.css'
 import './TradingView/TradingView.css'
 
 // We use any here because some Editor.js tools don't have proper TypeScript definitions
+import Tooltip from 'editorjs-tooltip';
+
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   paragraph: {
     class: Paragraph,
-    inlineToolbar: ['marker', 'inlineCode', 'link'],
+    inlineToolbar: ['marker', 'inlineCode', 'link', 'tooltip'],
+  },
+  tooltip: {
+    class: Tooltip,
+    config: {
+      location: 'top',
+      underline: true,
+      placeholder: 'Add tooltip text',
+      highlightColor: '#F8F9FA',
+      backgroundColor: '#1F2937',
+      textColor: '#FFFFFF',
+      holder: 'editorjs'
+    }
   },
   embed: Embed,
   table: Table,
