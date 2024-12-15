@@ -42,11 +42,5 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
       placeholder: 'Add a chart'
     }
   },
-  tradingview: {
-    class: TradingViewTool,
-    inlineToolbar: true,
-    config: {
-      placeholder: 'Add TradingView widget'
-    }
-  }
+  tradingview: TradingViewTool
 }

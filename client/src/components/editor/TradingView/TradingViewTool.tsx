@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import { TradingViewConfig, TradingViewConstructorOptions, WIDGET_TYPES } from './types';
 
-export default class TradingViewTool {
+class TradingViewTool {
   static get toolbox() {
     return {
       title: 'TradingView',
@@ -234,3 +234,6 @@ export default class TradingViewTool {
     this.modalContainer = null;
   }
 }
+
+
+export { TradingViewTool as default };
