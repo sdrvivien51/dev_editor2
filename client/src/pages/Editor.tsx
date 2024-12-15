@@ -3,7 +3,22 @@ import { useLocation } from "wouter";
 import EditorJS, { type OutputData, type API, type ToolConstructable, type BlockToolData } from "@editorjs/editorjs";
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
+import NestedList from '@editorjs/nested-list';
+import Paragraph from '@editorjs/paragraph';
+import Checklist from '@editorjs/checklist';
+import Quote from '@editorjs/quote';
+import Code from '@editorjs/code';
+import Delimiter from '@editorjs/delimiter';
+import InlineCode from '@editorjs/inline-code';
+import LinkTool from '@editorjs/link';
+import Image from '@editorjs/image';
 import Embed from '@editorjs/embed';
+import Table from '@editorjs/table';
+import Warning from '@editorjs/warning';
+import Marker from '@editorjs/marker';
+import Raw from '@editorjs/raw';
+import Attaches from '@editorjs/attaches';
+import SimpleImage from '@editorjs/simple-image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -107,6 +122,14 @@ export default function Editor() {
         const tools: EditorTools = {
           header: {
             class: Header as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              levels: [1, 2, 3, 4],
+              defaultLevel: 2
+            }
+          },
+          paragraph: {
+            class: Paragraph as unknown as ToolConstructable,
             inlineToolbar: true
           },
           list: {
@@ -114,6 +137,61 @@ export default function Editor() {
             inlineToolbar: true,
             config: {
               defaultStyle: 'unordered'
+            }
+          },
+          nestedList: {
+            class: NestedList as unknown as ToolConstructable,
+            inlineToolbar: true
+          },
+          checklist: {
+            class: Checklist as unknown as ToolConstructable,
+            inlineToolbar: true
+          },
+          quote: {
+            class: Quote as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              quotePlaceholder: 'Enter a quote',
+              captionPlaceholder: 'Quote\'s author'
+            }
+          },
+          code: {
+            class: Code as unknown as ToolConstructable,
+            config: {
+              placeholder: 'Enter code'
+            }
+          },
+          delimiter: {
+            class: Delimiter as unknown as ToolConstructable
+          },
+          inlineCode: {
+            class: InlineCode as unknown as ToolConstructable
+          },
+          linkTool: {
+            class: LinkTool as unknown as ToolConstructable,
+            config: {
+              endpoint: '/api/fetch-link'
+            }
+          },
+          image: {
+            class: Image as unknown as ToolConstructable,
+            config: {
+              uploader: {
+                uploadByFile(file: File): Promise<{ success: number; file: { url: string } }> {
+                  return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      resolve({
+                        success: 1,
+                        file: {
+                          url: reader.result as string
+                        }
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  });
+                }
+              }
             }
           },
           embed: {
@@ -126,6 +204,55 @@ export default function Editor() {
                 codepen: true
               }
             }
+          },
+          table: {
+            class: Table as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              rows: 2,
+              cols: 3
+            }
+          },
+          warning: {
+            class: Warning as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              titlePlaceholder: 'Title',
+              messagePlaceholder: 'Message'
+            }
+          },
+          marker: {
+            class: Marker as unknown as ToolConstructable,
+            inlineToolbar: true
+          },
+          raw: {
+            class: Raw as unknown as ToolConstructable
+          },
+          attaches: {
+            class: Attaches as unknown as ToolConstructable,
+            config: {
+              uploader: {
+                uploadByFile(file: File): Promise<{ success: number; file: { url: string; name: string; size: number } }> {
+                  return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      resolve({
+                        success: 1,
+                        file: {
+                          url: reader.result as string,
+                          name: file.name,
+                          size: file.size
+                        }
+                      });
+                    };
+                    reader.readAsDataURL(file);
+                  });
+                }
+              }
+            }
+          },
+          simpleImage: {
+            class: SimpleImage as unknown as ToolConstructable
           }
         };
 
