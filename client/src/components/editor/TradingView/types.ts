@@ -20,7 +20,11 @@ export const WIDGET_TYPES = {
   ADVANCED_CHART: {
     title: 'Advanced Chart',
     description: 'Full-featured charting',
-    configFields: ['symbol'],
+    configFields: [{
+      name: 'symbol',
+      type: 'input',
+      options: []
+    }],
     defaults: {
       symbol: 'NASDAQ:AAPL',
       interval: 'D',
