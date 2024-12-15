@@ -60,77 +60,99 @@ class TradingViewTool {
             <DialogTitle>TradingView Widget Configuration</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="flex items-center space-x-4">
-              <label className="w-24">Widget Type:</label>
-              <select
-                value={config.widgetType}
-                onChange={(e) => handleWidgetTypeChange(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-              >
-                {Object.entries(WIDGET_TYPES).map(([key, value]) => (
-                  <option key={key} value={key}>{value.title}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <label className="w-24">Theme:</label>
-              <select 
-                value={config.theme}
-                onChange={(e) => setConfig({ ...config, theme: e.target.value as 'light' | 'dark' })}
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-              >
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-              </select>
-            </div>
-
-            {widgetType.configFields.map(field => (
-              <div key={field.name} className="flex items-center space-x-4">
-                <label className="w-24">{field.name.charAt(0).toUpperCase() + field.name.slice(1)}:</label>
-                {field.type === 'select' ? (
-                  <select
-                    value={config.settings[field.name]}
-                    onChange={(e) => setConfig({
-                      ...config,
-                      settings: { ...config.settings, [field.name]: e.target.value }
-                    })}
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-                  >
-                    {field.options.map(option => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : field.type === 'multiSelect' ? (
-                  <select
-                    multiple
-                    value={config.settings[field.name] || []}
-                    onChange={(e) => {
-                      const values = Array.from(e.target.selectedOptions).map(opt => opt.value);
-                      setConfig({
-                        ...config,
-                        settings: { ...config.settings, [field.name]: values }
-                      });
-                    }}
-                    className="flex h-32 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
-                  >
-                    {field.options.map(option => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <Input
-                    value={config.settings[field.name]}
-                    onChange={(e) => setConfig({
-                      ...config,
-                      settings: { ...config.settings, [field.name]: e.target.value }
-                    })}
-                    placeholder={`Enter ${field.name}`}
-                  />
-                )}
+          <div className="grid gap-6 py-4">
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Widget Type</label>
+                <select
+                  value={config.widgetType}
+                  onChange={(e) => handleWidgetTypeChange(e.target.value)}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                >
+                  {Object.entries(WIDGET_TYPES).map(([key, value]) => (
+                    <option key={key} value={key}>{value.title}</option>
+                  ))}
+                </select>
               </div>
-            ))}
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Theme</label>
+                <select 
+                  value={config.theme}
+                  onChange={(e) => setConfig({ ...config, theme: e.target.value as 'light' | 'dark' })}
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                >
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid gap-4">
+              {widgetType.configFields.map(field => (
+                <div key={field.name} className="space-y-2">
+                  <label className="text-sm font-medium">
+                    {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                  </label>
+                  {field.type === 'select' ? (
+                    <select
+                      value={config.settings[field.name]}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        settings: { ...config.settings, [field.name]: e.target.value }
+                      })}
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                    >
+                      {field.options.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : field.type === 'multiSelect' ? (
+                    <select
+                      multiple
+                      value={config.settings[field.name] || []}
+                      onChange={(e) => {
+                        const values = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                        setConfig({
+                          ...config,
+                          settings: { ...config.settings, [field.name]: values }
+                        });
+                      }}
+                      className="flex h-32 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                    >
+                      {field.options.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : field.name === 'compareSymbol' ? (
+                    <Input
+                      value={config.settings[field.name]?.symbol || ''}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        settings: {
+                          ...config.settings,
+                          [field.name]: {
+                            symbol: e.target.value,
+                            lineColor: "rgba(41, 98, 255, 1)",
+                            lineWidth: 2
+                          }
+                        }
+                      })}
+                      placeholder="Enter comparison symbol (e.g. NASDAQ:NVDA)"
+                    />
+                  ) : (
+                    <Input
+                      value={config.settings[field.name]}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        settings: { ...config.settings, [field.name]: e.target.value }
+                      })}
+                      placeholder={`Enter ${field.name}`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-2">
