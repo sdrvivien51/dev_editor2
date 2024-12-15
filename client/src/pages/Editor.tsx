@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS, { type OutputData } from "@editorjs/editorjs";
+import EditorJS, { type OutputData, type API, type ToolConstructable, type BlockToolData } from "@editorjs/editorjs";
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Embed from '@editorjs/embed';
@@ -11,26 +11,64 @@ import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useDropzone } from 'react-dropzone';
+
+interface EditorTools {
+  [key: string]: {
+    class: ToolConstructable;
+    inlineToolbar?: boolean;
+    config?: Record<string, unknown>;
+  };
+}
+
+interface EditorInstance extends EditorJS {
+  isReady: Promise<void>;
+}
 
 export default function Editor() {
-  const editorRef = useRef<EditorJS | null>(null);
+  const editorRef = useRef<EditorInstance | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEditorReady, setIsEditorReady] = useState(false);
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string>("");
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setBannerImage(file);
+      const preview = URL.createObjectURL(file);
+      setBannerPreview(preview);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+    },
+    maxFiles: 1,
+    multiple: false
+  });
   
   const saveMutation = useMutation({
     mutationFn: async ({ title, content }: { title: string; content: OutputData }) => {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('content', JSON.stringify(content));
+      formData.append('description', description);
+      formData.append('published', 'true');
+      
+      if (bannerImage) {
+        formData.append('banner', bannerImage);
+      }
+      
       const res = await fetch("/api/posts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          content: JSON.stringify(content),
-          published: true
-        }),
+        body: formData,
       });
       if (!res.ok) throw new Error("Failed to save post");
       return res.json();
@@ -49,16 +87,13 @@ export default function Editor() {
   });
 
   useEffect(() => {
-    // Wait for DOM to be ready
     const initEditor = async () => {
-      // Check if editor element exists
       const editorElement = document.getElementById('editorjs');
       if (!editorElement) {
         console.error('Editor element not found');
         return;
       }
 
-      // Destroy existing instance if any
       if (editorRef.current) {
         try {
           await editorRef.current.destroy();
@@ -69,36 +104,34 @@ export default function Editor() {
       }
 
       try {
-        const editor = new EditorJS({
-          holder: 'editorjs',
-          tools: {
-            header: {
-              class: Header,
-              config: {
-                placeholder: 'Enter a header',
-                levels: [2, 3, 4],
-                defaultLevel: 2
-              }
-            },
-            list: {
-              class: List,
-              inlineToolbar: true,
-              config: {
-                defaultStyle: 'unordered'
-              }
-            },
-            embed: {
-              class: Embed,
-              inlineToolbar: true,
-              config: {
-                services: {
-                  youtube: true,
-                  codesandbox: true,
-                  codepen: true
-                }
-              }
+        const tools: EditorTools = {
+          header: {
+            class: Header as unknown as ToolConstructable,
+            inlineToolbar: true
+          },
+          list: {
+            class: List as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              defaultStyle: 'unordered'
             }
           },
+          embed: {
+            class: Embed as unknown as ToolConstructable,
+            inlineToolbar: true,
+            config: {
+              services: {
+                youtube: true,
+                codesandbox: true,
+                codepen: true
+              }
+            }
+          }
+        };
+
+        const editor = new EditorJS({
+          holder: 'editorjs',
+          tools,
           placeholder: 'Start writing your post...',
           minHeight: 200,
           onChange: async () => {
@@ -109,9 +142,8 @@ export default function Editor() {
               console.error('Error saving editor content:', e);
             }
           }
-        });
+        }) as EditorInstance;
 
-        // Wait for editor to be ready
         await editor.isReady;
         editorRef.current = editor;
         setIsEditorReady(true);
@@ -126,12 +158,10 @@ export default function Editor() {
       }
     };
 
-    // Initialize editor with a small delay to ensure DOM is ready
     const timeoutId = setTimeout(initEditor, 100);
 
     return () => {
       clearTimeout(timeoutId);
-      // Cleanup
       if (editorRef.current) {
         const cleanup = async () => {
           try {
@@ -168,8 +198,6 @@ export default function Editor() {
     try {
       setIsLoading(true);
       const content = await editorRef.current.save();
-      if (!content) throw new Error("No content to save");
-      
       await saveMutation.mutateAsync({ title, content });
     } catch (error) {
       console.error("Save error:", error);
@@ -216,6 +244,30 @@ export default function Editor() {
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
         />
+        
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-6 cursor-pointer transition-colors
+            ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'}
+            ${bannerPreview ? 'p-2' : 'p-6'}`}
+        >
+          <input {...getInputProps()} />
+          {bannerPreview ? (
+            <img
+              src={bannerPreview}
+              alt="Banner preview"
+              className="w-full h-[200px] object-cover rounded-md"
+            />
+          ) : (
+            <div className="text-center">
+              <p className="text-sm text-gray-500">
+                {isDragActive ? 
+                  "Drop your banner image here" : 
+                  "Drag and drop your banner image here, or click to select"}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <Separator className="my-8" />
