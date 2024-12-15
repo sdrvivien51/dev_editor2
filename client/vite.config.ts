@@ -13,9 +13,10 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
       'Cross-Origin-Opener-Policy': 'same-origin',
-      'Permissions-Policy': 'keyboard-map=self'
+      'Content-Security-Policy': "frame-ancestors 'self' https://www.tradingview.com https://s.tradingview.com https://www.youtube.com;",
+      'Access-Control-Allow-Origin': '*'
     },
     host: '0.0.0.0',
     port: 5173,
