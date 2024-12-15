@@ -1,7 +1,8 @@
 
 import { useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
-import type { OutputData, ToolConstructable, BlockToolData } from '@editorjs/editorjs';
+import type EditorJS from '@editorjs/editorjs';
+import type { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
@@ -22,22 +23,26 @@ import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
 
 // Import types from their respective packages
-import type { HeaderConfig } from '@editorjs/header';
-import type { ListConfig } from '@editorjs/list';
-import type { QuoteConfig } from '@editorjs/quote';
-import type { CodeConfig } from '@editorjs/code';
-import type { LinkToolConfig } from '@editorjs/link';
-import type { ImageToolConfig } from '@editorjs/image';
-import type { EmbedConfig } from '@editorjs/embed';
-import type { TableConfig } from '@editorjs/table';
-import type { WarningData } from '@editorjs/warning';
-import type { RawData } from '@editorjs/raw';
-import type { AttachesConfig } from '@editorjs/attaches';
+import type { HeaderData, HeaderConfig } from '@editorjs/header';
+import type { ListData, ListConfig } from '@editorjs/list';
+import type { QuoteData, QuoteConfig } from '@editorjs/quote';
+import type { CodeData, CodeConfig } from '@editorjs/code';
+import type { LinkToolData, LinkToolConfig } from '@editorjs/link';
+import type { ImageToolData, ImageToolConfig } from '@editorjs/image';
+import type { EmbedToolData, EmbedToolConfig } from '@editorjs/embed';
+import type { TableData, TableConfig } from '@editorjs/table';
+import type { WarningData, WarningConfig } from '@editorjs/warning';
+import type { RawData, RawConfig } from '@editorjs/raw';
+import type { AttachesData, AttachesConfig } from '@editorjs/attaches';
 
 interface EditorProps {
   data: OutputData;
   setData: (data: OutputData) => void;
 }
+
+type EditorCore = EditorJS & {
+  isReady: Promise<void>;
+};
 
 const EDITOR_JS_TOOLS = {
   header: {
@@ -183,10 +188,10 @@ const EDITOR_JS_TOOLS = {
 };
 
 export default function Editor({ data, setData }: EditorProps) {
-  const editorCore = useRef<any>(null);
+  const editorCore = useRef<EditorCore | null>(null);
   const ReactEditorJS = createReactEditorJS();
 
-  const handleInitialize = useCallback((instance: EditorJS) => {
+  const handleInitialize = useCallback((instance: EditorCore) => {
     if (!instance) return;
     
     instance.isReady
@@ -197,8 +202,17 @@ export default function Editor({ data, setData }: EditorProps) {
   }, []);
 
   const handleSave = useCallback(async () => {
-    const savedData = await editorCore.current.save();
-    setData(savedData);
+    if (!editorCore.current) {
+      console.error("Editor instance not initialized");
+      return;
+    }
+    
+    try {
+      const savedData = await editorCore.current.save();
+      setData(savedData);
+    } catch (err) {
+      console.error("Failed to save editor data:", err);
+    }
   }, [setData]);
 
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS, { type OutputData, type API, type ToolConstructable, type BlockToolData } from "@editorjs/editorjs";
+import EditorJS, { type OutputData, type ToolConstructable } from "@editorjs/editorjs";
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
@@ -31,7 +31,7 @@ import { useDropzone } from 'react-dropzone';
 interface EditorTools {
   [key: string]: {
     class: ToolConstructable;
-    inlineToolbar?: boolean;
+    inlineToolbar?: boolean | string[];
     config?: Record<string, unknown>;
   };
 }

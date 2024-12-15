@@ -1,24 +1,22 @@
 import EditorJS, { OutputData } from '@editorjs/editorjs';
-import Header from "@editorjs/header";
-import List from "@editorjs/list";
-import NestedList from "@editorjs/nested-list";
-import Paragraph from "@editorjs/paragraph";
-import Checklist from "@editorjs/checklist";
-import Quote from "@editorjs/quote";
-import Code from "@editorjs/code";
-import Delimiter from "@editorjs/delimiter";
-import InlineCode from "@editorjs/inline-code";
-import LinkTool from "@editorjs/link";
-import Image from "@editorjs/image";
-import Embed from "@editorjs/embed";
-import Table from "@editorjs/table";
-import Warning from "@editorjs/warning";
-import Marker from "@editorjs/marker";
-import Raw from "@editorjs/raw";
-import Attaches from "@editorjs/attaches";
-import SimpleImage from "@editorjs/simple-image";
-import { ChartTool } from './ChartTool';
-import { TradingViewTool } from './TradingViewTool';
+import Header from '@editorjs/header';
+import List from '@editorjs/list';
+import NestedList from '@editorjs/nested-list';
+import Paragraph from '@editorjs/paragraph';
+import Checklist from '@editorjs/checklist';
+import Quote from '@editorjs/quote';
+import Code from '@editorjs/code';
+import Delimiter from '@editorjs/delimiter';
+import InlineCode from '@editorjs/inline-code';
+import LinkTool from '@editorjs/link';
+import Image from '@editorjs/image';
+import Embed from '@editorjs/embed';
+import Table from '@editorjs/table';
+import Warning from '@editorjs/warning';
+import Marker from '@editorjs/marker';
+import Raw from '@editorjs/raw';
+import Attaches from '@editorjs/attaches';
+import SimpleImage from '@editorjs/simple-image';
 
 export interface EditorConfig {
   holder: string;
@@ -27,23 +25,26 @@ export interface EditorConfig {
   readOnly?: boolean;
 }
 
-export const createEditorConfig = ({ holder, data, onChange, readOnly = false }: EditorConfig): any => {
+export const createEditorConfig = ({ holder, data, onChange, readOnly = false }: EditorConfig) => {
   return {
     holder,
     readOnly,
     tools: {
       header: {
         class: Header,
-        inlineToolbar: ['link'],
+        inlineToolbar: true,
         config: {
-          placeholder: 'Enter a header',
-          levels: [1, 2, 3],
+          placeholder: 'Entrez un titre',
+          levels: [1, 2, 3, 4, 5, 6],
           defaultLevel: 2
         }
       },
       paragraph: {
         class: Paragraph,
-        inlineToolbar: true
+        inlineToolbar: true,
+        config: {
+          placeholder: 'Commencez à écrire...'
+        }
       },
       list: {
         class: List,
@@ -64,14 +65,14 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         class: Quote,
         inlineToolbar: true,
         config: {
-          quotePlaceholder: 'Enter a quote',
-          captionPlaceholder: 'Quote\'s author'
+          quotePlaceholder: 'Entrez une citation',
+          captionPlaceholder: 'Auteur de la citation'
         }
       },
       code: {
         class: Code,
         config: {
-          placeholder: 'Enter code'
+          placeholder: 'Entrez votre code ici'
         }
       },
       delimiter: {
@@ -90,7 +91,7 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         class: Image,
         config: {
           uploader: {
-            uploadByFile(file: File): Promise<{ success: number; file: { url: string } }> {
+            uploadByFile(file: File) {
               return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -104,18 +105,28 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
                 reader.readAsDataURL(file);
               });
             }
-          },
-          captionPlaceholder: 'Type caption (optional)'
+          }
         }
       },
       embed: {
         class: Embed,
-        inlineToolbar: true,
         config: {
           services: {
-            youtube: true,
-            codesandbox: true,
-            codepen: true
+            youtube: {
+              regex: /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+              height: 320,
+              width: 580
+            },
+            codesandbox: {
+              regex: /https?:\/\/codesandbox\.io\/s\/([a-zA-Z0-9_-]+)/,
+              height: 500,
+              width: '100%'
+            },
+            codepen: {
+              regex: /https?:\/\/codepen\.io\/([^\/]+)\/pen\/([a-zA-Z0-9_-]+)/,
+              height: 300,
+              width: '100%'
+            }
           }
         }
       },
@@ -131,7 +142,7 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         class: Warning,
         inlineToolbar: true,
         config: {
-          titlePlaceholder: 'Title',
+          titlePlaceholder: 'Titre',
           messagePlaceholder: 'Message'
         }
       },
@@ -142,14 +153,14 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
       raw: {
         class: Raw,
         config: {
-          placeholder: 'Enter raw HTML'
+          placeholder: 'Entrez du HTML brut'
         }
       },
       attaches: {
         class: Attaches,
         config: {
           uploader: {
-            uploadByFile(file: File): Promise<{ success: number; file: { url: string, name: string, size: number } }> {
+            uploadByFile(file: File) {
               return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -170,20 +181,6 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
       },
       simpleImage: {
         class: SimpleImage
-      },
-      chart: {
-        class: ChartTool,
-        inlineToolbar: true,
-        config: {
-          placeholder: 'Add chart data'
-        }
-      },
-      tradingview: {
-        class: TradingViewTool,
-        inlineToolbar: true,
-        config: {
-          placeholder: 'Add TradingView widget'
-        }
       }
     },
     data: data || {
@@ -192,21 +189,21 @@ export const createEditorConfig = ({ holder, data, onChange, readOnly = false }:
         {
           type: "paragraph",
           data: {
-            text: "Start writing your amazing post..."
+            text: "Commencez à écrire votre article..."
           }
         }
       ],
       version: "2.28.2"
     },
     onReady: () => {
-      console.log('Editor.js is ready to work!');
+      console.log('Editor.js est prêt !');
     },
-    onChange: (data: OutputData) => {
-      onChange?.(data);
-      console.log('Content changed:', data);
+    onChange: async (api: EditorJS) => {
+      const savedData = await api.saver.save();
+      onChange?.(savedData);
     },
     autofocus: true,
-    placeholder: 'Start writing your amazing post...',
+    placeholder: 'Commencez à écrire votre article...',
     inlineToolbar: true
   };
 };
