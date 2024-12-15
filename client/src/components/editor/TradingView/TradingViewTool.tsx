@@ -140,52 +140,69 @@ class TradingViewTool {
 
     const div = document.createElement('div');
     div.className = 'tradingview-widget-container';
+    div.style.height = this.data.height + 'px';
     
     const widgetDiv = document.createElement('div');
     widgetDiv.className = 'tradingview-widget-container__widget';
-    widgetDiv.style.height = this.data.height || '400px';
-    const widgetId = 'tradingview_' + Math.random().toString(36).substring(7);
-    widgetDiv.id = widgetId;
+    widgetDiv.style.height = '100%';
+    widgetDiv.style.width = '100%';
     
     div.appendChild(widgetDiv);
-    
+
     if (!widgetContainer) {
       this.container.appendChild(div);
+    } else {
+      widgetContainer.replaceWith(div);
     }
-
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
 
     const scriptConfig = {
       ...this.data.settings,
-      width: this.data.width,
-      height: this.data.height,
+      width: '100%',
+      height: '100%',
       theme: this.data.theme,
-      container_id: widgetId
+      container_id: widgetDiv.id
     };
 
     switch (this.data.widgetType) {
-      case 'ADVANCED_CHART':
-        script.src = 'https://s3.tradingview.com/tv.js';
-        script.onload = () => {
-          // @ts-ignore
-          new TradingView.widget(scriptConfig);
-        };
+      case 'ADVANCED_CHART': {
+        const script = document.createElement('script');
+        script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+        script.type = 'text/javascript';
+        script.async = true;
+        script.innerHTML = JSON.stringify({
+          autosize: true,
+          symbol: scriptConfig.symbol || "NASDAQ:AAPL",
+          interval: "D",
+          timezone: "exchange",
+          theme: scriptConfig.theme,
+          style: "1",
+          locale: "en",
+          enable_publishing: false,
+          allow_symbol_change: true,
+          calendar: false
+        });
+        div.appendChild(script);
         break;
-
-      case 'STOCK_HEATMAP':
+      }
+      case 'STOCK_HEATMAP': {
+        const script = document.createElement('script');
         script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
+        script.type = 'text/javascript';
+        script.async = true;
         script.innerHTML = JSON.stringify(scriptConfig);
+        div.appendChild(script);
         break;
-
-      case 'FOREX_HEATMAP':
+      }
+      case 'FOREX_HEATMAP': {
+        const script = document.createElement('script');
         script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-forex-heat-map.js';
+        script.type = 'text/javascript';
+        script.async = true;
         script.innerHTML = JSON.stringify(scriptConfig);
+        div.appendChild(script);
         break;
+      }
     }
-
-    div.appendChild(script);
   }
 
   render() {
@@ -207,8 +224,7 @@ class TradingViewTool {
     );
 
     this.container.appendChild(configButton);
-    setTimeout(() => this.renderWidget(), 100);
-
+    this.renderWidget();
     return this.container;
   }
 
@@ -235,5 +251,4 @@ class TradingViewTool {
   }
 }
 
-
-export { TradingViewTool as default };
+export default TradingViewTool;
