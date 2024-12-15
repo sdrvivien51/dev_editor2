@@ -6,11 +6,85 @@
   border: 1px solid var(--border);
 }
 
+/* Ensure modal is above editor content */
+.chart-config-modal {
+  z-index: 9999;
+}
+
+/* Style select inputs */
+.chart-tool-select {
+  z-index: 50;
+  position: relative;
+}
+
 .chart-canvas {
   width: 100%;
   height: 300px;
+  max-height: 300px;
   margin-top: 1rem;
   border-radius: 0.25rem;
+}
+
+/* Fix z-index issues */
+.ce-toolbar__content {
+  z-index: 1000 !important;
+}
+
+.ce-inline-toolbar {
+  z-index: 1001 !important;
+}
+
+.ce-conversion-toolbar {
+  z-index: 1001 !important;
+}
+
+.ce-settings {
+  z-index: 1002 !important;
+}
+
+/* Editor.js plus button and toolbar */
+.ce-toolbar__plus {
+  z-index: 1000 !important;
+}
+
+.ce-toolbar__actions {
+  z-index: 1000 !important;
+}
+
+/* Ensure tools menu is above content */
+.ce-popover {
+  z-index: 1002 !important;
+}
+
+.ce-popover-item {
+  z-index: 1002 !important;
+}
+
+.ce-popover--opened {
+  z-index: 1002 !important;
+}
+
+/* Tools settings */
+.ce-settings__button {
+  z-index: 999 !important;
+}
+
+.ce-conversion-tool {
+  z-index: 999 !important;
+}
+
+/* Ensure modal and select are above editor content */
+[role="dialog"],
+[role="listbox"],
+.chart-tool-select,
+select {
+  z-index: 9999 !important;
+}
+
+/* Ensure select dropdowns are visible */
+.chart-tool-container select {
+  position: relative;
+  z-index: 9999 !important;
 }
 
 .chart-tool-container button {

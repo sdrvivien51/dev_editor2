@@ -98,7 +98,7 @@ export default class ChartTool {
     const canvas = document.createElement('canvas');
     canvas.classList.add('chart-canvas');
     canvas.style.width = '100%';
-    canvas.style.height = '300px';
+    canvas.style.height = '200px';
     canvas.style.marginTop = '1rem';
 
     const configButton = document.createElement('div');
@@ -143,12 +143,18 @@ export default class ChartTool {
   }
 
   destroy() {
-    if (this.chart) {
-      this.chart.destroy();
+    try {
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      if (this.modalRoot && document.body.contains(this.modalRoot)) {
+        document.body.removeChild(this.modalRoot);
+      }
+    } catch (error) {
+      console.warn('Error during cleanup:', error);
     }
-    if (this.modalRoot) {
-      document.body.removeChild(this.modalRoot);
-    }
+    this.modalRoot = null;
+    this.modalContainer = null;
   }
 
   static get sanitize() {

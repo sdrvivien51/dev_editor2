@@ -1,37 +1,39 @@
 import React from 'react';
-import EditorJS, { OutputData as EditorData } from '@editorjs/editorjs';
+import EditorJS from '@editorjs/editorjs';
 import { EDITOR_JS_TOOLS } from './Tool';
 import './Chart/Chart.css';
 
-type OutputData = EditorData;
-
 interface EditorProps {
-  data: OutputData;
-  setData: (data: OutputData) => void;
+  data: EditorJS.OutputData;
+  setData: (data: EditorJS.OutputData) => void;
 }
 
 export default function Editor({ data, setData }: EditorProps) {
   const editorRef = React.useRef<EditorJS | null>(null);
+  const holderRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const initEditor = async () => {
-      if (!editorRef.current) {
-        const editor = new EditorJS({
-          holder: 'editor',
-          tools: EDITOR_JS_TOOLS,
-          data,
-          onChange: async () => {
-            const savedData = await editor.save();
-            setData(savedData);
-          },
-        });
-        
-        await editor.isReady;
-        editorRef.current = editor;
-      }
-    };
+    if (editorRef.current || !holderRef.current) return;
 
-    initEditor().catch(console.error);
+    const editor = new EditorJS({
+      holder: holderRef.current,
+      tools: EDITOR_JS_TOOLS,
+      data,
+      onChange: async () => {
+        try {
+          const savedData = await editor.save();
+          setData(savedData);
+        } catch (error) {
+          console.error('Editor save error:', error);
+        }
+      },
+    });
+
+    editor.isReady
+      .then(() => {
+        editorRef.current = editor;
+      })
+      .catch(console.error);
 
     return () => {
       if (editorRef.current) {
@@ -43,7 +45,7 @@ export default function Editor({ data, setData }: EditorProps) {
 
   return (
     <div className="relative min-h-[500px] w-full border rounded-md">
-      <div id="editor" className="prose max-w-none" />
+      <div ref={holderRef} className="prose max-w-none" />
     </div>
   );
 }

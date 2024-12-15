@@ -24,9 +24,8 @@ export const EDITOR_JS_TOOLS: { [key: string]: ToolConstructable | ToolSettings 
     class: Paragraph,
     inlineToolbar: true,
     config: {
-      placeholder:
-        'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
-    },
+      placeholder: 'Write something...'
+    }
   },
   embed: Embed,
   table: Table,
