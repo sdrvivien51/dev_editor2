@@ -19,6 +19,9 @@ export default function Editor({ data, setData }: EditorProps) {
       holder: holderRef.current,
       tools: EDITOR_JS_TOOLS,
       data,
+      onReady: () => {
+        MermaidTool.config({ theme: 'neutral' });
+      },
       onChange: async () => {
         try {
           const savedData = await editor.save();

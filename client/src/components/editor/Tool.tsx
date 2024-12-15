@@ -14,9 +14,8 @@ import Table from '@editorjs/table'
 import Warning from '@editorjs/warning'
 import Paragraph from '@editorjs/paragraph'
 import ChartTool from './Chart/ChartTool'
-import TradingViewTool from './TradingView/TradingViewTool'
+import MermaidTool from 'editorjs-mermaid'
 import './Chart/Chart.css'
-import './TradingView/TradingView.css'
 
 // We use any here because some Editor.js tools don't have proper TypeScript definitions
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
@@ -42,5 +41,10 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
       placeholder: 'Add a chart'
     }
   },
-  tradingview: TradingViewTool
+  mermaid: {
+    class: MermaidTool,
+    config: {
+      theme: 'neutral'
+    }
+  }
 }
