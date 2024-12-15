@@ -1,7 +1,7 @@
 
 import { useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
-import type EditorJS, { OutputData } from '@editorjs/editorjs';
+import type { EditorJS, OutputData } from '@editorjs/editorjs';
 import { Chart, registerables } from 'chart.js/auto';
 Chart.register(...registerables);
 import Header from '@editorjs/header';
