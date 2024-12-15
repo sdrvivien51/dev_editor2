@@ -109,7 +109,7 @@ export default function Editor() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-[600px] mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
         <Breadcrumb>
           <BreadcrumbItem>
