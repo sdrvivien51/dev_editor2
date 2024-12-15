@@ -184,12 +184,21 @@ const EDITOR_JS_TOOLS = {
   },
   chart: {
     class: ChartTool,
-    inlineToolbar: true,
     config: {
-      height: 400
+      height: 400,
+      defaultChartType: 'bar'
     }
   }
 };
+
+const saveButton = document.getElementById('save-button');
+const output = document.getElementById('output');
+
+saveButton.addEventListener('click', () => {
+  editor.save().then((savedData) => {
+    output.innerText = JSON.stringify(savedData, null, 4);
+  });
+});
 
 export default function Editor({ data, setData }: EditorProps) {
   const editorCore = useRef<EditorCore | null>(null);
