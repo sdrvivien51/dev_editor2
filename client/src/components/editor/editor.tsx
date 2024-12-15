@@ -4,7 +4,6 @@ import { createReactEditorJS } from "react-editor-js";
 import type EditorJS, { OutputData } from '@editorjs/editorjs';
 import { Chart, registerables } from 'chart.js/auto';
 Chart.register(...registerables);
-import type { OutputData } from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import NestedList from '@editorjs/nested-list';
@@ -23,7 +22,8 @@ import Marker from '@editorjs/marker';
 import Raw from '@editorjs/raw';
 import Attaches from '@editorjs/attaches';
 import SimpleImage from '@editorjs/simple-image';
-
+import TradingViewTool from './tool/TradingViewTool';
+import ChartTool from './tool/ChartTool';
 
 interface EditorProps {
   data: OutputData;
@@ -34,25 +34,7 @@ type EditorCore = EditorJS & {
   isReady: Promise<void>;
 };
 
-import TradingViewTool from './tool/TradingViewTool';
-import ChartTool from './tool/ChartTool';
-
 const EDITOR_JS_TOOLS = {
-  tradingview: {
-    class: TradingViewTool,
-    inlineToolbar: true,
-    config: {
-      height: 400
-    }
-  },
-  chart: {
-    class: ChartTool,
-    inlineToolbar: true,
-    icon: '<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">',
-    config: {
-      height: 400
-    }
-  },
   header: {
     class: Header,
     inlineToolbar: true,
@@ -74,7 +56,7 @@ const EDITOR_JS_TOOLS = {
     inlineToolbar: true,
     config: {
       defaultStyle: 'unordered'
-    } as ListConfig
+    }
   },
   nestedList: {
     class: NestedList,
@@ -90,13 +72,13 @@ const EDITOR_JS_TOOLS = {
     config: {
       quotePlaceholder: 'Entrez une citation',
       captionPlaceholder: 'Auteur de la citation'
-    } as QuoteConfig
+    }
   },
   code: {
     class: Code,
     config: {
       placeholder: 'Entrez du code'
-    } as CodeConfig
+    }
   },
   delimiter: {
     class: Delimiter
@@ -108,7 +90,7 @@ const EDITOR_JS_TOOLS = {
     class: LinkTool,
     config: {
       endpoint: '/api/fetch-link'
-    } as LinkToolConfig
+    }
   },
   image: {
     class: Image,
@@ -129,7 +111,7 @@ const EDITOR_JS_TOOLS = {
           });
         }
       }
-    } as ImageToolConfig
+    }
   },
   embed: {
     class: Embed,
@@ -139,7 +121,7 @@ const EDITOR_JS_TOOLS = {
         codesandbox: true,
         codepen: true
       }
-    } as EmbedToolConfig
+    }
   },
   table: {
     class: Table,
@@ -147,7 +129,7 @@ const EDITOR_JS_TOOLS = {
     config: {
       rows: 2,
       cols: 3
-    } as TableConfig
+    }
   },
   warning: {
     class: Warning,
@@ -155,7 +137,7 @@ const EDITOR_JS_TOOLS = {
     config: {
       titlePlaceholder: 'Titre',
       messagePlaceholder: 'Message'
-    } as WarningConfig
+    }
   },
   marker: {
     class: Marker,
@@ -165,7 +147,7 @@ const EDITOR_JS_TOOLS = {
     class: Raw,
     config: {
       placeholder: 'Entrez du HTML brut'
-    } as RawConfig
+    }
   },
   attaches: {
     class: Attaches,
@@ -188,10 +170,24 @@ const EDITOR_JS_TOOLS = {
           });
         }
       }
-    } as AttachesConfig
+    }
   },
   simpleImage: {
     class: SimpleImage
+  },
+  tradingview: {
+    class: TradingViewTool,
+    inlineToolbar: true,
+    config: {
+      height: 400
+    }
+  },
+  chart: {
+    class: ChartTool,
+    inlineToolbar: true,
+    config: {
+      height: 400
+    }
   }
 };
 
@@ -224,7 +220,7 @@ export default function Editor({ data, setData }: EditorProps) {
   }, [setData]);
 
   return (
-    <div className="editor-container">
+    <div className="editor-container prose max-w-none">
       <h4 className="edit-mode-alert">Mode édition activé</h4>
       <ReactEditorJS
         onInitialize={handleInitialize}

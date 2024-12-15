@@ -1,24 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+
+import { useState } from "react";
 import { useLocation } from "wouter";
-import EditorJS, { type OutputData, type ToolConstructable } from "@editorjs/editorjs";
-import Header from '@editorjs/header';
-import List from '@editorjs/list';
-import NestedList from '@editorjs/nested-list';
-import Paragraph from '@editorjs/paragraph';
-import Checklist from '@editorjs/checklist';
-import Quote from '@editorjs/quote';
-import Code from '@editorjs/code';
-import Delimiter from '@editorjs/delimiter';
-import InlineCode from '@editorjs/inline-code';
-import LinkTool from '@editorjs/link';
-import Image from '@editorjs/image';
-import Embed from '@editorjs/embed';
-import Table from '@editorjs/table';
-import Warning from '@editorjs/warning';
-import Marker from '@editorjs/marker';
-import Raw from '@editorjs/raw';
-import Attaches from '@editorjs/attaches';
-import SimpleImage from '@editorjs/simple-image';
+import { type OutputData } from "@editorjs/editorjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,25 +10,13 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/brea
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useDropzone } from 'react-dropzone';
+import Editor from "@/components/editor/editor";
 
-interface EditorTools {
-  [key: string]: {
-    class: ToolConstructable;
-    inlineToolbar?: boolean | string[];
-    config?: Record<string, unknown>;
-  };
-}
-
-interface EditorInstance extends EditorJS {
-  isReady: Promise<void>;
-}
-
-export default function Editor() {
-  const editorRef = useRef<EditorInstance | null>(null);
+export default function EditorPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isEditorReady, setIsEditorReady] = useState(false);
+  const [editorData, setEditorData] = useState<OutputData>({ blocks: [] });
   const [bannerImage, setBannerImage] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string>("");
   const [, setLocation] = useLocation();
@@ -101,208 +72,6 @@ export default function Editor() {
     }
   });
 
-  useEffect(() => {
-    const initEditor = async () => {
-      const editorElement = document.getElementById('editorjs');
-      if (!editorElement) {
-        console.error('Editor element not found');
-        return;
-      }
-
-      if (editorRef.current) {
-        try {
-          await editorRef.current.destroy();
-          editorRef.current = null;
-        } catch (e) {
-          console.error('Error destroying editor:', e);
-        }
-      }
-
-      try {
-        const tools: EditorTools = {
-          header: {
-            class: Header as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              levels: [1, 2, 3, 4],
-              defaultLevel: 2
-            }
-          },
-          paragraph: {
-            class: Paragraph as unknown as ToolConstructable,
-            inlineToolbar: true
-          },
-          list: {
-            class: List as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              defaultStyle: 'unordered'
-            }
-          },
-          nestedList: {
-            class: NestedList as unknown as ToolConstructable,
-            inlineToolbar: true
-          },
-          checklist: {
-            class: Checklist as unknown as ToolConstructable,
-            inlineToolbar: true
-          },
-          quote: {
-            class: Quote as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              quotePlaceholder: 'Enter a quote',
-              captionPlaceholder: 'Quote\'s author'
-            }
-          },
-          code: {
-            class: Code as unknown as ToolConstructable,
-            config: {
-              placeholder: 'Enter code'
-            }
-          },
-          delimiter: {
-            class: Delimiter as unknown as ToolConstructable
-          },
-          inlineCode: {
-            class: InlineCode as unknown as ToolConstructable
-          },
-          linkTool: {
-            class: LinkTool as unknown as ToolConstructable,
-            config: {
-              endpoint: '/api/fetch-link'
-            }
-          },
-          image: {
-            class: Image as unknown as ToolConstructable,
-            config: {
-              uploader: {
-                uploadByFile(file: File): Promise<{ success: number; file: { url: string } }> {
-                  return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      resolve({
-                        success: 1,
-                        file: {
-                          url: reader.result as string
-                        }
-                      });
-                    };
-                    reader.readAsDataURL(file);
-                  });
-                }
-              }
-            }
-          },
-          embed: {
-            class: Embed as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              services: {
-                youtube: true,
-                codesandbox: true,
-                codepen: true
-              }
-            }
-          },
-          table: {
-            class: Table as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              rows: 2,
-              cols: 3
-            }
-          },
-          warning: {
-            class: Warning as unknown as ToolConstructable,
-            inlineToolbar: true,
-            config: {
-              titlePlaceholder: 'Title',
-              messagePlaceholder: 'Message'
-            }
-          },
-          marker: {
-            class: Marker as unknown as ToolConstructable,
-            inlineToolbar: true
-          },
-          raw: {
-            class: Raw as unknown as ToolConstructable
-          },
-          attaches: {
-            class: Attaches as unknown as ToolConstructable,
-            config: {
-              uploader: {
-                uploadByFile(file: File): Promise<{ success: number; file: { url: string; name: string; size: number } }> {
-                  return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      resolve({
-                        success: 1,
-                        file: {
-                          url: reader.result as string,
-                          name: file.name,
-                          size: file.size
-                        }
-                      });
-                    };
-                    reader.readAsDataURL(file);
-                  });
-                }
-              }
-            }
-          },
-          simpleImage: {
-            class: SimpleImage as unknown as ToolConstructable
-          }
-        };
-
-        const editor = new EditorJS({
-          holder: 'editorjs',
-          tools,
-          placeholder: 'Start writing your post...',
-          minHeight: 200,
-          onChange: async () => {
-            try {
-              const data = await editor.save();
-              console.log('Content changed:', data);
-            } catch (e) {
-              console.error('Error saving editor content:', e);
-            }
-          }
-        }) as EditorInstance;
-
-        await editor.isReady;
-        editorRef.current = editor;
-        setIsEditorReady(true);
-        console.log('Editor initialized successfully');
-      } catch (error) {
-        console.error('Editor initialization error:', error);
-        toast({
-          title: "Editor initialization failed",
-          description: "Please refresh the page and try again",
-          variant: "destructive"
-        });
-      }
-    };
-
-    const timeoutId = setTimeout(initEditor, 100);
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (editorRef.current) {
-        const cleanup = async () => {
-          try {
-            await editorRef.current?.destroy();
-            editorRef.current = null;
-          } catch (e) {
-            console.error('Error during cleanup:', e);
-          }
-        };
-        cleanup();
-      }
-    };
-  }, [toast]);
-
   const handleSave = async () => {
     if (!title.trim()) {
       toast({
@@ -313,19 +82,9 @@ export default function Editor() {
       return;
     }
 
-    if (!isEditorReady || !editorRef.current) {
-      toast({
-        title: "Editor not ready",
-        description: "Please wait for the editor to initialize",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
       setIsLoading(true);
-      const content = await editorRef.current.save();
-      await saveMutation.mutateAsync({ title, content });
+      await saveMutation.mutateAsync({ title, content: editorData });
     } catch (error) {
       console.error("Save error:", error);
       toast({
@@ -351,7 +110,7 @@ export default function Editor() {
         </Breadcrumb>
         <Button 
           onClick={handleSave} 
-          disabled={isLoading || !title.trim() || !isEditorReady}
+          disabled={isLoading || !title.trim()}
         >
           {isLoading ? "Saving..." : "Save Post"}
         </Button>
@@ -399,7 +158,7 @@ export default function Editor() {
 
       <Separator className="my-8" />
       
-      <div id="editorjs" className="prose max-w-none min-h-[200px]" />
+      <Editor data={editorData} setData={setEditorData} />
     </div>
   );
 }
