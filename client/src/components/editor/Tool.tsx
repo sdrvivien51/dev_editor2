@@ -27,7 +27,7 @@ import Tooltip from 'editorjs-tooltip';
 export const EDITOR_JS_TOOLS: { [key: string]: any } = {
   paragraph: {
     class: Paragraph,
-    inlineToolbar: ['marker', 'inlineCode', 'link', 'tooltip'],
+    inlineToolbar: ['bold', 'italic', 'marker', 'inlineCode', 'link' ],
   },
   tooltip: {
     class: Tooltip,
@@ -38,7 +38,7 @@ export const EDITOR_JS_TOOLS: { [key: string]: any } = {
       highlightColor: '#F8F9FA',
       backgroundColor: '#1F2937',
       textColor: '#FFFFFF',
-      holder: 'editorjs'
+      holder: 'holderRef'
     }
   },
   embed: Embed,
