@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import EditorJS from "@editorjs/editorjs";
@@ -7,10 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
-import { editorConfig } from "@/lib/editor";
+import { createEditorConfig } from "@/lib/editor";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import ImageUpload from "../components/editor/ImageUpload";
 
 export default function Editor() {
   const editorRef = useRef<EditorJS | null>(null);
@@ -48,68 +46,39 @@ export default function Editor() {
   });
 
   useEffect(() => {
-    let isMounted = true;
-    let destroyTimer: number;
-
     const initEditor = async () => {
-      if (!isMounted) return;
-      
-      const editorElement = document.getElementById('editorjs');
-      if (!editorElement || editorRef.current) return;
+      if (!document.getElementById('editorjs')) {
+        console.error('Editor holder element not found');
+        return;
+      }
 
       try {
-        const editor = new EditorJS({
-          ...createEditorConfig(editorElement),
-          data: {
-            time: Date.now(),
-            blocks: [
-              {
-                type: "paragraph",
-                data: {
-                  text: "Start writing your amazing post..."
-                }
-              }
-            ]
-          },
-          onReady: () => {
-            console.log('Editor.js is ready to work!');
-          },
-          onChange: async () => {
-            if (editorRef.current) {
-              try {
-                const content = await editorRef.current.save();
-                console.log('Content changed:', content);
-              } catch (error) {
-                console.error('Save error:', error);
-              }
-            }
-          },
-        });
-
-        await editor.isReady;
-        if (isMounted) {
-          editorRef.current = editor;
+        if (editorRef.current) {
+          await editorRef.current.destroy();
+          editorRef.current = null;
         }
+
+        const editor = new EditorJS(createEditorConfig({
+          holder: 'editorjs',
+          onChange: async (outputData) => {
+            console.log('Content changed:', outputData);
+          }
+        }));
+        
+        editorRef.current = editor;
+        await editor.isReady;
+        console.log('Editor initialized successfully');
       } catch (error) {
         console.error('Editor.js initialization error:', error);
       }
     };
 
-    // Ensure DOM is ready before initialization
-    if (document.readyState === 'complete') {
-      initEditor();
-    } else {
-      destroyTimer = window.setTimeout(initEditor, 100);
-    }
+    initEditor();
 
     return () => {
-      isMounted = false;
-      if (destroyTimer) {
-        clearTimeout(destroyTimer);
-      }
       if (editorRef.current) {
         editorRef.current.destroy()
-          .catch(e => console.error('Editor destroy error:', e));
+          .catch(e => console.error('Error destroying editor:', e));
         editorRef.current = null;
       }
     };
@@ -176,7 +145,6 @@ export default function Editor() {
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
         />
-        <ImageUpload />
       </div>
 
       <Separator className="my-8" />
