@@ -14,19 +14,13 @@ import Table from '@editorjs/table'
 import Warning from '@editorjs/warning'
 import Paragraph from '@editorjs/paragraph'
 import ChartTool from './Chart/ChartTool'
+import TradingViewTool from './TradingView/TradingViewTool'
+import './Chart/Chart.css'
+import './TradingView/TradingView.css'
 
-
-
-import { API, ToolConstructable, ToolSettings } from '@editorjs/editorjs';
-
-export const EDITOR_JS_TOOLS: { [key: string]: ToolConstructable | ToolSettings } = {
-  paragraph: {
-    class: Paragraph,
-    inlineToolbar: true,
-    config: {
-      placeholder: 'Write something...'
-    }
-  },
+// We use any here because some Editor.js tools don't have proper TypeScript definitions
+export const EDITOR_JS_TOOLS: { [key: string]: any } = {
+  paragraph: Paragraph,
   embed: Embed,
   table: Table,
   list: List,
@@ -44,5 +38,15 @@ export const EDITOR_JS_TOOLS: { [key: string]: ToolConstructable | ToolSettings 
   chart: {
     class: ChartTool,
     inlineToolbar: true,
+    config: {
+      placeholder: 'Add a chart'
+    }
   },
+  tradingview: {
+    class: TradingViewTool,
+    inlineToolbar: true,
+    config: {
+      placeholder: 'Add TradingView widget'
+    }
+  }
 }

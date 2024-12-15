@@ -1,0 +1,61 @@
+.tradingview-tool-container {
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  margin: 1rem 0;
+  position: relative;
+}
+
+.tradingview-widget-container {
+  margin-top: 1rem;
+  width: 100%;
+  height: 300px;
+  max-height: 300px;
+  position: relative;
+  z-index: 1;
+}
+
+.tradingview-tool-container {
+  position: relative;
+  z-index: auto;
+}
+
+/* Fix z-index issues with editor */
+.ce-toolbar__content {
+  z-index: 100 !important;
+}
+
+.ce-inline-toolbar {
+  z-index: 101 !important;
+}
+
+.ce-conversion-toolbar {
+  z-index: 101 !important;
+}
+
+.ce-toolbar__plus {
+  z-index: 100 !important;
+}
+
+.ce-toolbar__settings-btn {
+  z-index: 100 !important;
+}
+
+/* Ensure modal and select dropdowns are above editor content */
+.tradingview-tool-container [role="dialog"],
+.tradingview-tool-container [role="listbox"],
+.tradingview-tool-select {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+/* Style select inputs */
+.tradingview-tool-select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  background: var(--background);
+  margin-top: 0.5rem;
+}
