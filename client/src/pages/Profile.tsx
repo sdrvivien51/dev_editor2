@@ -4,6 +4,7 @@ import ProfileBanner from '../components/profile/ProfileBanner';
 import ProfileInfo from '../components/profile/ProfileInfo';
 import ProfileTabs from '../components/profile/ProfileTabs';
 import type { ProfileUser } from '../types/profile';
+import { Input, Button } from 'some-ui-library'; // Added import for Input and Button components.  Replace 'some-ui-library' with the actual library.
 
 function Profile() {
   // Mock data - à remplacer par les vraies données de l'utilisateur
@@ -71,7 +72,7 @@ function Profile() {
         <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-start gap-6">
             {/* Avatar */}
-            <div className="relative w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-lg flex-shrink-0">
+            <div className="relative w-24 h-24 rounded-[6px] border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-100 dark:bg-gray-800 shadow-lg flex-shrink-0"> {/* Changed border-radius to 6px */}
               {user.avatar ? (
                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
               ) : (
@@ -82,31 +83,33 @@ function Profile() {
             </div>
             
             {/* Informations principales */}
-            <div className="flex-1 space-y-3">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.name}</h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400">{user.tagline}</p>
-              </div>
-
-              {user.description && (
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  {user.description}
-                </p>
-              )}
-
-              <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                {user.age && (
-                  <div className="flex items-center gap-1">
-                    <CalendarIcon className="w-4 h-4" />
-                    <span>{user.age} ans</span>
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {user.name}
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-400">{user.tagline}</p>
+                  {user.description && (
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                      {user.description}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="flex-shrink-0 ml-4">
+                  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+                    <h3 className="text-sm font-medium mb-2">Receive my latest tips</h3>
+                    <div className="flex gap-2">
+                      <Input 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        className="w-64"
+                      />
+                      <Button>Subscribe</Button>
+                    </div>
                   </div>
-                )}
-                {user.location && (
-                  <div className="flex items-center gap-1">
-                    <MapPinIcon className="w-4 h-4" />
-                    <span>{user.location}</span>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
