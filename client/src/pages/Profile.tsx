@@ -83,6 +83,26 @@ function Profile() {
               )}
             </div>
             
+            {/* Follow button and badges */}
+            <div className="absolute -bottom-4 left-0 flex items-center gap-2">
+              <Button variant="default" size="sm" className="shadow-lg">
+                Follow
+              </Button>
+            </div>
+
+            {/* Info badges */}
+            <div className="absolute -bottom-4 right-0 flex items-center gap-2">
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                5 YOE
+              </span>
+              <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                Paris, FR
+              </span>
+              <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">
+                ~6k€/month
+              </span>
+            </div>
+            
             {/* Informations principales */}
             <div className="flex-1">
               <div className="flex items-start justify-between">
