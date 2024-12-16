@@ -2,6 +2,7 @@ import React from 'react';
 import ProfileBanner from '../components/profile/ProfileBanner';
 import ProfileInfo from '../components/profile/ProfileInfo';
 import ProfileTabs from '../components/profile/ProfileTabs';
+import type { ProfileUser, Project, Experience, Post } from '../types/profile';
 
 function Profile() {
   // Mock data - à remplacer par les vraies données de l'utilisateur
@@ -15,16 +16,21 @@ function Profile() {
     skills: [
       { name: "React", level: "Advanced" },
       { name: "Node.js", level: "Intermediate" },
-      { name: "TypeScript", level: "Advanced" }
+      { name: "TypeScript", level: "Advanced" },
+      { name: "Python", level: "Intermediate" },
+      { name: "Docker", level: "Beginner" }
     ],
     certifications: [
       "AWS Certified Developer",
-      "Google Cloud Professional"
+      "Google Cloud Professional",
+      "MongoDB Professional Developer",
+      "React Native Specialist"
     ],
     languages: [
       { name: "Français", level: "Natif" },
       { name: "Anglais", level: "C1" },
-      { name: "Espagnol", level: "B2" }
+      { name: "Espagnol", level: "B2" },
+      { name: "Allemand", level: "A2" }
     ]
   };
 
@@ -56,16 +62,18 @@ function Profile() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm overflow-hidden">
+    <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden">
         <ProfileBanner />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 py-6">
-          {/* Left column */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
+          {/* Colonne de gauche */}
           <div className="lg:col-span-1">
-            <ProfileInfo user={user} />
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+              <ProfileInfo user={user} />
+            </div>
           </div>
           
-          {/* Right column */}
+          {/* Colonne de droite */}
           <div className="lg:col-span-2">
             <ProfileTabs 
               projects={projects}

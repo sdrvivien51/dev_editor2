@@ -1,8 +1,14 @@
 import React from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
-import { type Post, type Project, type Experience } from '../../types/profile';
+import type { Project, Experience, Post } from '../../types/profile';
 
-function ProfileTabs({ projects, experiences, posts }) {
+interface ProfileTabsProps {
+  projects: Project[];
+  experiences: Experience[];
+  posts: Post[];
+}
+
+function ProfileTabs({ projects, experiences, posts }: ProfileTabsProps) {
   return (
     <Tabs.Root defaultValue="portfolio" className="w-full">
       <Tabs.List className="flex border-b">
@@ -20,19 +26,19 @@ function ProfileTabs({ projects, experiences, posts }) {
         </Tabs.Trigger>
       </Tabs.List>
 
-      <Tabs.Content value="portfolio" className="py-4 space-y-8">
+      <Tabs.Content value="portfolio" className="py-6 space-y-8">
         {/* Projects Section */}
         <section>
           <h2 className="text-xl font-semibold mb-4">Projets</h2>
           <div className="space-y-4">
             {projects?.map((project, index) => (
-              <div key={index} className="p-4 border rounded-lg">
+              <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
                 <h3 className="font-medium">{project.name}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   {project.description}
                 </p>
                 {project.technologies && (
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     {project.technologies.map((tech, i) => (
                       <span
                         key={i}
@@ -53,7 +59,7 @@ function ProfileTabs({ projects, experiences, posts }) {
           <h2 className="text-xl font-semibold mb-4">Expériences</h2>
           <div className="space-y-4">
             {experiences?.map((exp, index) => (
-              <div key={index} className="p-4 border rounded-lg">
+              <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-medium">{exp.title}</h3>
@@ -74,10 +80,10 @@ function ProfileTabs({ projects, experiences, posts }) {
         </section>
       </Tabs.Content>
 
-      <Tabs.Content value="posts" className="py-4">
+      <Tabs.Content value="posts" className="py-6">
         <div className="space-y-4">
           {posts?.map((post, index) => (
-            <div key={index} className="p-4 border rounded-lg">
+            <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
               <h3 className="font-medium">{post.title}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {post.excerpt}
