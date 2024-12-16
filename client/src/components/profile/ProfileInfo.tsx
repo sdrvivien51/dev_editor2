@@ -25,18 +25,18 @@ function ProfileInfo({ user }: ProfileInfoProps) {
           
           {/* Accordion pour les éléments supplémentaires */}
           {hiddenItems.length > 0 && (
-            <Accordion.Root type="single" collapsible className="mt-2">
-              <Accordion.Item value="more">
-                <Accordion.Header>
-                  <Accordion.Trigger className="flex w-full items-center justify-between py-2">
-                    <ChevronDown className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-180" />
-                  </Accordion.Trigger>
-                </Accordion.Header>
-                <Accordion.Content className="pt-1 pb-2">
-                  <div className="space-y-2">
+            <Accordion.Root type="single" collapsible>
+              <Accordion.Item value="more" className="border-none">
+                <Accordion.Content className="data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden">
+                  <div className="space-y-2 pt-2">
                     {hiddenItems.map((item, index) => renderItem(item, visibleItems.length + index))}
                   </div>
                 </Accordion.Content>
+                <Accordion.Header className="mt-2">
+                  <Accordion.Trigger className="flex w-full items-center justify-center">
+                    <ChevronDown className="h-5 w-5 transition-transform duration-200 data-[state=open]:rotate-180" />
+                  </Accordion.Trigger>
+                </Accordion.Header>
               </Accordion.Item>
             </Accordion.Root>
           )}
