@@ -4,7 +4,8 @@ import ProfileBanner from '../components/profile/ProfileBanner';
 import ProfileInfo from '../components/profile/ProfileInfo';
 import ProfileTabs from '../components/profile/ProfileTabs';
 import type { ProfileUser } from '../types/profile';
-import { Input, Button } from 'some-ui-library'; // Added import for Input and Button components.  Replace 'some-ui-library' with the actual library.
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"; // Added import for Input and Button components.  Replace 'some-ui-library' with the actual library.
 
 function Profile() {
   // Mock data - à remplacer par les vraies données de l'utilisateur
