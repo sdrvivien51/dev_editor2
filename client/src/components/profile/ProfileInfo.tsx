@@ -28,8 +28,7 @@ function ProfileInfo({ user }: ProfileInfoProps) {
             <Accordion.Root type="single" collapsible className="mt-2">
               <Accordion.Item value="more">
                 <Accordion.Header>
-                  <Accordion.Trigger className="flex w-full items-center justify-between py-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-100">
-                    <span>Voir {hiddenItems.length} de plus</span>
+                  <Accordion.Trigger className="flex w-full items-center justify-between py-2">
                     <ChevronDown className="h-4 w-4 transition-transform duration-200 [&[data-state=open]>svg]:rotate-180" />
                   </Accordion.Trigger>
                 </Accordion.Header>
