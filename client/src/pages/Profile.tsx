@@ -1,7 +1,7 @@
 import React from 'react';
-import ProfileBanner from '../components/profile/ProfileBanner';
-import ProfileInfo from '../components/profile/ProfileInfo';
-import ProfileTabs from '../components/profile/ProfileTabs';
+import ProfileBanner from '../components/profile/ProfileBanner.tsx';
+import ProfileInfo from '../components/profile/ProfileInfo.tsx';
+import ProfileTabs from '../components/profile/ProfileTabs.tsx';
 import type { ProfileUser, Project, Experience, Post } from '../types/profile';
 
 function Profile() {
@@ -62,18 +62,18 @@ function Profile() {
   ];
 
   return (
-    <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden">
+    <div className="container max-w-[900px] mx-auto px-6 sm:px-8 py-10 sm:py-12">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden">
         <ProfileBanner />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
-          {/* Colonne de gauche */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6 sm:p-8">
+          {/* Colonne de gauche - Informations utilisateur */}
           <div className="lg:col-span-1">
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+            <div className="sticky top-4">
               <ProfileInfo user={user} />
             </div>
           </div>
           
-          {/* Colonne de droite */}
+          {/* Colonne de droite - Contenu */}
           <div className="lg:col-span-2">
             <ProfileTabs 
               projects={projects}

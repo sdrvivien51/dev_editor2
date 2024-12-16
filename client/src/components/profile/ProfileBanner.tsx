@@ -1,6 +1,10 @@
 import React from 'react';
 
-function ProfileBanner({ bannerUrl }) {
+interface ProfileBannerProps {
+  bannerUrl?: string;
+}
+
+function ProfileBanner({ bannerUrl }: ProfileBannerProps) {
   return (
     <div className="relative w-full h-[200px] bg-gray-200 dark:bg-gray-800 rounded-t-lg overflow-hidden">
       {bannerUrl ? (

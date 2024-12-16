@@ -3,12 +3,12 @@ import * as Tabs from '@radix-ui/react-tabs';
 import type { Project, Experience, Post } from '../../types/profile';
 
 interface ProfileTabsProps {
-  projects: Project[];
-  experiences: Experience[];
-  posts: Post[];
+  projects?: Project[];
+  experiences?: Experience[];
+  posts?: Post[];
 }
 
-function ProfileTabs({ projects, experiences, posts }: ProfileTabsProps) {
+function ProfileTabs({ projects = [], experiences = [], posts = [] }: ProfileTabsProps) {
   return (
     <Tabs.Root defaultValue="portfolio" className="w-full">
       <Tabs.List className="flex border-b">
@@ -31,7 +31,7 @@ function ProfileTabs({ projects, experiences, posts }: ProfileTabsProps) {
         <section>
           <h2 className="text-xl font-semibold mb-4">Projets</h2>
           <div className="space-y-4">
-            {projects?.map((project, index) => (
+            {projects.map((project, index) => (
               <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
                 <h3 className="font-medium">{project.name}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -58,7 +58,7 @@ function ProfileTabs({ projects, experiences, posts }: ProfileTabsProps) {
         <section>
           <h2 className="text-xl font-semibold mb-4">Expériences</h2>
           <div className="space-y-4">
-            {experiences?.map((exp, index) => (
+            {experiences.map((exp, index) => (
               <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
@@ -82,7 +82,7 @@ function ProfileTabs({ projects, experiences, posts }: ProfileTabsProps) {
 
       <Tabs.Content value="posts" className="py-6">
         <div className="space-y-4">
-          {posts?.map((post, index) => (
+          {posts.map((post, index) => (
             <div key={index} className="p-4 border rounded-lg hover:border-blue-500 transition-colors">
               <h3 className="font-medium">{post.title}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
