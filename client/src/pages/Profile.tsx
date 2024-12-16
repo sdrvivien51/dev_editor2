@@ -111,10 +111,10 @@ function Profile() {
                 <div className="text-sm text-gray-500">~6k€/month</div>
               </div>
             </div>
-          </div>iv>
+          </div>
 
-            {/* Info badges */}
-            <div className="absolute -bottom-4 right-0 flex items-center gap-2">
+          {/* Info badges */}
+          <div className="absolute -bottom-4 right-0 flex items-center gap-2">
               <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
                 5 YOE
               </span>
