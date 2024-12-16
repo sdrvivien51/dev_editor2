@@ -1,0 +1,114 @@
+Fill Block with saved data
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+In the previous guide, we have learned how to create a basic Tool class with minimal required methods. In this part, we consider how to render previously saved data.
+
+
+Accepting saved data
+When user will edit previously saved article, Editor will get saved data by the data property. Then the Editor will render Blocks one-by-one and pass them their data.
+
+Let's add a saved data we got in the previous part to initialization at the example.html:
+
+<script>
+    const editor = new EditorJS({
+      autofocus: true,
+      tools: {
+        image: SimpleImage
+      },
+      data: {
+        time: 1552744582955,
+        blocks: [
+          {
+            type: "image",
+            data: {
+              url: "https://cdn.pixabay.com/photo/2017/09/01/21/53/blue-2705642_1280.jpg"
+            }
+          }
+        ],
+        version: "2.11.10"
+      }
+    });
+
+    // ... save-buttons stuff
+</script>
+
+We should provide a mechanism for showing saved data by our Tool. It is quite simple: data will be passed to the class's constructor, so we can save it at the property, for example this.data and access later by any method, including render:
+
+class SimpleImage {
+  // ... toolbox static getter
+
+  constructor({data}){
+    this.data = data;
+  }
+
+  render(){
+    const input = document.createElement('input');
+    input.value = this.data && this.data.url ? this.data.url : '';
+    return input;
+  }
+
+  // ... save method
+}
+
+If you open the example.html, you will see our Image Block after Editor initialization. The saved URL will be set at the input of the Block.
+
+Before we go further, let's improve our UI: add a wrapper and some CSS styles.
+
+
+Improving a render
+We will create a wrapper where all Tool's elements will be placed, add a placeholder and CSS class for Tool. Don't forget to modify the save method: Block content will be a wrapper instead of input, so we need to get an input by ourselves. Now our class looks like this.
+
+class SimpleImage {
+  static get toolbox() {
+    return {
+      title: 'Image',
+      icon: '<svg width="17" height="15" viewBox="0 0 336 276" xmlns="http://www.w3.org/2000/svg"><path d="M291 150V79c0-19-15-34-34-34H79c-19 0-34 15-34 34v42l67-44 81 72 56-29 42 30zm0 52l-43-30-56 30-81-67-66 39v23c0 19 15 34 34 34h178c17 0 31-13 34-29zM79 0h178c44 0 79 35 79 79v118c0 44-35 79-79 79H79c-44 0-79-35-79-79V79C0 35 35 0 79 0z"/></svg>'
+    };
+  }
+
+  constructor({data}){
+    this.data = data;
+  }
+
+  render(){
+    const wrapper = document.createElement('div');
+    const input = document.createElement('input');
+
+    wrapper.classList.add('simple-image');
+    wrapper.appendChild(input);
+
+    input.placeholder = 'Paste an image URL...';
+    input.value = this.data && this.data.url ? this.data.url : '';
+
+    return wrapper;
+  }
+
+  save(blockContent){
+    const input = blockContent.querySelector('input');
+
+    return {
+      url: input.value
+    }
+  }
+}
+
+☝️
+Note.
+We've just hardcoded the placeholder text. It's better to wrap it with the t() of the I18nAPI method to allow users of your tool to localize the UI.
+In the simple-image.css we can add some styles:
+
+.simple-image {
+    padding: 20px 0;
+}
+
+.simple-image input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e4e4e4;
+    border-radius: 3px;
+    outline: none;
+    font-size: 14px;
+}
+
+And the final result from this point is the Editor that shows filled Block.

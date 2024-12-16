@@ -1,0 +1,97 @@
+Access Editor's API
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+In the previous chapter we have stopped on «Stretch Block» tune. It should increase a Block's Content to the full Editor width. Especially for this case, Editor.js provide a simple API method block.stretchBlock.
+
+In this guide we will learn how to work with the API.
+
+
+Calling an API
+Editor passes an API object to the Tools constructor via api parameter. We can store it somewhere, for example in this.api property that can be visible from any method.
+
+class SimpleImage {
+  // ... toolbox
+
+  constructor({data, api}){
+    this.api = api;
+    // ...
+  }
+
+  // ... other methods
+}
+
+blocks.stretchBlock method" data-text-to-copy="#using-a-blocks-stretchblock-method">
+Using a blocks.stretchBlock method
+To make Block stretched we can call a mentioned stretchBlock method. This method accepts a Block index and a status. We can get index of our Block with getCurrentBlockIndex method.
+
+Let's modify our _acceptTuneView with calling an API.
+
+/**
+ * Add specified class corresponds with activated tunes
+ * @private
+ */
+_acceptTuneView() {
+  this.settings.forEach( tune => {
+    this.wrapper.classList.toggle(tune.name, !!this.data[tune.name]);
+
+    if (tune.name === 'stretched') {
+      this.api.blocks.stretchBlock(this.api.blocks.getCurrentBlockIndex(), !!this.data.stretched);
+    }
+  });
+}
+
+Try to toggle «Stretch Block» tune now, it should works as wanted.
+
+
+Using a Styles API
+Remember CSS classes that we use in renderSettings method? 
+
+renderSettings(){
+  const wrapper = document.createElement('div');
+
+  this.settings.forEach( tune => {
+    let button = document.createElement('div');
+
+    button.classList.add('cdx-settings-button');
+    button.classList.toggle('cdx-settings-button--active', this.data[tune.name]);
+    button.innerHTML = tune.icon;
+    wrapper.appendChild(button);
+
+    button.addEventListener('click', () => {
+      this._toggleTune(tune.name);
+      button.classList.toggle('cdx-settings-button--active');
+    });
+
+  });
+
+  return wrapper;
+}
+
+It is a base elements classes provided by Editor.js. The reason of using such classes is to make a UI design more consistent between different plugins. 
+
+Supported CSS classes for common elements described in Styles API. Let's use them:
+
+renderSettings(){
+  const wrapper = document.createElement('div');
+
+  this.settings.forEach( tune => {
+    let button = document.createElement('div');
+
+   button.classList.add('cdx-settings-button');
+   button.classList.toggle('cdx-settings-button--active', this.data[tune.name]);
+   button.classList.add(this.api.styles.settingsButton);
+   button.classList.toggle(this.api.styles.settingsButtonActive, this.data[tune.name]);
+    button.innerHTML = tune.icon;
+    wrapper.appendChild(button);
+
+    button.addEventListener('click', () => {
+      this._toggleTune(tune.name);
+     button.classList.toggle('cdx-settings-button--active');
+     button.classList.toggle(this.api.styles.settingsButtonActive);
+    });
+
+  });
+
+  return wrapper;
+}

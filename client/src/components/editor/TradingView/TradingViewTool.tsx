@@ -32,6 +32,12 @@ class TradingViewTool {
         ...(data?.settings || {})
       }
     };
+    // Render widget immediately after construction
+    setTimeout(() => {
+      if (this.container) {
+        this.renderWidget();
+      }
+    }, 0);
   }
 
   private TradingViewModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {

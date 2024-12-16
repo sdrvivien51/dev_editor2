@@ -1,0 +1,67 @@
+EditorJS Tooltip Inline-tool
+stability-stable  Coverage Status OpenSSF Best Practices OpenSSF Scorecard
+
+Tooltip for Editor.js.
+
+
+
+Notes
+Adds a tooltip as an inline-tool in Editor.js.
+Custom styles to the selected text.
+Custom tooltip location.
+Custom styles to the tooltips.
+Installation
+Install via NPM
+Get the package
+
+$ npm i --save-dev editorjs-tooltip
+Include module at your application
+
+import Tooltip from 'editorjs-tooltip';
+Load from CDN
+You can load a specific version of the package from jsDelivr CDN.
+
+Require this script on a page with Editor.js.
+
+<script src="https://cdn.jsdelivr.net/npm/editorjs-tooltip"></script>
+Usage
+Add a new Tool to the tools property of the Editor.js initial config.
+
+const editor = EditorJS({
+  tools: {
+    tooltip: {
+      class: Tooltip,
+      config: {
+        location: 'left',
+        underline: true,
+        placeholder: 'Enter a tooltip',
+        highlightColor: '#FFEFD5',
+        backgroundColor: '#154360',
+        textColor: '#FDFEFE',
+        holder: 'editorId',
+      }
+    }
+  }
+});
+Select some text, click on the tooltip button in the inline-tools bar, and type the tooltip in the input, when the key enter is pressed, the tooltip will be created.
+
+Note: Use the holder field to indicate the EditorJS Id passed in the div tag, by default the holder field is 'editorjs'.
+
+Config Params
+Field	Type	Description
+location	String (top, bottom, left, right)	Where to place the tooltip. Default value is bottom.
+underline	Boolean	Add underline text decoration to the text wrapped by the tooltip. Default is false.
+placeholder	String	Placeholder text for the tooltip input. Default is 'Add a tooltip'.
+highlightColor	String or Hexadecimal	Background color of the text wrapped by the tooltip.
+backgroundColor	String or Hexadecimal	Background color of the tooltip container.
+textColor	String or Hexadecimal	Text color of the tooltip.
+holder	String	ID of the HTML element that contains the EditorJS instance. Default is 'editorjs'.
+Output data
+Selected text will be wrapped in a span tag with a cdx-tooltip class and with a data-tooltip, it contains the tooltip text.
+
+{
+    "type" : "text",
+    "data" : {
+        "text" : "It is a text to the <span class=\"cdx-tooltip\" data-tooltip =\"tooltip\" >tooltip</span> inline-tool."
+    }
+}

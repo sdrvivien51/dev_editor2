@@ -48,8 +48,8 @@ export default function Editor({ data, setData }: EditorProps) {
   }, []);
 
   return (
-    <div className="relative min-h-[500px] w-full">
-      <div ref={holderRef} id="editorjs-container" className="prose max-w-none [&_.ce-toolbar__plus]:ml-[-10px] [&_.ce-toolbar__settings-btn]:mr-[-10px]" />
+    <div className="relative min-h-[500px] w-full border rounded-md">
+      <div ref={holderRef} id="editorjs-container" className="prose max-w-none" />
     </div>
   );
 }

@@ -1,0 +1,46 @@
+How to set widget size
+When embedding TradingView widgets into your website, it’s important to set their sizes correctly to ensure optimal display and functionality. Otherwise, the widget may appear collapsed or cut off.
+
+There are two ways to set widget size: enabling the Use container size setting or specifying a fixed width and height.
+
+With Use container size
+The Use container size setting allows the widget to automatically adjust its dimensions to fit within its container, a block-level element such as <div>. This setting is useful for creating responsive designs as the widget adapts to different screen sizes and layouts. Therefore, you do not need to specify exact pixel values for each screen size.
+
+However, the container element should have a defined height for this setting to work correctly. Without a set height, the container defaults to a short height, making the widget appear collapsed or cut off.
+
+By default, block-level elements in HTML automatically stretch to fill the available width of their container. This is because the default value for the width property is auto, meaning the element will use as much horizontal space as possible.
+
+The default value for the height property is also auto. However, in this context, the element’s height will be determined by its content. If there is not enough content to fill the vertical space, the element will collapse to a very short height. In the screenshot below, text is defined within a <div> container without height specified. The light-blue background color shows that the text size determines the container height.
+
+The text size determines the container height.
+When you embed a widget in a block-level element with Use container size enabled, the widget will attempt to fill its container. If the container’s height is not explicitly set, it will collapse to a short height, causing the widget to appear collapsed.
+
+Set the container height and width
+To ensure your widget displays correctly when Use container size is enabled, you need to set a height for the container element. You can achieve this using CSS:
+
+.widget-container {
+  height: 500px;
+}
+By applying a height to the container, you provide the necessary vertical space for the widget to expand into.
+
+Since block-level elements automatically stretch to fill the available width, you do not need to specify a width for the container. The widget will expand horizontally to match its container. If you want to limit the widget’s width, you can set a specific width on the container using CSS:
+
+.widget-container {
+  width: 800px;
+  height: 500px;
+}
+This will constrain the widget’s width to 800 pixels while still allowing it to fill the 500-pixel height.
+
+Example
+In the screenshot below, the Advanced Chart widget is defined within a <div> container. Although the Use container size setting is enabled, the container’s height is not specified, causing the widget to appear collapsed.
+
+The widget is collapsed because the container height is not specified.
+To fix this, set a height for the <div> container in the CSS file, for example height: 500px;. The widget will be displayed correctly, without appearing collapsed.
+
+The widget looks as expected because the container height is specified.
+With fixed height and width
+If you prefer to have full control over the widget’s dimensions, you can disable Use container size. In this case, you need to specify a fixed width and height for the widget within the widget’s constructor.
+
+NoteWith Use container size disabled and width/height set, the widget will always display at these exact dimensions regardless of the container size.
+
+In the screenshot below, a <div> container has a defined size, highlighted by the light-blue background color. The Advanced Chart widget is defined within this container. Despite the container’s size, the widget maintains its specified width and height, as the Use container size setting is disabled.

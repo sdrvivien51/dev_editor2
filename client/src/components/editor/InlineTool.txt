@@ -1,0 +1,548 @@
+Basics
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+First of all lets describe elements we will work with. Every Inline Tool must provide a button — HTML element with icon or some layout — for Inline Toolbar of the Editor. When button is pressed Inline Tool receives selected text range as JavaScript Range object references to TextNode on the page. Some Tools may also provide actions for additional interactions with the user.
+
+Enough theory, lets do some practice! To start we need to define JavaScript class. To let Editor know that this Tool is inline we need to provide isInline static getter:
+
+class MarkerTool {
+    static get isInline() {
+        return true;
+    }
+}
+
+Inline Tools must provide three methods to work with Editor: render, surround, and checkState.
+
+Render method must return HTML element of the button for Inline Toolbar. When user selects some text Editor calls checkState method of each Inline Tool with current Selection to update the state if selected text contains some of the inline markup. Finally, when button is pressed Editor calls surround method of the tool with Range object as an argument:
+
+class MarkerTool {
+
+    static get isInline {
+        true;
+    }
+
+    render() {
+
+    }
+
+    surround(range) {
+
+    } 
+
+    checkState(selection) {
+
+    }
+
+}
+
+Lets create the basic structure of the Tool and add primitive implementation for methods.
+
+class MarkerTool {
+
+    static get isInline() {
+        return true;
+    }
+
+    constructor() {
+        this.button = null;
+        this.state = false;
+    }
+
+    render() {
+        this.button = document.createElement('button');
+        this.button.type = 'button';
+        this.button.textContent = 'M';
+
+        return this.button;
+    }
+
+    surround(range) {
+        if (this.state) {
+            // If highlights is already applied, do nothing for now
+            return;
+        }
+
+        const selectedText = range.extractContents();
+
+        // Create MARK element
+        const mark = document.createElement('MARK');
+
+        // Append to the MARK element selected TextNode
+        mark.appendChild(selectedText);
+
+        // Insert new element
+        range.insertNode(mark);
+    }
+
+
+    checkState(selection) {
+        const text = selection.anchorNode;
+
+        if (!text) {
+            return;
+        }
+
+        const anchorElement = text instanceof Element ? text : text.parentElement;
+
+        this.state = !!anchorElement.closest('MARK');
+    }
+}
+
+For now if highlight is applied you can't redo it. How to deal with that you can read at Using API article.
+
+Using API
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Now it's time to use the Editor`s API features. We can access the API using the api object passed to the Tool constructor. For Marker Tool we need styles and selection APIs.
+
+Styles API provides some CSS classes` names to stylize elements of our Tool with common Editor.js style:
+
+class MarkerTool {
+
+    constructor({api}) {
+        this.api = api;
+        this.button = null;
+    }
+
+    render() {
+        this.button = document.createElement('button');
+        this.button.type = 'button';
+        this.button.textContent = 'M';
+        this.button.classList.add(this.api.styles.inlineToolButton);
+
+        return this.button;
+    }
+
+}
+
+Selection API has some useful methods to work with selected text fragments. For the Marker Tool we will use following API methods: findParentTag and expandToTag. First one accepts tag name and class name as arguments and returns first found parent element of anchorNode of the Selection with passed parameters and null if such element doesn't exist. Second one accepts HTML element as argument and expand current selection to that element.
+
+After we replace selected text with mark element we need to expand selection to the inserted element:
+
+surround(range) {
+    if (this.state) {
+        return;
+    }
+
+    const selectedText = range.extractContents();
+    const mark = document.createElement('MARK');
+
+    mark.appendChild(selectedText);
+    range.insertNode(mark);
+
+    this.api.selection.expandToTag(mark);
+}
+
+Let's move code of surrounding text to another method called wrap and create unwrap method to remove highlighting. To remove highlight we need to find mark tag from selection position and replace it with plain text:
+
+surround(range) {
+    if (this.state) {
+        this.unwrap(range);
+        return;
+    }
+
+    this.wrap(range);
+}
+
+wrap(range) {
+    const selectedText = range.extractContents();
+    const mark = document.createElement('MARK');
+
+    mark.appendChild(selectedText);
+    range.insertNode(mark);
+
+    this.api.selection.expandToTag(mark);
+}
+
+unwrap(range) {
+    const mark = this.api.selection.findParentTag('MARK');
+    const text = range.extractContents();
+
+    mark.remove();
+
+    range.insertNode(text);
+}
+
+Also we can modify checkState method using the API:
+
+ checkState() {
+    const mark = this.api.selection.findParentTag(this.tag);
+
+    this.state = !!mark;
+  }
+
+Now Tool works actually how it should but we can make it prettier. Let's add icon and change button state in accordance with current state of highlighting:
+
+class MarkerTool {
+
+    static get isInline() {
+        return true;
+    }
+
+    get state() {
+        return this._state;
+    }
+
+    set state(state) {
+        this._state = state;
+
+        this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
+    }
+
+    constructor({api}) {
+        this.api = api;
+        this.button = null;
+        this._state = false;
+    }
+
+    render() {
+        this.button = document.createElement('button');
+        this.button.type = 'button';
+        this.button.innerHTML = '<svg width="20" height="18"><path d="M10.458 12.04l2.919 1.686-.781 1.417-.984-.03-.974 1.687H8.674l1.49-2.583-.508-.775.802-1.401zm.546-.952l3.624-6.327a1.597 1.597 0 0 1 2.182-.59 1.632 1.632 0 0 1 .615 2.201l-3.519 6.391-2.902-1.675zm-7.73 3.467h3.465a1.123 1.123 0 1 1 0 2.247H3.273a1.123 1.123 0 1 1 0-2.247z"/></svg>';
+        this.button.classList.add(this.api.styles.inlineToolButton);
+
+        return this.button;
+    }
+}
+
+Last step is adding some styles for MARK element:
+
+// marker.css
+.cdx-marker {
+  background: rgba(245,235,111,0.29);
+  padding: 3px 0;
+}
+
+//marker.js
+wrap(range) {
+    const selectedText = range.extractContents();
+    const mark = document.createElement('MARK');
+
+    mark.classList.add('cdx-marker');
+    mark.appendChild(selectedText);
+    range.insertNode(mark);
+
+    this.api.selection.expandToTag(mark);
+}
+
+Congrats! Marker Tool is ready to use. Here is the full implementation:
+
+// marker.css
+.cdx-marker {
+    background: rgba(245,235,111,0.29);
+    padding: 3px 0;
+}
+
+// marker.js
+class MarkerTool {
+
+  static get isInline() {
+    return true;
+  }
+
+  get state() {
+    return this._state;
+  }
+
+  set state(state) {
+    this._state = state;
+
+    this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
+  }
+
+  constructor({api}) {
+    this.api = api;
+    this.button = null;
+    this._state = false;
+
+    this.tag = 'MARK';
+    this.class = 'cdx-marker';
+  }
+
+  render() {
+    this.button = document.createElement('button');
+    this.button.type = 'button';
+    this.button.innerHTML = '<svg width="20" height="18"><path d="M10.458 12.04l2.919 1.686-.781 1.417-.984-.03-.974 1.687H8.674l1.49-2.583-.508-.775.802-1.401zm.546-.952l3.624-6.327a1.597 1.597 0 0 1 2.182-.59 1.632 1.632 0 0 1 .615 2.201l-3.519 6.391-2.902-1.675zm-7.73 3.467h3.465a1.123 1.123 0 1 1 0 2.247H3.273a1.123 1.123 0 1 1 0-2.247z"/></svg>';
+    this.button.classList.add(this.api.styles.inlineToolButton);
+
+    return this.button;
+  }
+
+  surround(range) {
+    if (this.state) {
+      this.unwrap(range);
+      return;
+    }
+
+    this.wrap(range);
+  }
+
+  wrap(range) {
+    const selectedText = range.extractContents();
+    const mark = document.createElement(this.tag);
+
+    mark.classList.add(this.class);
+    mark.appendChild(selectedText);
+    range.insertNode(mark);
+
+    this.api.selection.expandToTag(mark);
+  }
+
+  unwrap(range) {
+    const mark = this.api.selection.findParentTag(this.tag, this.class);
+    const text = range.extractContents();
+
+    mark.remove();
+
+    range.insertNode(text);
+  }
+
+
+  checkState() {
+    const mark = this.api.selection.findParentTag(this.tag);
+
+    this.state = !!mark;
+  }
+}
+
+It's that simple! In the next article you can learn how to add some interactive elements for Inline Tools.
+
+Interaction with the user
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Our Marker Tool is ready to use. However, we can add some more features. For example, you want to choose a highlight color when you use Marker. For that we will use HTML input element with type color.  To add input to the Inline Toolbar we need renderActions method which returns some layout we want to add:
+
+renderActions() {
+    this.colorPicker = document.createElement('input');
+    this.colorPicker.type = 'color';
+    this.colorPicker.value = '#f5f1cc';
+    this.colorPicker.hidden = true;
+
+    return this.colorPicker;
+}
+
+Now when marker button is pressed just show this input. When highlight is removed — hide it:
+
+showActions(mark) {
+    this.colorPicker.value = mark.style.backgroundColor || '#f5f1cc';
+
+    this.colorPicker.onchange = () => {
+        mark.style.backgroundColor = this.colorPicker.value;
+    };
+    this.colorPicker.hidden = false;
+}
+
+hideActions() {
+    this.colorPicker.onchange = null;
+    this.colorPicker.hidden = true;
+}
+
+checkState() {
+    const mark = this.api.selection.findParentTag(this.tag);
+
+    this.state = !!mark;
+
+    if (this.state) {
+        this.showActions(mark);
+    } else {
+        this.hideActions();
+    }
+}
+
+Unfortunately that wouldn't work as expected because mark.style.backgroundColor returns the value of color in normalized rgb() format. To handle it we need one more helping method to convert the rgb value to hex:
+
+showActions(mark) {
+    const {backgroundColor} = mark.style;
+
+    this.colorPicker.value = backgroundColor ? this.convertToHex(backgroundColor) : '#f5f1cc';
+
+    this.colorPicker.onchange = () => {
+        mark.style.backgroundColor = this.colorPicker.value;
+    };
+    this.colorPicker.hidden = false;
+}
+
+convertToHex(color) {
+    const rgb = color.match(/(\d+)/g);
+
+    let hexr = parseInt(rgb[0]).toString(16);
+    let hexg = parseInt(rgb[1]).toString(16);
+    let hexb = parseInt(rgb[2]).toString(16);
+
+    hexr = hexr.length === 1 ? '0' + hexr : hexr;
+    hexg = hexg.length === 1 ? '0' + hexg : hexg;
+    hexb = hexb.length === 1 ? '0' + hexb : hexb;
+
+    return '#' + hexr + hexg + hexb;
+}
+
+That's it! Now you can choose the color of marker. With renderActions method you can insert into Inline Toolbar any inputs or hints for the user (e.g. input for the link).
+
+Here the full code of Marker Tool with color picker:
+
+class MarkerTool {
+
+  static get isInline() {
+    return true;
+  }
+
+  get state() {
+    return this._state;
+  }
+
+  set state(state) {
+    this._state = state;
+
+    this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
+  }
+
+  constructor({api}) {
+    this.api = api;
+    this.button = null;
+    this._state = false;
+
+    this.tag = 'MARK';
+    this.class = 'cdx-marker';
+  }
+
+  render() {
+    this.button = document.createElement('button');
+    this.button.type = 'button';
+    this.button.innerHTML = '<svg width="20" height="18"><path d="M10.458 12.04l2.919 1.686-.781 1.417-.984-.03-.974 1.687H8.674l1.49-2.583-.508-.775.802-1.401zm.546-.952l3.624-6.327a1.597 1.597 0 0 1 2.182-.59 1.632 1.632 0 0 1 .615 2.201l-3.519 6.391-2.902-1.675zm-7.73 3.467h3.465a1.123 1.123 0 1 1 0 2.247H3.273a1.123 1.123 0 1 1 0-2.247z"/></svg>';
+    this.button.classList.add(this.api.styles.inlineToolButton);
+
+    return this.button;
+  }
+
+  surround(range) {
+    if (this.state) {
+      this.unwrap(range);
+      return;
+    }
+
+    this.wrap(range);
+  }
+
+  wrap(range) {
+    const selectedText = range.extractContents();
+    const mark = document.createElement(this.tag);
+
+    mark.classList.add(this.class);
+    mark.appendChild(selectedText);
+    range.insertNode(mark);
+
+    this.api.selection.expandToTag(mark);
+  }
+
+  unwrap(range) {
+    const mark = this.api.selection.findParentTag(this.tag, this.class);
+    const text = range.extractContents();
+
+    mark.remove();
+
+    range.insertNode(text);
+  }
+
+
+  checkState() {
+    const mark = this.api.selection.findParentTag(this.tag);
+
+    this.state = !!mark;
+
+    if (this.state) {
+      this.showActions(mark);
+    } else {
+      this.hideActions();
+    }
+  }
+
+  renderActions() {
+    this.colorPicker = document.createElement('input');
+    this.colorPicker.type = 'color';
+    this.colorPicker.value = '#f5f1cc';
+    this.colorPicker.hidden = true;
+
+    return this.colorPicker;
+  }
+
+  showActions(mark) {
+    const {backgroundColor} = mark.style;
+    this.colorPicker.value = backgroundColor ? this.convertToHex(backgroundColor) : '#f5f1cc';
+
+    this.colorPicker.onchange = () => {
+      mark.style.backgroundColor = this.colorPicker.value;
+    };
+    this.colorPicker.hidden = false;
+  }
+
+  hideActions() {
+    this.colorPicker.onchange = null;
+    this.colorPicker.hidden = true;
+  }
+
+  convertToHex(color) {
+    const rgb = color.match(/(\d+)/g);
+
+    let hexr = parseInt(rgb[0]).toString(16);
+    let hexg = parseInt(rgb[1]).toString(16);
+    let hexb = parseInt(rgb[2]).toString(16);
+
+    hexr = hexr.length === 1 ? '0' + hexr : hexr;
+    hexg = hexg.length === 1 ? '0' + hexg : hexg;
+    hexb = hexb.length === 1 ? '0' + hexb : hexb;
+
+    return '#' + hexr + hexg + hexb;
+  }
+}
+
+In the next article you can learn about some advanced methods for Inline Tools.
+
+Sanitizing
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Editor.js sanitizes all content in several cases: on render, on paste, and on save. Each Block Tool provides sanitizer rules to let Editor know which HTML tags it should respect. However, Block Tools are not connected with Inline ones so markup added by Inline Tool will be removed on pasting or on saving. To avoid that you need to provide sanitizer rules for your Inline Tool in sanitize static getter.
+
+You can read more about sanitizer rules in Sanitizer API section. Here is the example for Marker Tool we created earlier:
+
+class MarkerTool {
+    static get sanitize() {
+        return {
+            mark: {
+                class: 'cdx-marker'
+            }
+        };
+    }
+}
+
+That means Editor will respect all MARK elements with cdx-marker class and your highlights won't be lost.
+
+Advanced methods
+ads via Carbon
+Design and Development tips in your inbox. Every weekday.
+ads via Carbon
+Apart from all available methods you learnt from previous articles you can use some advanced ones. You can provide two additional methods: shortcut and clear.
+
+
+Shortcut
+You can provide a keyboard shortcut for your Inline Tool by shortcut getter. It should return string with keys combination. Available special keys you can see here. For Marker Tool we can use CTRL (or CMD) + M combination:
+
+class MarkerTool {
+    static get shortcut() {
+        return 'CMD+M';
+    }
+}
+
+
+Clear
+Clear method is called when Inline Toolbar closes. You can use it to clean some properties or hide actions. Example for Marker Tool: 
+
+class MarkerTool {
+    clear() {
+        this.hideActions();
+    }
+}
+

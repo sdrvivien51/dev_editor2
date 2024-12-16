@@ -2,11 +2,12 @@
 /* Editor.js Base Styles */
 .cdx-block {
   padding: 0.7em 0;
-  transition: box-shadow 0.15s ease;
+  transition: background-color 0.15s ease;
   border-radius: 6px;
 }
+
 .cdx-block:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .cdx-input {
@@ -31,7 +32,6 @@
   opacity: 0.6;
 }
 
-.cdx-block .cdx-button,
 .cdx-button {
   padding: 8px 16px;
   background: var(--background);
@@ -41,18 +41,13 @@
   transition: all 0.2s ease;
   transform: translateY(0);
   cursor: pointer;
-  position: relative;
-  z-index: 1;
 }
 
-.cdx-block .cdx-button:hover,
 .cdx-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.1);
-  background: var(--accent);
 }
 
-.cdx-block .cdx-button:active,
 .cdx-button:active {
   transform: translateY(0);
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
@@ -86,6 +81,27 @@
 @keyframes loader {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.custom-button {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 16px;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  background: var(--background);
+  cursor: pointer;
+  transform: translateY(0);
+}
+
+.custom-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 0 black;
+}
+
+.custom-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 black;
 }
 
 
