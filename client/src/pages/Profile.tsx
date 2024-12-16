@@ -6,6 +6,7 @@ import ProfileTabs from '../components/profile/ProfileTabs';
 import type { ProfileUser } from '../types/profile';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"; // Added import for Input and Button components.  Replace 'some-ui-library' with the actual library.
+import { Badge } from '@shadcn/ui'
 
 function Profile() {
   // Mock data - à remplacer par les vraies données de l'utilisateur
@@ -85,46 +86,20 @@ function Profile() {
           </div>
           
           {/* Profile details section */}
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="flex items-center gap-2 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <MapPinIcon className="h-5 w-5 text-gray-500" />
-              <div>
-                <div className="text-sm font-medium">Location</div>
-                <div className="text-sm text-gray-500">Paris, France</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <CalendarIcon className="h-5 w-5 text-gray-500" />
-              <div>
-                <div className="text-sm font-medium">Experience</div>
-                <div className="text-sm text-gray-500">5 years</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2 p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mt-6 flex items-center gap-2">
+            <Badge variant="secondary" className="gap-1">
+              <MapPinIcon className="h-4 w-4" /> Paris, France
+            </Badge>
+            <Badge variant="secondary" className="gap-1">
+              <CalendarIcon className="h-4 w-4" /> 5 YOE
+            </Badge>
+            <Badge variant="secondary" className="gap-1">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <div>
-                <div className="text-sm font-medium">Monthly Salary</div>
-                <div className="text-sm text-gray-500">~6k€/month</div>
-              </div>
-            </div>
+              ~6k€/month
+            </Badge>
           </div>
-
-          {/* Info badges */}
-          <div className="absolute -bottom-4 right-0 flex items-center gap-2">
-              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                5 YOE
-              </span>
-              <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                Paris, FR
-              </span>
-              <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">
-                ~6k€/month
-              </span>
-            </div>
             
             {/* Informations principales */}
             <div className="flex-1">
@@ -156,7 +131,7 @@ function Profile() {
                 </div>
               </div>
             </div>
-          </div>
+          
         </div>
 
         {/* Contenu principal avec sidebar et tabs */}
