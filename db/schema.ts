@@ -24,6 +24,8 @@ export const posts = pgTable("posts", {
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
   published: boolean("published").default(true),
+  slug: text("slug").unique().notNull(),
+  excerpt: text("excerpt"),
 });
 
 // Define relationships
