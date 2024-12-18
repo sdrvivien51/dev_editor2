@@ -19,7 +19,7 @@ interface AuthRequest extends Request {
 
 export function registerRoutes(app: Express) {
   // Get all posts
-  app.get("/api/posts", async (req, res) => {
+  app.get("/api/post", async (req, res) => {
   // Get article by slug
   app.get("/api/posts/:slug", async (req, res) => {
     const { slug } = req.params;
