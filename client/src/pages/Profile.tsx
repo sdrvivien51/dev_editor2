@@ -6,7 +6,7 @@ import ProfileTabs from '../components/profile/ProfileTabs';
 import type { ProfileUser } from '../types/profile';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"; // Added import for Input and Button components.  Replace 'some-ui-library' with the actual library.
-import { Badge } from '@shadcn/ui'
+import { Badge } from '@/components/ui/badge'
 
 function Profile() {
   // Mock data - à remplacer par les vraies données de l'utilisateur
