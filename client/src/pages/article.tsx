@@ -44,11 +44,7 @@ const BlogArticle = () => {
             )
           `)
           .eq('slug', slug)
-          .single()
-          .headers({
-            'Accept': 'application/vnd.pgrst.object+json',
-            'Accept-Profile': 'public'
-          });
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching article:', error);
