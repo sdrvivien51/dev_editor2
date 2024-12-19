@@ -1,0 +1,86 @@
+URL de requête:
+https://itismtljanixwnbeduji.supabase.co/rest/v1/posts?select=*%2Cusers%28name%2Cavatar_url%29&slug=eq.article
+Méthode de requête:
+GET
+Code d'état:
+400 Bad Request
+Adresse distante:
+104.18.38.10:443
+Règlement sur les URL de provenance:
+strict-origin-when-cross-origin
+access-control-allow-origin:
+https://322bdca3-e386-46b4-852c-c5191be873f5-00-vwn8yr6g60cp.picard.replit.dev:5173
+access-control-expose-headers:
+Content-Encoding, Content-Location, Content-Range, Content-Type, Date, Location, Server, Transfer-Encoding, Range-Unit
+alt-svc:
+h3=":443"; ma=86400
+cf-cache-status:
+DYNAMIC
+cf-ray:
+8f4855245de6692f-LIS
+content-encoding:
+gzip
+content-type:
+application/json; charset=utf-8
+date:
+Thu, 19 Dec 2024 15:12:44 GMT
+priority:
+u=1,i
+sb-gateway-version:
+1
+sb-project-ref:
+itismtljanixwnbeduji
+server:
+cloudflare
+server-timing:
+cfExtPri
+strict-transport-security:
+max-age=31536000; includeSubDomains
+vary:
+Accept-Encoding
+x-content-type-options:
+nosniff
+x-envoy-attempt-count:
+1
+x-envoy-upstream-service-time:
+3
+:authority:
+itismtljanixwnbeduji.supabase.co
+:method:
+GET
+:path:
+/rest/v1/posts?select=*%2Cusers%28name%2Cavatar_url%29&slug=eq.article
+:scheme:
+https
+accept:
+application/vnd.pgrst.object+json
+accept-encoding:
+gzip, deflate, br, zstd
+accept-language:
+en-GB,en-US;q=0.9,en;q=0.8
+accept-profile:
+public
+apikey:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0aXNtdGxqYW5peHduYmVkdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyMDcyOTUsImV4cCI6MjA0Nzc4MzI5NX0.GX3NMh4eHK08i0bWQNiHeTTo--jcsRfK-IncbXGB0rE
+authorization:
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0aXNtdGxqYW5peHduYmVkdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyMDcyOTUsImV4cCI6MjA0Nzc4MzI5NX0.GX3NMh4eHK08i0bWQNiHeTTo--jcsRfK-IncbXGB0rE
+origin:
+https://322bdca3-e386-46b4-852c-c5191be873f5-00-vwn8yr6g60cp.picard.replit.dev:5173
+priority:
+u=1, i
+referer:
+https://322bdca3-e386-46b4-852c-c5191be873f5-00-vwn8yr6g60cp.picard.replit.dev:5173/
+sec-fetch-dest:
+empty
+sec-fetch-mode:
+cors
+sec-fetch-site:
+cross-site
+user-agent:
+Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1
+x-client-info:
+supabase-js-web/2.47.6
+Activez Assistance par l'IA dans les paramètres pour obtenir de l'aide afin de mieux comprendre les styles CSS
+Suivez les étapes ci-dessus pour poser une question
+
+Il s'agit d'une fonctionnalité d'IA expérimentale qui n'est pas infaillible. En savoir plus sur l'IA dans les outils de développement

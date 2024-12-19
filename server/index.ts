@@ -17,7 +17,7 @@ app.use(session({
   }),
   resave: false,
   saveUninitialized: false,
-  secret: 'your-secret-key',
+  secret: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0aXNtdGxqYW5peHduYmVkdWppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyMDcyOTUsImV4cCI6MjA0Nzc4MzI5NX0.GX3NMh4eHK08i0bWQNiHeTTo--jcsRfK-IncbXGB0rE',
 }));
 
 app.use((req, res, next) => {

@@ -16,7 +16,7 @@ export const users = pgTable("users", {
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  content: text("content").notNull(),
+  content: text("html_content").notNull(),
   author_id: uuid("author_id")
     .references(() => users.id)
     .notNull(),

@@ -1,0 +1,78 @@
+ET https://itismtljanixwnbeduji.supabase.co/rest/v1/posts?select=*%2Cusers%28name%2Cavatar_url%29&slug=eq.article 400 (Bad Request)
+
+article.tsx:50 Error fetching article: 
+{code: 'PGRST200', details: "Searched for a foreign key relationship between 'p…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'posts' and 'users' in the schema cache"}
+code
+: 
+"PGRST200"
+details
+: 
+"Searched for a foreign key relationship between 'posts' and 'users' in the schema 'public', but no matches were found."
+hint
+: 
+null
+message
+: 
+"Could not find a relationship between 'posts' and 'users' in the schema cache"
+[[Prototype]]
+: 
+Object
+fetchArticle	@	article.tsx:50
+await in fetchArticle		
+(anonyme)	@	article.tsx:89
+article.tsx:83 Error: 
+{code: 'PGRST200', details: "Searched for a foreign key relationship between 'p…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'posts' and 'users' in the schema cache"}
+code
+: 
+"PGRST200"
+details
+: 
+"Searched for a foreign key relationship between 'posts' and 'users' in the schema 'public', but no matches were found."
+hint
+: 
+null
+message
+: 
+"Could not find a relationship between 'posts' and 'users' in the schema cache"
+[[Prototype]]
+: 
+Object
+fetchArticle	@	article.tsx:83
+await in fetchArticle		
+(anonyme)	@	article.tsx:89
+@supabase_supabase-js.js?v=e0de137d:3871 
+ GET https://itismtljanixwnbeduji.supabase.co/rest/v1/posts?select=*%2Cusers%28name%2Cavatar_url%29&slug=eq.article 400 (Bad Request)
+(anonyme)	@	@supabase_supabase-js.js?v=e0de137d:3871
+(anonyme)	@	@supabase_supabase-js.js?v=e0de137d:3892
+fulfilled	@	@supabase_supabase-js.js?v=e0de137d:3844
+Promise.then		
+step	@	@supabase_supabase-js.js?v=e0de137d:3857
+(anonyme)	@	@supabase_supabase-js.js?v=e0de137d:3859
+__awaiter6	@	@supabase_supabase-js.js?v=e0de137d:3841
+(anonyme)	@	@supabase_supabase-js.js?v=e0de137d:3882
+then	@	@supabase_supabase-js.js?v=e0de137d:89
+article.tsx:50 Error fetching article: 
+{code: 'PGRST200', details: "Searched for a foreign key relationship between 'p…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'posts' and 'users' in the schema cache"}
+fetchArticle	@	article.tsx:50
+await in fetchArticle		
+(anonyme)	@	article.tsx:89
+article.tsx:83 Error: 
+{code: 'PGRST200', details: "Searched for a foreign key relationship between 'p…n the schema 'public', but no matches were found.", hint: null, message: "Could not find a relationship between 'posts' and 'users' in the schema cache"}
+code
+: 
+"PGRST200"
+details
+: 
+"Searched for a foreign key relationship between 'posts' and 'users' in the schema 'public', but no matches were found."
+hint
+: 
+null
+message
+: 
+"Could not find a relationship between 'posts' and 'users' in the schema cache"
+[[Prototype]]
+: 
+Object
+fetchArticle	@	article.tsx:83
+await in fetchArticle		
+(anonyme)	@	article.tsx:89
