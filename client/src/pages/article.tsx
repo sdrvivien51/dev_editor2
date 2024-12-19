@@ -38,7 +38,7 @@ const BlogArticle = () => {
           .from('posts')
           .select(`
             *,
-            users (
+            author (
               name,
               avatar_url
             )
@@ -71,9 +71,9 @@ const BlogArticle = () => {
           created_at: data.created_at,
           updated_at: data.updated_at,
           author_id: data.author_id,
-          author: data.users ? {
-            name: data.users.name,
-            avatar_url: data.users.avatar_url
+          author: data.author ? {
+            name: data.author.name,
+            avatar_url: data.author.avatar_url
           } : undefined
         };
 
