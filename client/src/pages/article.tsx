@@ -44,10 +44,17 @@ const BlogArticle = () => {
             )
           `)
           .eq('slug', slug)
-          .single();
+          .single()
+          .headers({
+            'Accept': 'application/vnd.pgrst.object+json',
+            'Accept-Profile': 'public'
+          });
 
         if (error) {
           console.error('Error fetching article:', error);
+          if (error.code === 'PGRST116') {
+            throw new Error('Article not found');
+          }
           throw error;
         }
 
