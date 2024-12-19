@@ -19,22 +19,27 @@ interface AuthRequest extends Request {
 
 export function registerRoutes(app: Express) {
   // Get all posts
-  app.get("/api/post", async (req, res) => {
+  app.get("/api/posts", async (req, res) => {
   // Get article by slug
   app.get("/api/posts/:slug", async (req, res) => {
-    const { slug } = req.params;
-    const post = await db.query.posts.findFirst({
-      where: eq(posts.slug, slug),
-      with: {
-        author: true,
-      },
-    });
-    
-    if (!post) {
-      return res.status(404).json({ message: "Article not found" });
+    try {
+      const { slug } = req.params;
+      const post = await db.query.posts.findFirst({
+        where: eq(posts.slug, slug),
+        with: {
+          author: true,
+        },
+      });
+      
+      if (!post) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      
+      res.json(post);
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      res.status(500).json({ message: "Failed to fetch article" });
     }
-    
-    res.json(post);
   });
 
     const allPosts = await db.query.posts.findMany({
