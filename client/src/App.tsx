@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import AuthCallback from "./pages/AuthCallback";
 import BlogArticle from "./pages/article";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
@@ -20,7 +21,9 @@ function App() {
             <Route path="/profile" component={Profile} />
             <Route path="/settings" component={Settings} />
             <Route path="/auth-callback" component={AuthCallback} />
-            <Route path="/article/:slug" component={BlogArticle} />
+            <Route path="/article/:slug">
+              {(params) => <BlogArticle />}
+            </Route>
             <Route>
               <div className="flex h-[50vh] items-center justify-center">
                 <h1 className="text-2xl font-bold">404 Page Not Found</h1>

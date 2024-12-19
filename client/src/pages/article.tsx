@@ -7,121 +7,106 @@ import { useParams } from "wouter";
 import { Helmet } from "react-helmet";
 import { supabase } from '@/lib/supabase';
 
-// Type pour les données brutes de l'article depuis Supabase
-interface RawArticle {
+interface Article {
+  id: number;
   title: string;
   html_content: string;
   description: string;
   slug: string;
   created_at: string;
   updated_at: string;
-  users: {
-    name: string;
-    avatar_url: string | null;
-  } | null;
-}
-
-// Type pour l'article transformé utilisé dans le composant
-interface TransformedArticle {
-  title: string;
-  html_content: string;
-  description: string;
-  slug: string;
-  created_at: string;
-  updated_at: string;
-  author: {
+  author_id: string;
+  author?: {
     name: string;
     avatar_url?: string;
   };
 }
 
 const BlogArticle = () => {
-  const params = useParams();
-  const [article, setArticle] = useState<TransformedArticle | null>(null);
+  const { slug } = useParams();
+  const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchArticle = async () => {
+      if (!slug) return;
+      
       try {
-        // Récupérer l'article avec les données de l'auteur
+        console.log('Fetching article with slug:', slug);
+        
         const { data, error } = await supabase
           .from('posts')
           .select(`
-            title,
-            html_content,
-            description,
-            slug,
-            created_at,
-            updated_at,
+            *,
             users (
               name,
               avatar_url
             )
           `)
-          .eq('slug', params.slug)
+          .eq('slug', slug)
           .single();
 
         if (error) {
-          console.error('Supabase error:', error);
+          console.error('Error fetching article:', error);
           throw error;
         }
 
         if (!data) {
+          console.error('No article found with slug:', slug);
           throw new Error('Article not found');
         }
 
-        // Cast the data to RawArticle type
-        const rawArticle = data as RawArticle;
-        
-        // Transform the data to match the TransformedArticle interface
-        const transformedArticle: TransformedArticle = {
-          title: rawArticle.title,
-          html_content: rawArticle.html_content,
-          description: rawArticle.description,
-          slug: rawArticle.slug,
-          created_at: rawArticle.created_at,
-          updated_at: rawArticle.updated_at,
-          author: {
-            name: rawArticle.users?.name ?? 'Anonymous',
-            avatar_url: rawArticle.users?.avatar_url ?? undefined
-          }
+        console.log('Article data:', data);
+
+        // Transform the data to include author information
+        const transformedArticle: Article = {
+          id: data.id,
+          title: data.title,
+          html_content: data.html_content || '',
+          description: data.description || '',
+          slug: data.slug,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          author_id: data.author_id,
+          author: data.users ? {
+            name: data.users.name,
+            avatar_url: data.users.avatar_url
+          } : undefined
         };
-        
+
+        console.log('Transformed article:', transformedArticle);
         setArticle(transformedArticle);
       } catch (error) {
-        console.error('Error fetching article:', error);
+        console.error('Error:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (params.slug) {
-      fetchArticle();
-    }
-  }, [params.slug]);
+    fetchArticle();
+  }, [slug]);
 
   if (loading) return <div>Chargement...</div>;
   if (!article) return <div>Article non trouvé</div>;
-
-  const tableOfContents = [
-    { id: 'introduction', title: 'Introduction' },
-    { id: 'partie-1', title: 'Première partie' },
-    { id: 'partie-2', title: 'Deuxième partie' },
-    { id: 'conclusion', title: 'Conclusion' }
-  ];
 
   // Schema.org structured data for the article
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": article.title,
+    "description": article.description,
+    "articleBody": article.html_content,
     "author": {
       "@type": "Person",
-      "name": article.author.name
+      "name": article.author?.name || "Anonymous"
     },
     "datePublished": article.created_at,
     "dateModified": article.updated_at,
-    "description": article.description,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Modern Blog Platform",
+      "url": window.location.origin
+    },
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": window.location.href
@@ -131,7 +116,7 @@ const BlogArticle = () => {
   return (
     <>
       <Helmet>
-        <title>{article.title} | Mon Blog</title>
+        <title>{article.title} | Modern Blog Platform</title>
         <meta name="description" content={article.description} />
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.description} />
@@ -139,7 +124,7 @@ const BlogArticle = () => {
         <meta property="og:url" content={window.location.href} />
         <meta property="article:published_time" content={article.created_at} />
         <meta property="article:modified_time" content={article.updated_at} />
-        <meta property="article:author" content={article.author.name} />
+        <meta property="article:author" content={article.author?.name || 'Anonymous'} />
         <script type="application/ld+json">
           {JSON.stringify(articleSchema)}
         </script>
@@ -157,15 +142,7 @@ const BlogArticle = () => {
               <CardContent>
                 <ScrollArea className="h-[200px]">
                   <nav className="space-y-2">
-                    {tableOfContents.map((item) => (
-                      <a
-                        key={item.id}
-                        href={`#${item.id}`}
-                        className="block text-sm hover:text-blue-500 transition-colors"
-                      >
-                        {item.title}
-                      </a>
-                    ))}
+                    {/* Add your table of contents items here */}
                   </nav>
                 </ScrollArea>
               </CardContent>
@@ -194,20 +171,22 @@ const BlogArticle = () => {
           {/* Main Content */}
           <main className="flex-1 max-w-3xl">
             <article className="prose lg:prose-xl">
-              <h1 id="introduction" className="text-4xl font-bold mb-8">
+              <h1 className="text-4xl font-bold mb-8">
                 {article.title}
               </h1>
 
-              <div dangerouslySetInnerHTML={{ __html: article.html_content }} />
-
-              <div className="mt-8 text-sm text-gray-500">
+              <div className="mb-4 text-sm text-gray-500">
+                Par {article.author?.name || 'Anonymous'} • 
                 Publié le {new Date(article.created_at).toLocaleDateString('fr-FR')}
                 {article.updated_at !== article.created_at && 
                   ` • Mis à jour le ${new Date(article.updated_at).toLocaleDateString('fr-FR')}`
                 }
-                {" • "} 
-                Par {article.author.name}
               </div>
+
+              <div 
+                className="mt-6"
+                dangerouslySetInnerHTML={{ __html: article.html_content }} 
+              />
             </article>
           </main>
         </div>
